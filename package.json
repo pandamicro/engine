@@ -1,0 +1,22 @@
+{
+  "name": "fireball-engine",
+  "version": "0.0.1",
+  "description": "Fireball Engine",
+  "homepage": "https://github.com/fireball-x/engine",
+  "license": "MIT",
+  "licenseUrl": "http://opensource.org/licenses/MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "event-stream": "",
+    "express": "",
+    "gulp": "",
+    "gulp-clean": "",
+    "gulp-concat": "",
+    "gulp-jshint": "",
+    "gulp-qunit": "",
+    "gulp-rename": "",
+    "gulp-uglify": "",
+    "gulp-util": "",
+    "jshint-stylish": ""
+  }
+}

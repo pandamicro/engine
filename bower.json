@@ -1,0 +1,24 @@
+{
+  "name": "fireball-engine",
+  "version": "0.0.1",
+  "homepage": "https://github.com/fireball-x/engine",
+  "authors": [
+    "Johnny Wu <KarasAya@gmail.com>",
+    "Jare Guo <jare.guo@gmail.com>"
+  ],
+  "description": "Fireball Engine",
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "ext",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+  },
+  "devDependencies": {
+  }
+}
