@@ -17,6 +17,7 @@
     "gulp-rename": "",
     "gulp-uglify": "",
     "gulp-util": "",
-    "jshint-stylish": ""
+    "jshint-stylish": "",
+    "through": "^2.3.4"
   }
 }

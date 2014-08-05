@@ -43,6 +43,7 @@ bower_components/
 bin/
 /ext/
 publish/
+test/unit/**/*.html
 
 # scripts
 *.bat

@@ -2,6 +2,7 @@
 var es = require('event-stream');
 var stylish = require('jshint-stylish');
 var fs = require('fs');
+var through = require('through');
 
 var gulp = require('gulp');
 var clean = require('gulp-clean');
@@ -13,15 +14,22 @@ var rename = require('gulp-rename');
 var uglify = require('gulp-uglify');
 
 var paths = {
+    // source
     src: [
         'src/test.js',
     ],
     index: 'src/index.js',
-    
+
+    // ext
     ext_core: [ 
         '../core/bin/**/*.js',
     ],
 
+    // test
+    unit_test: 'test/unit/**/*.js',
+    runner_template: 'test/lib/runner.html',
+
+    // output
     output: 'bin/',
     engine_dev: 'engine.dev.js',
     engine_min: 'engine.min.js',
@@ -81,7 +89,64 @@ gulp.task('js', ['js-dev'], function() {
 // test
 /////////////////////////////////////////////////////////////////////////////
 
-gulp.task('test', ['js'], function() {
+var toFileList = function () {
+    var firstFile = null;
+    var fileList = [];
+    function write(file) {
+        if (file.isStream()) return this.emit('error', new PluginError('gulp-concat', 'Streaming not supported'));
+        if (!firstFile) firstFile = file;
+        fileList.push(file.relative);
+    }
+    function end() {
+        if (firstFile) {
+            firstFile.contents = new Buffer(fileList.join(','));
+        }
+        else {
+            firstFile = new gutil.File({
+                contents: new Buffer(0),
+            });
+        }
+        this.emit('data', firstFile);
+        this.emit('end');
+    }
+    return through(write, end);
+};
+
+var generateRunner = function (templatePath, dest) {
+    var template = fs.readFileSync(templatePath);
+    return es.map(function(file, callback) {
+        var fileList = file.contents.toString().split(',');
+        var scriptElements = '';
+        for (var i = 0; i < fileList.length; i++) {
+            if (fileList[i]) {
+                if (i > 0) {
+                    scriptElements += '\n    ';
+                }
+                scriptElements += ('<script src="' + Path.relative(dest, fileList[i]) + '"></script>');
+            }
+        }
+        var data = { file: file, scripts: scriptElements };
+        file.contents = new Buffer(gutil.template(template, data));
+        file.path = Path.join(file.base, Path.basename(templatePath));
+        callback(null, file);
+    });
+};
+
+gulp.task('unit-runner', function() {
+    var js = [];
+    js = js.concat('ext/fire-core/core.min.js');
+    js = js.concat(Path.join(paths.output, paths.engine_min));
+    js = js.concat(paths.unit_test);
+
+    var dest = paths.unit_test.split('*')[0];
+    return gulp.src(js, { read: false, base: './' })
+               .pipe(toFileList())
+               .pipe(generateRunner(paths.runner_template, dest))
+               .pipe(gulp.dest(dest))
+               ;
+});
+
+gulp.task('test', ['js', 'unit-runner'], function() {
     return gulp.src('test/unit/**/*.html')
                .pipe(qunit())
                .on('error', function(err) {
