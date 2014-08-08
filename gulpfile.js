@@ -16,7 +16,9 @@ var uglify = require('gulp-uglify');
 var paths = {
     // source
     src: [
-        'src/test.js',
+        'src/time.js',
+        'src/platform/h5Ticker.js',
+        'src/platform/h5Engine.js',
     ],
     index: 'src/index.js',
 
@@ -70,7 +72,6 @@ gulp.task('js-dev', function() {
     return gulp.src(paths.src)
                .pipe(jshint())
                .pipe(jshint.reporter(stylish))
-               .pipe(uglify())
                .pipe(concat(paths.engine_dev))
                .pipe(delcareFireScope(paths.index))
                .pipe(gulp.dest(paths.output))
@@ -167,6 +168,5 @@ gulp.task('watch', function() {
 });
 
 // tasks
-gulp.task('dev', ['cp-all', 'js-dev' ] );
 gulp.task('default', ['cp-all', 'js' ] );
 gulp.task('all', ['default', 'test'] );
