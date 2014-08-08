@@ -113,10 +113,26 @@ var toFileList = function () {
     return through(write, end);
 };
 
+var trySortByDepends = function (fileList) {
+    var indexInSrc = function (filePath) {
+        var basename = Path.basename(filePath);
+        for (var i = 0; i < paths.src.length; i++) {
+            if (Path.basename(paths.src[i]) === basename) {
+                return i;
+            }
+        }
+        return -1;
+    };
+    fileList.sort(function (lhs, rhs) {
+        return compare = indexInSrc(lhs) - indexInSrc(rhs);
+    });
+}
+
 var generateRunner = function (templatePath, dest) {
     var template = fs.readFileSync(templatePath);
     return es.map(function(file, callback) {
         var fileList = file.contents.toString().split(',');
+        trySortByDepends(fileList);
         var scriptElements = '';
         for (var i = 0; i < fileList.length; i++) {
             if (fileList[i]) {
