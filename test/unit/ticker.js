@@ -1,4 +1,4 @@
-﻿module('h5Ticker');
+﻿module('ticker');
 
 var Ticker = FIRE.__TESTONLY__.Ticker;
 
@@ -30,6 +30,3 @@ asyncTest('test requestAnimationFrame', function() {
         });
     });
 });
-
-module('h5Engine');
-

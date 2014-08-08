@@ -1,7 +1,7 @@
 ﻿var FIRE = FIRE || {};
-if (FIRE.isWeb) {
 
 FIRE.Engine = (function () {
+
     var Engine = {};
 
     var isPlaying = false;
@@ -56,6 +56,3 @@ FIRE.Engine = (function () {
 
     return Engine;
 })();
-
-
-}

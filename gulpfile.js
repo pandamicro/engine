@@ -17,8 +17,8 @@ var paths = {
     // source
     src: [
         'src/time.js',
-        'src/platform/h5Ticker.js',
-        'src/platform/h5Engine.js',
+        'src/platform/h5/ticker.js',
+        'src/platform/h5/engine.js',
     ],
     index: 'src/index.js',
 
@@ -100,7 +100,7 @@ var toFileList = function () {
     }
     function end() {
         if (firstFile) {
-            firstFile.contents = new Buffer(fileList.join(','));
+            firstFile.contents = new Buffer(fileList.join(',') + ',');
         }
         else {
             firstFile = new gutil.File({
@@ -133,6 +133,11 @@ var generateRunner = function (templatePath, dest) {
     return es.map(function(file, callback) {
         var fileList = file.contents.toString().split(',');
         trySortByDepends(fileList);
+        var libs = [
+            'ext/fire-core/core.min.js',
+            'bin/engine.min.js',
+        ];
+        fileList = libs.concat(fileList);
         var scriptElements = '';
         for (var i = 0; i < fileList.length; i++) {
             if (fileList[i]) {
@@ -150,11 +155,7 @@ var generateRunner = function (templatePath, dest) {
 };
 
 gulp.task('unit-runner', function() {
-    var js = [];
-    js = js.concat('ext/fire-core/core.min.js');
-    js = js.concat(Path.join(paths.output, paths.engine_min));
-    js = js.concat(paths.unit_test);
-
+    var js = paths.unit_test;
     var dest = paths.unit_test.split('*')[0];
     return gulp.src(js, { read: false, base: './' })
                .pipe(toFileList())
