@@ -181,7 +181,7 @@ gulp.task('test', ['js', 'unit-runner'], function() {
 // watch
 gulp.task('watch', function() {
     gulp.watch(paths.ext_core, ['cp-core']).on ( 'error', gutil.log );
-    gulp.watch(paths.src.concat(paths.index), ['js-dev']).on ( 'error', gutil.log );
+    gulp.watch(paths.src.concat(paths.index), ['js']).on ( 'error', gutil.log );
 });
 
 // tasks

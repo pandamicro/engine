@@ -12,14 +12,20 @@ FIRE.Time = (function () {
     var lastUpdateTime = 0;
     var startTime = 0;
 
-    Time._update = function (timestamp) {
-        var delta = timestamp - lastUpdateTime;
-        delta = Math.min(Time.maxDeltaTime, delta);
-        lastUpdateTime = timestamp;
+    /*
+     * @method _update
+     * @param paused {boolean} if true, only realTime will be updated, can omit
+     */
+    Time._update = function (timestamp, paused) {
+        if (!paused) {
+            var delta = timestamp - lastUpdateTime;
+            delta = Math.min(Time.maxDeltaTime, delta);
+            lastUpdateTime = timestamp;
 
-        ++Time.frameCount;
-        Time.deltaTime = delta;
-        Time.time += delta;
+            ++Time.frameCount;
+            Time.deltaTime = delta;
+            Time.time += delta;
+        }
         Time.realTime = timestamp - startTime;
     };
 
