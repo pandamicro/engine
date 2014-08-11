@@ -18,7 +18,7 @@ asyncTest('test requestAnimationFrame', function() {
     var startTime = Ticker.now();
     var tolerance = 0.02;
 
-    Ticker.requestAnimationFrame(function () {
+    var requestId = Ticker.requestAnimationFrame(function () {
         var delta = Ticker.now() - startTime;
         ok(0 <= delta && delta < (1 / 60) + tolerance, 'time to next frame should less than 0.016: ' + delta);
 
@@ -29,4 +29,16 @@ asyncTest('test requestAnimationFrame', function() {
             start();
         });
     });
+    strictEqual(typeof requestId, 'number', 'requestAnimationFrame should return a request id');
+});
+
+asyncTest('test cancelAnimationFrame', function() {
+    expect(0);
+    var requestId = Ticker.requestAnimationFrame(function () {
+        ok(false, 'should not callback after cancelAnimationFrame');
+    });
+    Ticker.cancelAnimationFrame(requestId);
+    setTimeout(function () {
+        start();
+    }, 30);
 });

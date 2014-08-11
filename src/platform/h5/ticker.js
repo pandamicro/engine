@@ -6,10 +6,10 @@
     // Ticker.requestAnimationFrame
 
     window.requestAnimationFrame = window.requestAnimationFrame ||
-                                    window.mozRequestAnimationFrame ||
-                                    window.webkitRequestAnimationFrame ||
-                                    window.msRequestAnimationFrame ||
-                                    window.oRequestAnimationFrame;
+                                   window.webkitRequestAnimationFrame ||
+                                   window.msRequestAnimationFrame ||
+                                   window.mozRequestAnimationFrame ||
+                                   window.oRequestAnimationFrame;
     if (_frameRate !== 60 || !window.requestAnimationFrame) {
         Ticker.requestAnimationFrame = function (callback) {
             return window.setTimeout(callback, 1000 / _frameRate);
@@ -20,7 +20,24 @@
             return window.requestAnimationFrame(callback);
         };
     }
-    //window.cancelAnimationFrame = window.cancelAnimationFrame || window.mozCancelAnimationFrame || window.webkitCancelAnimationFrame || window.msCancelAnimationFrame || window.oCancelAnimationFrame;
+
+    // Ticker.cancelAnimationFrame
+
+    window.cancelAnimationFrame = window.cancelAnimationFrame || 
+                                  window.webkitCancelAnimationFrame ||
+                                  window.msCancelAnimationFrame ||
+                                  window.mozCancelAnimationFrame ||
+                                  window.oCancelAnimationFrame;
+    if (window.cancelAnimationFrame) {
+        Ticker.cancelAnimationFrame = function (requestId) {
+            window.cancelAnimationFrame(requestId);
+        };
+    }
+    else {
+        Ticker.cancelAnimationFrame = function (requestId) {
+            window.clearTimeout(requestId);
+        };
+    }
 
     // Ticker.now
 
