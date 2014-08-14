@@ -129,3 +129,5 @@ test('component in hierarchy', function () {
 
     child.transform.parent = null;
 });
+
+// TODO: test destory entity

@@ -17,6 +17,7 @@
     };
 
     // properties
+
     Transform.prototype.__defineGetter__('parent', function () { return this._parent; });
     Transform.prototype.__defineSetter__('parent', function (value) {
         if (this._parent != value) {
@@ -26,7 +27,7 @@
             }
             var oldParent = this._parent;
             if (oldParent) {
-                oldParent._children.splice(oldParent._children.indexOf(this));
+                oldParent._children.splice(oldParent._children.indexOf(this), 1);
             }
             this._parent = value;
             if (value) {
@@ -45,9 +46,16 @@
         this._position = value;
     });
 
-    // functions
+    // built-in functions
 
-    Transform.prototype.GetChild = function (index) {
+    Transform.prototype.onDestroy = function () {
+        this.parent = null;
+        // TODO: destroy children
+    };
+
+    // other functions
+
+    Transform.prototype.getChild = function (index) {
         return this._children[index];
     };
 

@@ -9,7 +9,7 @@ asyncTest('test now', function() {
     var startTime = Ticker.now();
     setTimeout(function () {
         var delta = Ticker.now() - startTime;
-        ok(0 < delta && delta < 0.03, 'elpased time should in range (0, 0.03): ' + delta);
+        ok(0 < delta && delta < 0.1, 'elpased time should in range (0, 0.1): ' + delta);
         start();
     }, 10);
 });
