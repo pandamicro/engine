@@ -18,6 +18,10 @@ var paths = {
     src: [
         'src/time.js',
         'src/platform/h5/ticker.js',
+        'src/component/component.js',
+        'src/component/transform.js',
+        'src/entity.js',
+        'src/scene.js',
         'src/platform/h5/engine.js',
     ],
     index: 'src/index.js',
@@ -70,7 +74,10 @@ var delcareFireScope = function (template) {
 
 gulp.task('js-dev', function() {
     return gulp.src(paths.src)
-               .pipe(jshint())
+               .pipe(jshint({
+                   multistr: true,
+                   evil: true,
+               }))
                .pipe(jshint.reporter(stylish))
                .pipe(concat(paths.engine_dev))
                .pipe(delcareFireScope(paths.index))

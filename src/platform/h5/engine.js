@@ -12,6 +12,8 @@ FIRE.Engine = (function () {
     // last ticker will not cancel correctly.
     var requestId = -1;
 
+    var scene = null;
+
     // is rendering and allow update logic
     Engine.__defineGetter__('isPlaying', function () {
         return isPlaying;
@@ -23,7 +25,7 @@ FIRE.Engine = (function () {
     });
 
     Engine.init = function () {
-
+        scene = new FIRE.Scene();
     };
 
     Engine.play = function () {
@@ -64,13 +66,19 @@ FIRE.Engine = (function () {
         }
     };
 
-    var updateAll = function (updateLogic) {
+    var doUpdate = function (updateLogic) {
         //console.log('canUpdateLogic: ' + updateLogic + ' Time: ' + FIRE.Time);
+        // TODO: scheduler
+        if (updateLogic) {
+            scene.update();
+            FIRE.FObject._deferredDestroy();
+        }
     };
 
-    /*
-     * @method update
+    /**
+     * @method FIRE.Engine#update
      * @param unused {float} not used parameter, can omit
+     * @private
      */
     var update = function (unused) {
         if (!isPlaying) {
@@ -82,7 +90,7 @@ FIRE.Engine = (function () {
         stepOnce = false;
         var now = Ticker.now();
         FIRE.Time._update(now, !updateLogic);
-        updateAll(updateLogic);
+        doUpdate(updateLogic);
 
         // for test
         if (FIRE.__TESTONLY__.update) {
