@@ -34,6 +34,10 @@ var paths = {
     // test
     unit_test: 'test/unit/**/*.js',
     runner_template: 'test/lib/runner.html',
+    runner_lib: [
+        'ext/fire-core/core.min.js',
+        'bin/engine.min.js',
+    ],
 
     // output
     output: 'bin/',
@@ -101,7 +105,7 @@ var toFileList = function () {
     var firstFile = null;
     var fileList = [];
     function write(file) {
-        if (file.isStream()) return this.emit('error', new PluginError('gulp-concat', 'Streaming not supported'));
+        if (file.isStream()) return this.emit('error', new PluginError('toFileList', 'Streaming not supported'));
         if (!firstFile) firstFile = file;
         fileList.push(file.relative);
     }
@@ -137,28 +141,46 @@ var trySortByDepends = function (fileList) {
 
 var generateRunner = function (templatePath, dest) {
     var template = fs.readFileSync(templatePath);
-    return es.map(function(file, callback) {
-        var fileList = file.contents.toString().split(',');
-        trySortByDepends(fileList);
-        var libs = [
-            'ext/fire-core/core.min.js',
-            'bin/engine.min.js',
-        ];
-        fileList = libs.concat(fileList);
+
+    function generateContents(fileList, dev) {
+        var lib = paths.runner_lib;
+        if (dev) {
+            for (var i = 0; i < lib.length; i++) {
+                lib[i] = lib[i].replace('.min.', '.dev.');
+            }
+        }
+        fileList = lib.concat(fileList);
         var scriptElements = '';
         for (var i = 0; i < fileList.length; i++) {
             if (fileList[i]) {
                 if (i > 0) {
-                    scriptElements += '\n    ';
+                    scriptElements += '\r\n    ';
                 }
                 scriptElements += ('<script src="' + Path.relative(dest, fileList[i]) + '"></script>');
             }
         }
-        var data = { file: file, scripts: scriptElements };
-        file.contents = new Buffer(gutil.template(template, data));
+        var data = { file: null, scripts: scriptElements };
+        return new Buffer(gutil.template(template, data));
+    }
+    function write(file) {
+        var fileList = file.contents.toString().split(',');
+        trySortByDepends(fileList);
+        // runner.html
+        file.contents = generateContents(fileList, false);
         file.path = Path.join(file.base, Path.basename(templatePath));
-        callback(null, file);
-    });
+        this.emit('data', file);
+        // runner.dev.html
+        var ext = Path.extname(file.path);
+        var filename = Path.basename(file.path, ext) + '.dev' + ext;
+        this.emit('data', new gutil.File({
+            contents: generateContents(fileList, true),
+            base: file.base,
+            path: Path.join(file.base, filename)
+        }));
+
+        this.emit('end');
+    }
+    return through(write);
 };
 
 gulp.task('unit-runner', function() {
@@ -172,7 +194,7 @@ gulp.task('unit-runner', function() {
 });
 
 gulp.task('test', ['js', 'unit-runner'], function() {
-    return gulp.src('test/unit/**/*.html')
+    return gulp.src('test/unit/runner.html')
                .pipe(qunit())
                .on('error', function(err) {
                    // Make sure failed tests cause gulp to exit non-zero
