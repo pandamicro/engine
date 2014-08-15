@@ -1,4 +1,6 @@
-﻿var FIRE = FIRE || {};
+﻿/* global Ticker: false */
+
+var FIRE = FIRE || {};
 
 FIRE.Engine = (function () {
 
@@ -77,7 +79,7 @@ FIRE.Engine = (function () {
 
     /**
      * @method FIRE.Engine#update
-     * @param unused {float} not used parameter, can omit
+     * @param unused {Float} not used parameter, can omit
      * @private
      */
     var update = function (unused) {

@@ -1,4 +1,6 @@
-﻿module('entity');
+﻿// jshint ignore: start
+
+module('entity');
 
 var Entity = FIRE.Entity;
 
@@ -45,6 +47,8 @@ test('hierarchy', function () {
 
     strictEqual(parent.activeInHierarchy, true, 'parent become activeInHierarchy');
     strictEqual(child.activeInHierarchy, true, 'child become activeInHierarchy because parent actived');
+
+    parent.destroy();
 });
 
 test('component', function () {
@@ -131,3 +135,4 @@ test('component in hierarchy', function () {
 });
 
 // TODO: test destory entity
+// jshint ignore: end

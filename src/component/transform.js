@@ -1,4 +1,5 @@
-﻿FIRE.Transform = (function () {
+﻿var FIRE;
+FIRE.Transform = (function () {
     var _super = FIRE.Component;
 
     // constructor
@@ -20,7 +21,9 @@
 
     Transform.prototype.__defineGetter__('parent', function () { return this._parent; });
     Transform.prototype.__defineSetter__('parent', function (value) {
+        // jshint eqeqeq: false
         if (this._parent != value) {
+        // jshint eqeqeq: true
             if (value && value instanceof Transform === false) {
                 console.error('Parent must be a Transform or null');
                 return;

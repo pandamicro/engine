@@ -1,4 +1,5 @@
-﻿var Ticker = (function () {
+﻿var FIRE;
+var Ticker = (function () {
     var Ticker = {};
 
     var _frameRate = 60;

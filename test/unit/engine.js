@@ -1,4 +1,5 @@
-﻿module('engine', {
+﻿// jshint ignore: start
+module('engine', {
     setup: function () {
         //console.log('setup');
         Engine.stop();
@@ -202,5 +203,6 @@ asyncTest('stop -> step -> step', function () {
     Engine.step();
 });
 
+// jshint ignore: end
 
 

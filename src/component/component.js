@@ -1,4 +1,5 @@
-﻿FIRE.Component = (function () {
+﻿var FIRE;
+FIRE.Component = (function () {
     var _super = FIRE.FObject;
 
     // constructor
@@ -19,7 +20,9 @@
     // properties
     Component.prototype.__defineGetter__('enabled', function () { return this._enabled; });
     Component.prototype.__defineSetter__('enabled', function (value) {
+        // jshint eqeqeq: false
         if (this._enabled != value) {
+        // jshint eqeqeq: true
             this._enabled = value;
             if (this.entity.activeInHierarchy) {
                 _callOnEnable(this, value);

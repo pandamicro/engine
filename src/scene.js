@@ -1,4 +1,5 @@
-﻿FIRE.Scene = (function () {
+﻿var FIRE;
+FIRE.Scene = (function () {
     var _super = FIRE.Asset;
 
     // constructor
@@ -34,8 +35,11 @@
         }\
     }';
 
-    // declare updateRecursively
+    // declare updateRecursively in eval
+    /* global updateRecursively: false */
+    // jshint evil: true
     eval(visitFunctionTmpl.replace(/_FUNC_NAME_/g, 'update'));
+    // jshint evil: false
 
     // visit entities and components
     Scene.prototype.update = function () {

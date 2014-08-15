@@ -2,7 +2,9 @@ var FIRE;
 (function (FIRE) {
     FIRE.__TESTONLY__ = {};
 
+    // jshint ignore: start
     <%=contents%>
+    // jshint ignore: end
 
 })(FIRE || (FIRE = {}));
 

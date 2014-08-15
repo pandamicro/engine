@@ -1,4 +1,5 @@
-﻿FIRE.Entity = (function () {
+﻿var FIRE;
+FIRE.Entity = (function () {
     var _super = FIRE.FObject;
 
     // constructor
@@ -22,7 +23,9 @@
     // properties
     Entity.prototype.__defineGetter__('active', function () { return this._active; });
     Entity.prototype.__defineSetter__('active', function (value) {
+        // jshint eqeqeq: false
         if (this._active != value) {
+        // jshint eqeqeq: true
             this._active = value;
             var canActiveInHierarchy = (!this.transform.parent || this.transform.parent.entity.activeInHierarchy);
             if (canActiveInHierarchy) {

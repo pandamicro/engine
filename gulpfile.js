@@ -80,7 +80,6 @@ gulp.task('js-dev', function() {
     return gulp.src(paths.src)
                .pipe(jshint({
                    multistr: true,
-                   evil: true,
                }))
                .pipe(jshint.reporter(stylish))
                .pipe(concat(paths.engine_dev))
