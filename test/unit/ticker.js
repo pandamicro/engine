@@ -1,4 +1,6 @@
-﻿module('ticker');
+﻿// jshint ignore: start
+
+module('ticker');
 
 var Ticker = FIRE.__TESTONLY__.Ticker;
 
@@ -42,3 +44,5 @@ asyncTest('test cancelAnimationFrame', function() {
         start();
     }, 30);
 });
+
+// jshint ignore: end

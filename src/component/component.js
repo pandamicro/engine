@@ -1,5 +1,4 @@
-﻿var FIRE;
-FIRE.Component = (function () {
+﻿FIRE.Component = (function () {
     var _super = FIRE.FObject;
 
     // constructor

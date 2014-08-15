@@ -1,5 +1,4 @@
-﻿var FIRE;
-FIRE.Scene = (function () {
+﻿FIRE.Scene = (function () {
     var _super = FIRE.Asset;
 
     // constructor

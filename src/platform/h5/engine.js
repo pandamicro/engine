@@ -1,7 +1,5 @@
 ﻿/* global Ticker: false */
 
-var FIRE = FIRE || {};
-
 FIRE.Engine = (function () {
 
     var Engine = {};

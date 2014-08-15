@@ -1,5 +1,4 @@
-﻿var FIRE;
-FIRE.Entity = (function () {
+﻿FIRE.Entity = (function () {
     var _super = FIRE.FObject;
 
     // constructor

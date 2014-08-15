@@ -1,6 +1,4 @@
-﻿var FIRE = FIRE || {};
-
-FIRE.Time = (function () {
+﻿FIRE.Time = (function () {
     var Time = {};
 
     Time.time = 0;

@@ -1,5 +1,4 @@
-﻿var FIRE;
-FIRE.Transform = (function () {
+﻿FIRE.Transform = (function () {
     var _super = FIRE.Component;
 
     // constructor
