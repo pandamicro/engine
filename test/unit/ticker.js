@@ -34,8 +34,7 @@ asyncTest('test requestAnimationFrame', function() {
     strictEqual(typeof requestId, 'number', 'requestAnimationFrame should return a request id');
 });
 
-asyncTest('test cancelAnimationFrame', function() {
-    expect(0);
+asyncTest('test cancelAnimationFrame', 0, function() {
     var requestId = Ticker.requestAnimationFrame(function () {
         ok(false, 'should not callback after cancelAnimationFrame');
     });

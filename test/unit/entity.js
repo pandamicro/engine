@@ -6,7 +6,9 @@ var Entity = FIRE.Entity;
 
 test('basic test', function () {
     var entity = new Entity();
-    ok(entity.name, 'entity has name');
+    ok(entity.name, 'entity has default name');
+    strictEqual(new Entity('myEntity').name, 'myEntity', 'can specify entity name');
+
     strictEqual(entity.active, true, 'entity is active');
     strictEqual(entity.activeInHierarchy, true, 'entity is activeInHierarchy');
 
@@ -47,8 +49,6 @@ test('hierarchy', function () {
 
     strictEqual(parent.activeInHierarchy, true, 'parent become activeInHierarchy');
     strictEqual(child.activeInHierarchy, true, 'child become activeInHierarchy because parent actived');
-
-    parent.destroy();
 });
 
 test('component', function () {
@@ -99,14 +99,12 @@ test('component', function () {
     strictEqual(obj.getComponent(MyComponent), null, 'can not get component after this frame');
 });
 
-test('component in hierarchy', function () {
+test('component in hierarchy', 3, function () {
     // 这里主要测试entity，不是测试component
     var parent = new Entity();
     var child = new Entity();
     child.transform.parent = parent.transform;
     parent.active = false;
-
-    expect(3);
 
     var comp = new FIRE.Component();
     comp.onEnable = function () {
@@ -134,5 +132,15 @@ test('component in hierarchy', function () {
     child.transform.parent = null;
 });
 
-// TODO: test destory entity
+test('destroy hierarchy', function () {
+    var parent = new Entity();
+    var child = new Entity();
+    child.transform.parent = parent.transform;
+
+    parent.destroy();
+    FIRE.FObject._deferredDestroy();
+
+    strictEqual(child.isValid, false, 'entity will also destroyed with its parent');
+});
+
 // jshint ignore: end

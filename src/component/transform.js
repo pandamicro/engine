@@ -51,10 +51,20 @@
     // built-in functions
 
     Transform.prototype.onDestroy = function () {
-        this.parent = null;
-        // TODO: destroy children
+        this.parent = null; // TODO: may call onEnable on other component's
+        // destroy child entitys
+        var transform = this.transform;
+        for (var i = 0, len = transform.childCount; i < len; ++i) {
+            var entity = transform._children[i].entity;
+            entity._destroyImmediate();
+        }
     };
 
+    Transform.prototype.destroy = function () {
+        console.error("Not allowed to destroy the transform. Please destroy the entity instead.");
+        return;
+    };
+    
     // other functions
 
     Transform.prototype.getChild = function (index) {

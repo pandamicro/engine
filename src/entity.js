@@ -2,19 +2,19 @@
     var _super = FIRE.FObject;
 
     // constructor
-    function Entity () {
+    function Entity (name) {
         _super.call(this);
-        init(this);
+        init(this, name);
     }
     FIRE.extend(Entity, _super);
     Entity.prototype.__classname__ = "FIRE.Entity";
 
     // init
-    var init = function (self) {
+    var init = function (self, name) {
         self._active = true;
         self._components = [];
 
-        self.name = "Entity";
+        self.name = name || "Entity";
         self.transform = new FIRE.Transform();
         self.addComponent(self.transform);
     };
@@ -36,7 +36,7 @@
         return this._active && (!this.transform.parent || this.transform.parent.entity.activeInHierarchy);
     });
 
-    // functions
+    // other functions
 
     Entity.prototype.addComponent = function (component) {
         if (!component) {

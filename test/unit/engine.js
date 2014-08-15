@@ -123,8 +123,7 @@ asyncTest('stop -> play -> stop', function () {
     Engine.play();
 });
 
-asyncTest('stop -> play -> stop, all in 1 frame', function () {
-    expect(4);
+asyncTest('stop -> play -> stop, all in 1 frame', 4, function () {
     TestOnly.update = function (updateLogic) {
         // first frame
         strictEqual(Time.time, 0, 'reset time');
