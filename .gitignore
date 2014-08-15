@@ -44,6 +44,7 @@ bin/
 /ext/
 publish/
 test/unit/**/*.html
+_references.js
 
 # scripts
 *.bat

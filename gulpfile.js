@@ -43,6 +43,13 @@ var paths = {
     output: 'bin/',
     engine_dev: 'engine.dev.js',
     engine_min: 'engine.min.js',
+
+    // generate references
+    ref_libs: [
+        'ext/fire-core/core.dev.js',
+        'test/lib/*.js',
+    ],
+    ref: '_references.js',
 };
 
 // clean
@@ -202,6 +209,32 @@ gulp.task('test', ['js', 'unit-runner'], function() {
                ;
 });
 
+gulp.task('ref', ['cp-all'], function() {
+    var files = paths.ref_libs.concat(paths.src);
+    var destPath = paths.ref;
+    var destDir = Path.dirname(destPath);
+    return gulp.src(files, { read: false, base: './' })
+               .pipe(toFileList())
+               .pipe(through(function (file) {
+                   function generateContents(fileList) {
+                       var scriptElements = '';
+                       for (var i = 0; i < fileList.length; i++) {
+                           if (fileList[i]) {
+                               scriptElements += ('/// <reference path="' + Path.relative(destDir, fileList[i]) + '" />\r\n');
+                           }
+                       }
+                       return new Buffer(scriptElements);
+                   }
+                   var fileList = file.contents.toString().split(',');
+                   file.contents = generateContents(fileList);
+                   file.base = destDir;
+                   file.path = destPath;
+                   this.emit('data', file);
+                   this.emit('end');
+                }))
+               .pipe(gulp.dest(destDir));
+});
+
 /////////////////////////////////////////////////////////////////////////////
 // tasks
 /////////////////////////////////////////////////////////////////////////////
@@ -214,4 +247,4 @@ gulp.task('watch', function() {
 
 // tasks
 gulp.task('default', ['cp-all', 'js' ] );
-gulp.task('all', ['default', 'test'] );
+gulp.task('all', ['default', 'test', 'ref'] );
