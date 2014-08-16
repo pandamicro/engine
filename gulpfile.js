@@ -27,9 +27,8 @@ var paths = {
     index: 'src/index.js',
 
     // ext
-    ext_core: [ 
-        '../core/bin/**/*.js',
-    ],
+    ext_core_min: '../core/bin/**/*.min.js',
+    ext_core_dev: '../core/bin/**/*.dev.js',
 
     // test
     unit_test: 'test/unit/**/*.js',
@@ -62,13 +61,25 @@ gulp.task('clean', function() {
 // copy
 /////////////////////////////////////////////////////////////////////////////
 
+// copy core to 3rd, so it can be committed
 gulp.task('cp-core', function() {
-    var dest = 'ext/fire-core';
-    return gulp.src(paths.ext_core)
-               .pipe(gulp.dest(dest));
+    return gulp.src(paths.ext_core_min)
+               .pipe(gulp.dest('3rd/fire-core'));
 });
 
-gulp.task('cp-all', ['cp-core' ] );
+// 3rd to ext
+gulp.task('cp-3rd', ['cp-core'], function() {
+    return gulp.src('3rd/**/*', {base: '3rd/'})
+               .pipe(gulp.dest('ext'));
+});
+
+// dev core to ext, not worked in publish
+gulp.task('cp-core-dev', function() {
+    return gulp.src(paths.ext_core_dev)
+               .pipe(gulp.dest('ext/fire-core'));
+});
+
+gulp.task('cp-all', ['cp-3rd', 'cp-core-dev' ] );
 
 /////////////////////////////////////////////////////////////////////////////
 // build
@@ -241,7 +252,8 @@ gulp.task('ref', ['cp-all'], function() {
 
 // watch
 gulp.task('watch', function() {
-    gulp.watch(paths.ext_core, ['cp-core']).on ( 'error', gutil.log );
+    gulp.watch(paths.ext_core_min, ['cp-3rd']).on ( 'error', gutil.log );
+    gulp.watch(paths.ext_core_dev, ['cp-core-dev']).on ( 'error', gutil.log );
     gulp.watch(paths.src.concat(paths.index), ['js']).on ( 'error', gutil.log );
 });
 
