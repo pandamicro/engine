@@ -53,9 +53,9 @@
     Transform.prototype.onDestroy = function () {
         this.parent = null; // TODO: may call onEnable on other component's
         // destroy child entitys
-        var transform = this.transform;
-        for (var i = 0, len = transform.childCount; i < len; ++i) {
-            var entity = transform._children[i].entity;
+        var children = this._children;
+        for (var i = 0, len = children.length; i < len; ++i) {
+            var entity = children[i].entity;
             entity._destroyImmediate();
         }
     };
