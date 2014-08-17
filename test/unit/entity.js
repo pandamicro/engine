@@ -21,7 +21,7 @@ test('basic test', function () {
     strictEqual(entity.isValid, false, 'entity can be destoryed');
 });
 
-test('hierarchy', function () {
+test('activeInHierarchy', function () {
     var parent = new Entity();
     var child = new Entity();
 
@@ -52,44 +52,39 @@ test('hierarchy', function () {
 });
 
 test('component', function () {
-    // my base component
-    function MyComponentBase () {
-        FIRE.Component.call(this);
-    }
-    FIRE.extend(MyComponentBase, FIRE.Component);
-    // my component
-    function MyComponent () {
-        MyComponentBase.call(this);
-    }
-    FIRE.extend(MyComponent, MyComponentBase);
-
     // 这里主要测试entity，不是测试component
-    expect(10);
+
+    // my component
+    var MyComponentBase = FIRE.simpleExtend(CallbackTester);
+    var MyComponent = FIRE.simpleExtend(MyComponentBase);
 
     var obj = new Entity();
     var comp = new MyComponent();
-    comp.onEnable = function () {
-        ok(true, 'should call onEnable');
-    }
-    comp.onDisable = function () {
-        ok(false, 'should not call onDisable when adding');
-    }
+    comp.onEnable = callback().setName('onEnable').enable();
+    comp.onDisable = callback().setName('onDisable').setDisabledMessage('should not call onDisable when adding');
 
     obj.addComponent(comp); // onEnable
 
     strictEqual(comp.entity, obj, 'can get entity from component');
-
-    comp.onDisable = function () {
-        ok(true, 'should call onDisable now');
-    }
-
+    comp.onEnable.once().disable('can not call onEnable when active = false');
+    comp.onDisable.enable();
+    
     obj.active = false; // onDisable
+
+    comp.onEnable.enable();
+    comp.onDisable.once().disable('can not call onDisable when active = true');
+
     obj.active = true;  // onEnable
+
+    comp.onEnable.once().disable();
+    comp.onDisable.enable();
 
     strictEqual(obj.getComponent(FIRE.Transform), obj.transform, 'getComponent: can get transform');
     strictEqual(obj.getComponent(MyComponent), comp, 'getComponent: can get my component');
     strictEqual(obj.getComponent(MyComponentBase), comp, 'getComponent: can get component by base type');
 
+    comp.destroy();     // onDisable
+    comp.onDisable.once('should called onDisable when destory').disable('should called only once');
     comp.destroy();     // onDisable
 
     strictEqual(obj.getComponent(MyComponent), comp, 'can still get component in this frame');
@@ -100,6 +95,7 @@ test('component', function () {
 });
 
 test('component in hierarchy', 3, function () {
+    rewrite
     // 这里主要测试entity，不是测试component
     var parent = new Entity();
     var child = new Entity();
@@ -132,15 +128,48 @@ test('component in hierarchy', 3, function () {
     child.transform.parent = null;
 });
 
-test('destroy hierarchy', function () {
+test('destroy', function () {
     var parent = new Entity();
     var child = new Entity();
-    child.transform.parent = parent.transform;
 
+    var childComp = child.addComponent(new FIRE.Component());
+    childComp.onDisable = callback().enable();
+    childComp.onDestroy = callback().setDisabledMessage('can not destroyed before the end of this frame');
+
+    child.transform.parent = parent.transform;
     parent.destroy();
+
+    childComp.onDisable.once('should disable while destroy parent').disable('child comp should only disabled once');
+
+    // test added after destroy
+
+    var newComp = new FIRE.Component();
+    newComp.onEnable = callback().enable();
+
+    child.addComponent(newComp);
+
+    newComp.onEnable.once('new component should enable even if added after destroy').disable();
+
+    newComp.onDisable = callback(function () {
+        strictEqual(newComp.onDestroy.calledCount, 0, 'new component\'s onDisable should be called before its onDestroy');
+    }).enable();
+    newComp.onDestroy = callback().enable();
+    
+    // do destory
+
+    childComp.onDestroy.enable()
+
     FIRE.FObject._deferredDestroy();
 
-    strictEqual(child.isValid, false, 'entity will also destroyed with its parent');
+    childComp.onDestroy.once('should destroyed at the end of frame').disable();
+
+    newComp.onDisable.once().disable();
+    newComp.onDestroy.once('new component should also destroyed at the end of frame').disable();
+
+    strictEqual(newComp.isValid, false, 'entity will finally destroyed with its component which added after calling destroy');
+    strictEqual(childComp.isValid, false, 'entity will destroyed with its child components');
+    strictEqual(child.isValid, false, 'entity will destroyed with its children');
+
 });
 
 // jshint ignore: end
