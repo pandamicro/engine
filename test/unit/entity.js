@@ -1,6 +1,6 @@
 ﻿// jshint ignore: start
 
-module('entity');
+largeModule('Entity');
 
 var Entity = FIRE.Entity;
 
@@ -60,71 +60,54 @@ test('component', function () {
 
     var obj = new Entity();
     var comp = new MyComponent();
-    comp.onEnable = callback().setName('onEnable').enable();
-    comp.onDisable = callback().setName('onDisable').setDisabledMessage('should not call onDisable when adding');
 
+    comp.expect(CallbackTester.OnEnable);
     obj.addComponent(comp); // onEnable
 
     strictEqual(comp.entity, obj, 'can get entity from component');
-    comp.onEnable.once().disable('can not call onEnable when active = false');
-    comp.onDisable.enable();
-    
+
+    comp.expect(CallbackTester.OnDisable);
     obj.active = false; // onDisable
 
-    comp.onEnable.enable();
-    comp.onDisable.once().disable('can not call onDisable when active = true');
-
+    comp.expect(CallbackTester.OnEnable);
     obj.active = true;  // onEnable
-
-    comp.onEnable.once().disable();
-    comp.onDisable.enable();
 
     strictEqual(obj.getComponent(FIRE.Transform), obj.transform, 'getComponent: can get transform');
     strictEqual(obj.getComponent(MyComponent), comp, 'getComponent: can get my component');
     strictEqual(obj.getComponent(MyComponentBase), comp, 'getComponent: can get component by base type');
 
+    comp.expect(CallbackTester.OnDisable, 'should called onDisable when destory');
+
     comp.destroy();     // onDisable
-    comp.onDisable.once('should called onDisable when destory').disable('should called only once');
-    comp.destroy();     // onDisable
+    
+    comp.notExpect(CallbackTester.OnDisable, 'onDisable should called only once');
+    comp.destroy();
 
     strictEqual(obj.getComponent(MyComponent), comp, 'can still get component in this frame');
 
+    comp.expect(CallbackTester.OnDestroy);
     FIRE.FObject._deferredDestroy();    // onDestroy
 
     strictEqual(obj.getComponent(MyComponent), null, 'can not get component after this frame');
 });
 
 test('component in hierarchy', 3, function () {
-    rewrite
     // 这里主要测试entity，不是测试component
     var parent = new Entity();
     var child = new Entity();
     child.transform.parent = parent.transform;
     parent.active = false;
 
-    var comp = new FIRE.Component();
-    comp.onEnable = function () {
-        ok(false, 'should not call onEnable if entity deactive');
-    }
-    
+    var comp = new CallbackTester();
     child.addComponent(comp);
 
-    comp.onEnable = function () {
-        ok(true, 'should enable when parent become active');
-    }
-
+    comp.expect(CallbackTester.OnEnable, 'should enable when parent become active');
     parent.active = true;   // onEnable
 
-    comp.onDisable = function () {
-        ok(true, 'should disable when parent become deactive');
-    }
-
+    comp.expect(CallbackTester.OnDisable, 'should disable when parent become deactive');
     parent.active = false;   // onDisable
 
-    comp.onEnable = function () {
-        ok(true, 'should enable when entity detached from its parent');
-    }
-
+    comp.expect(CallbackTester.OnEnable, 'should enable when entity detached from its parent');
     child.transform.parent = null;
 });
 
@@ -132,39 +115,28 @@ test('destroy', function () {
     var parent = new Entity();
     var child = new Entity();
 
-    var childComp = child.addComponent(new FIRE.Component());
-    childComp.onDisable = callback().enable();
-    childComp.onDestroy = callback().setDisabledMessage('can not destroyed before the end of this frame');
-
+    var childComp = child.addComponent(new CallbackTester().expect(CallbackTester.OnEnable));
+    
+    childComp.expect(CallbackTester.OnDisable, 'should disable while destroy parent');
+    childComp.notExpect(CallbackTester.OnDestroy, 'can not destroyed before the end of this frame');
     child.transform.parent = parent.transform;
     parent.destroy();
-
-    childComp.onDisable.once('should disable while destroy parent').disable('child comp should only disabled once');
+    childComp.notExpect(CallbackTester.OnDisable, 'child comp should only disabled once');
 
     // test added after destroy
 
-    var newComp = new FIRE.Component();
-    newComp.onEnable = callback().enable();
-
+    var newComp = new CallbackTester();
+    newComp.expect(CallbackTester.OnEnable, 'new component should enable even if added after destroy');
     child.addComponent(newComp);
 
-    newComp.onEnable.once('new component should enable even if added after destroy').disable();
-
-    newComp.onDisable = callback(function () {
-        strictEqual(newComp.onDestroy.calledCount, 0, 'new component\'s onDisable should be called before its onDestroy');
-    }).enable();
-    newComp.onDestroy = callback().enable();
-    
     // do destory
 
-    childComp.onDestroy.enable()
+    newComp.expect(CallbackTester.OnDisable, 'new component\'s onDisable should be called before its onDestroy');
+    newComp.expect(CallbackTester.OnDestroy, 'new component should also destroyed at the end of frame', true);
+    childComp.notExpect(CallbackTester.OnEnable, 'child component should not re-enable when parent destroying');
+    childComp.expect(CallbackTester.OnDestroy, 'should destroyed at the end of frame');
 
     FIRE.FObject._deferredDestroy();
-
-    childComp.onDestroy.once('should destroyed at the end of frame').disable();
-
-    newComp.onDisable.once().disable();
-    newComp.onDestroy.once('new component should also destroyed at the end of frame').disable();
 
     strictEqual(newComp.isValid, false, 'entity will finally destroyed with its component which added after calling destroy');
     strictEqual(childComp.isValid, false, 'entity will destroyed with its child components');

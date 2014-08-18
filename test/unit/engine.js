@@ -1,5 +1,5 @@
 ﻿// jshint ignore: start
-module('engine', {
+largeModule('Engine', {
     setup: function () {
         //console.log('setup');
         Engine.stop();

@@ -41,9 +41,10 @@
     // overrides
 
     Component.prototype.destroy = function () {
-        _super.prototype.destroy.call(this);
-        if (this._enabled && this.entity.activeInHierarchy) {
-            _callOnEnable(this, false);
+        if (_super.prototype.destroy.call(this)) {
+            if (this._enabled && this.entity.activeInHierarchy) {
+                _callOnEnable(this, false);
+            }
         }
     };
 

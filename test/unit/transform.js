@@ -1,6 +1,6 @@
 ﻿// jshint ignore: start
 
-module('Transform');
+largeModule('Transform');
 
 test('test', function () {
     var obj1 = new FIRE.Entity();

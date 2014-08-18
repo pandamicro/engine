@@ -47,6 +47,7 @@ var paths = {
     ref_libs: [
         'ext/fire-core/core.dev.js',
         'test/lib/*.js',
+        'test/unit/_*.js',
     ],
     ref: '_references.js',
 };
