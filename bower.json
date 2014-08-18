@@ -18,6 +18,7 @@
     "tests"
   ],
   "dependencies": {
+    "fire-core": "fireball-x/core#master"
   },
   "devDependencies": {
   }

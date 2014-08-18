@@ -5,7 +5,9 @@
   "homepage": "https://github.com/fireball-x/engine",
   "license": "MIT",
   "licenseUrl": "http://opensource.org/licenses/MIT",
-  "dependencies": {},
+  "dependencies": {
+    "bower": ""
+  },
   "devDependencies": {
     "event-stream": "",
     "express": "",
@@ -19,5 +21,8 @@
     "gulp-util": "",
     "jshint-stylish": "",
     "through": "^2.3.4"
+  },
+  "scripts": {
+    "postinstall": "bower install && cd ext/fire-core && npm install && gulp"
   }
 }
