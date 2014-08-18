@@ -247,3 +247,4 @@ gulp.task('watch', function() {
 // tasks
 gulp.task('default', ['cp-all', 'js' ] );
 gulp.task('all', ['default', 'test', 'ref'] );
+gulp.task('ci', ['js', 'test'] );

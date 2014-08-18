@@ -115,33 +115,51 @@ test('destroy', function () {
     var parent = new Entity();
     var child = new Entity();
 
+    // add child component
     var childComp = child.addComponent(new CallbackTester().expect(CallbackTester.OnEnable));
     
+    // expect ondisable
     childComp.expect(CallbackTester.OnDisable, 'should disable while destroy parent');
     childComp.notExpect(CallbackTester.OnDestroy, 'can not destroyed before the end of this frame');
+
     child.transform.parent = parent.transform;
+    // call destroy
     parent.destroy();
+    
     childComp.notExpect(CallbackTester.OnDisable, 'child comp should only disabled once');
-
-    // test added after destroy
-
-    var newComp = new CallbackTester();
-    newComp.expect(CallbackTester.OnEnable, 'new component should enable even if added after destroy');
-    child.addComponent(newComp);
-
-    // do destory
-
-    newComp.expect(CallbackTester.OnDisable, 'new component\'s onDisable should be called before its onDestroy');
-    newComp.expect(CallbackTester.OnDestroy, 'new component should also destroyed at the end of frame', true);
     childComp.notExpect(CallbackTester.OnEnable, 'child component should not re-enable when parent destroying');
     childComp.expect(CallbackTester.OnDestroy, 'should destroyed at the end of frame');
 
+    // try add component after destroy
+
+    var childComp_new = new CallbackTester();
+    childComp_new.expect(CallbackTester.OnEnable, 'new child component should enable even if added after destroy');
+    childComp_new.expect(CallbackTester.OnDisable, 'new component\'s onDisable should be called before its onDestroy', true);
+    childComp_new.expect(CallbackTester.OnDestroy, 'new component should also destroyed at the end of frame', true);
+    child.addComponent(childComp_new);
+
+    var newParentComp = new CallbackTester();
+    newParentComp.expect(CallbackTester.OnEnable);
+    newParentComp.expect(CallbackTester.OnDisable, null, true);
+    newParentComp.expect(CallbackTester.OnDestroy, null, true);
+    parent.addComponent(newParentComp);
+
+    // try add child after destroy
+
+    var newChildEntity = new Entity();
+    newChildEntity.transform.parent = parent.transform;
+    newChildEntity.addComponent(new CallbackTester().expect(CallbackTester.OnEnable)
+                                                    .expect(CallbackTester.OnDisable, null, true)
+                                                    .expect(CallbackTester.OnDestroy, null, true));
+
+    // do destory
+
     FIRE.FObject._deferredDestroy();
 
-    strictEqual(newComp.isValid, false, 'entity will finally destroyed with its component which added after calling destroy');
+    strictEqual(childComp_new.isValid, false, 'entity will finally destroyed with its component which added after calling destroy');
     strictEqual(childComp.isValid, false, 'entity will destroyed with its child components');
     strictEqual(child.isValid, false, 'entity will destroyed with its children');
-
+    strictEqual(newChildEntity.isValid, false, 'entity will destroyed with its new children');
 });
 
 // jshint ignore: end

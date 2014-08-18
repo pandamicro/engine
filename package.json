@@ -23,6 +23,7 @@
     "through": "^2.3.4"
   },
   "scripts": {
-    "postinstall": "bower install && cd ext/fire-core && npm install && gulp"
+    "postinstall": "bower install && cd ext/fire-core && npm install && gulp",
+    "postupdate": "bower update && cd ext/fire-core && npm update && gulp"
   }
 }

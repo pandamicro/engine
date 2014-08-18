@@ -5,7 +5,7 @@ before_install:
 - npm install -g gulp
 - npm install -g bower
 install: npm install
-script: gulp all
+script: gulp ci
 notifications:
   campfire:
     rooms:

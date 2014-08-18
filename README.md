@@ -7,3 +7,12 @@ What makes Fireball different from other Html5 game engine?
 - blablabla...
 - blablabla...
 - blablabla...
+
+Build
+---------
+
+### bash ###
+```
+npm install
+gulp
+```
