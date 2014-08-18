@@ -36,9 +36,33 @@
         return this._active && (!this.transform.parent || this.transform.parent.entity.activeInHierarchy);
     });
 
+    // overrides
+    
+    Entity.prototype.destroy = function () {
+        if (_super.prototype.destroy.call(this)) {
+            // disable hierarchy
+            if (this.activeInHierarchy) {
+                _onActivatedInHierarchy(this, false);
+            }
+        }
+    };
+
+    Entity.prototype._onPreDestroy = function () {
+        this.isDestroying = true;
+        // destroy components
+        for (var c = 0; c < this._components.length; ++c) {
+            var component = this._components[c];
+            component._destroyImmediate();
+        }
+    };
+
     // other functions
 
     Entity.prototype.addComponent = function (component) {
+        if (this.isDestroying) {
+            console.error('isDestroying');
+            return;
+        }
         if (!component) {
             console.error('Argument must be non-nil');
             return;
@@ -53,6 +77,7 @@
         if (this.activeInHierarchy) {
             component._onEntityActivated(true);
         }
+        return component;
     };
 
     Entity.prototype.getComponent = function (constructor) {
@@ -74,13 +99,15 @@
             console.error('Argument must be non-nil');
             return;
         }*/
-        var i = this._components.indexOf(component);
-        if (i !== -1) {
-            this._components.splice(i, 1);
-            component.entity = null;
-        }
-        else if (component.entity !== this) {
-            console.error("Component not owned by this entity");
+        if (!this.isDestroying) {
+            var i = this._components.indexOf(component);
+            if (i !== -1) {
+                this._components.splice(i, 1);
+                component.entity = null;
+            }
+            else if (component.entity !== this) {
+                console.error("Component not owned by this entity");
+            }
         }
     };
 

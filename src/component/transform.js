@@ -28,14 +28,14 @@
                 return;
             }
             var oldParent = this._parent;
-            if (oldParent) {
-                oldParent._children.splice(oldParent._children.indexOf(this), 1);
-            }
             this._parent = value;
             if (value) {
                 value._children.push(this);
             }
-            this.entity._onHierarchyChanged(oldParent);
+            if (oldParent && !oldParent.entity.isDestroying) {
+                oldParent._children.splice(oldParent._children.indexOf(this), 1);
+                this.entity._onHierarchyChanged(oldParent);
+            }
         }
     });
 

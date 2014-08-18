@@ -14,6 +14,12 @@
         self.entity = null;
 
         self._enabled = true;      // enabled self
+
+        // used in _callOnEnable to ensure onEnable and onDisable will be called alternately
+        self._calledEnable = false;
+            // 从逻辑上来说OnEnable和OnDisable的交替调用不需要由额外的变量进行保护，但那样会使设计变得复杂
+            // 例如Entity.destory调用后但还未真正销毁时，会调用所有Component的OnDisable。
+            // 这时如果又有addComponent，Entity需要对这些新来的Component特殊处理。将来调度器做了之后可以尝试去掉这个标记。
     };
 
     // properties
@@ -48,15 +54,18 @@
         }
     };
 
+    // Should not call onEnable/onDisable in other place
     var _callOnEnable = function (self, enable) {
         if (enable) {
-            if (self.onEnable) {
+            if (!self._calledEnable && self.onEnable) {
                 self.onEnable();
+                self._calledEnable = true;
             }
         }
         else {
-            if (self.onDisable) {
+            if (self._calledEnable && self.onDisable) {
                 self.onDisable();
+                self._calledEnable = false;
             }
         }
     };
@@ -68,9 +77,13 @@
     };
     
     Component.prototype._onPreDestroy = function () {
+        // ensure onDisable called
+        _callOnEnable(this, false);
+        // onDestroy
         if (this.onDestroy) {
             this.onDestroy();
         }
+        // remove component
         this.entity._removeComponent(this);
     };
 
