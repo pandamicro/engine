@@ -14,7 +14,7 @@
         self.entities = [];     // root entities
     };
 
-    // functions
+    // visit functions
 
     // 当引入DestroyImmediate后，entity和component可能会在遍历过程中变少，需要复制一个新的数组，或者做一些标记
     var visitFunctionTmpl = 'var _FUNC_NAME_Recursively = function (entity) {\
@@ -34,12 +34,14 @@
         }\
     }';
 
-    // declare updateRecursively in eval
-    /* global updateRecursively: false */
+    // declare updateRecursively method in eval
     // jshint evil: true
     eval(visitFunctionTmpl.replace(/_FUNC_NAME_/g, 'update'));
     // jshint evil: false
+    /* global updateRecursively: false */
 
+    // other functions
+    
     // visit entities and components
     Scene.prototype.update = function () {
         var self = this;
@@ -47,6 +49,10 @@
         for (var i = 0, len = entities.length; i < len; ++i) {
             updateRecursively(entities[i]);
         }
+    };
+
+    Scene.prototype.render = function (renderContext) {
+        
     };
 
     return Scene;

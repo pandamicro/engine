@@ -18,6 +18,7 @@ var paths = {
     src: [
         'src/time.js',
         'src/platform/h5/ticker.js',
+        'src/platform/h5/pixiRenderContext.js',
         'src/component/component.js',
         'src/component/transform.js',
         'src/entity.js',
@@ -32,7 +33,13 @@ var paths = {
     // test
     unit_test: 'test/unit/**/*.js',
     runner_template: 'test/lib/runner.html',
-    runner_lib: [
+    runner_lib_dev: [
+        'ext/pixi/bin/pixi.dev.js',
+        'ext/fire-core/bin/core.dev.js',
+        'bin/engine.dev.js',
+    ],
+    runner_lib_min: [
+        'ext/pixi/bin/pixi.js',
         'ext/fire-core/bin/core.min.js',
         'bin/engine.min.js',
     ],
@@ -44,6 +51,7 @@ var paths = {
 
     // generate references
     ref_libs: [
+        'ext/pixi/bin/pixi.dev.js',
         'ext/fire-core/bin/core.dev.js',
         'test/lib/*.js',
         'test/unit/_*.js',
@@ -148,13 +156,6 @@ var generateRunner = function (templatePath, dest) {
     var template = fs.readFileSync(templatePath);
 
     function generateContents(fileList, dev) {
-        var lib = paths.runner_lib;
-        if (dev) {
-            for (var i = 0; i < lib.length; i++) {
-                lib[i] = lib[i].replace('.min.', '.dev.');
-            }
-        }
-        fileList = lib.concat(fileList);
         var scriptElements = '';
         for (var i = 0; i < fileList.length; i++) {
             if (fileList[i]) {
@@ -171,14 +172,14 @@ var generateRunner = function (templatePath, dest) {
         var fileList = file.contents.toString().split(',');
         trySortByDepends(fileList);
         // runner.html
-        file.contents = generateContents(fileList, false);
+        file.contents = generateContents(paths.runner_lib_min.concat(fileList));
         file.path = Path.join(file.base, Path.basename(templatePath));
         this.emit('data', file);
         // runner.dev.html
         var ext = Path.extname(file.path);
         var filename = Path.basename(file.path, ext) + '.dev' + ext;
         this.emit('data', new gutil.File({
-            contents: generateContents(fileList, true),
+            contents: generateContents(paths.runner_lib_dev.concat(fileList)),
             base: file.base,
             path: Path.join(file.base, filename)
         }));

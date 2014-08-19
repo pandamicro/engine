@@ -18,8 +18,8 @@
     "tests"
   ],
   "dependencies": {
-    "fire-core": "fireball-x/core#master"
+    "fire-core": "fireball-x/core#master",
+    "pixi": "~1.6.1"
   },
-  "devDependencies": {
-  }
+  "devDependencies": {}
 }

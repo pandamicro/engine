@@ -12,7 +12,11 @@ FIRE.Engine = (function () {
     // last ticker will not cancel correctly.
     var requestId = -1;
 
+    // current scene
     var scene = null;
+
+    // main renderer
+    var renderContext = null;
 
     // is rendering and allow update logic
     Engine.__defineGetter__('isPlaying', function () {
@@ -24,8 +28,29 @@ FIRE.Engine = (function () {
         return isPaused;
     });
 
-    Engine.init = function () {
+    /**
+     * @return {FIRE.Vec2}
+     */
+    Engine.__defineGetter__('screenSize', function () {
+        return renderContext.size;
+    });
+
+    /**
+     * @param value {FIRE.Vec2}
+     */
+    Engine.__defineSetter__('screenSize', function (value) {
+        renderContext.size = value;
+    });
+
+    // functions
+
+    /**
+     * @param screenSize {FIRE.Vec2}
+     */
+    Engine.init = function (screenSize) {
         scene = new FIRE.Scene();
+        renderContext = new RenderContext(screenSize);
+        return renderContext.element;
     };
 
     Engine.play = function () {
@@ -73,6 +98,8 @@ FIRE.Engine = (function () {
             scene.update();
             FIRE.FObject._deferredDestroy();
         }
+        // render
+        scene.render(renderContext);
     };
 
     /**
