@@ -13,7 +13,7 @@ FIRE.Engine = (function () {
     var requestId = -1;
 
     // current scene
-    var scene = null;
+    var scene_ = null;
 
     // main renderer
     var renderContext = null;
@@ -48,7 +48,7 @@ FIRE.Engine = (function () {
      * @param screenSize {FIRE.Vec2}
      */
     Engine.init = function (screenSize) {
-        scene = new FIRE.Scene();
+        scene_ = new FIRE.Scene();
         renderContext = new RenderContext(screenSize);
         return renderContext.element;
     };
@@ -95,16 +95,16 @@ FIRE.Engine = (function () {
         //console.log('canUpdateLogic: ' + updateLogic + ' Time: ' + FIRE.Time);
         // TODO: scheduler
         if (updateLogic) {
-            scene.update();
+            scene_.update();
             FIRE.FObject._deferredDestroy();
         }
         // render
-        scene.render(renderContext);
+        scene_.render(renderContext);
     };
 
     /**
-     * @method FIRE.Engine#update
-     * @param unused {Float} not used parameter, can omit
+     * @method FIRE.Engine.update
+     * @param [unused] {float} not used parameter, can omit
      * @private
      */
     var update = function (unused) {
@@ -125,6 +125,26 @@ FIRE.Engine = (function () {
         }
     };
     Engine.update = update;
+
+    /**
+     * Get current scene, only used in Editor
+     * @property FIRE.Engine._scene
+     * @returns {FIRE.Scene}
+     * @private
+     */
+    Engine.__defineGetter__('_scene', function () {
+        return scene_;
+    });
+
+    /**
+     * Set current scene directly, only used in Editor
+     * @method FIRE.Engine._loadScene
+     * @param scene {FIRE.Scene}
+     * @private
+     */
+    Engine._loadScene = function (scene) {
+        scene_ = scene;
+    };
 
     return Engine;
 })();
