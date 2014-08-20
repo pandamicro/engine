@@ -25,7 +25,7 @@ RenderContext = (function () {
     });
 
     RenderContext.prototype.render = function () {
-	    this.renderer.render(this.stage);
+        this.renderer.render(this.stage);
     };
 
     return RenderContext;
