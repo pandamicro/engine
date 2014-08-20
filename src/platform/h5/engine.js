@@ -42,14 +42,25 @@ FIRE.Engine = (function () {
         renderContext.size = value;
     });
 
+    var inited = false;
+    Engine.__defineGetter__('inited', function () {
+        return inited;
+    });
+
     // functions
 
     /**
      * @param screenSize {FIRE.Vec2}
      */
     Engine.init = function (screenSize) {
+        if (inited) {
+            console.error('Engine already inited');
+            return;
+        }
+        inited = true;
         scene_ = new FIRE.Scene();
         renderContext = new RenderContext(screenSize);
+        inited = true;
         return renderContext.element;
     };
 
