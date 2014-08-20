@@ -6,6 +6,7 @@ var CallbackTester = FIRE.simpleExtend(FIRE.Component, function () {
     this._unexpect = {};
 });
 
+CallbackTester.OnCreate = 'onCreate';
 CallbackTester.OnEnable = 'onEnable';
 CallbackTester.OnDisable = 'onDisable';
 CallbackTester.OnDestroy = 'onDestroy';
@@ -16,6 +17,14 @@ CallbackTester.OnDestroy = 'onDestroy';
  * @param {boolean} [append=false]
  */
 CallbackTester.prototype.expect = function (expect, message, append) {
+    if (Array.isArray(expect) && expect.length > 0) {
+        this.expect(expect[0]);
+        for (var i = 1; i < expect.length; ++i) {
+            this.expect(expect[i], null, true);
+        }
+        return this;
+    }
+
     var error = !append && this._expects.length > 0;
     if (error) {
         strictEqual(this._expects[0].expect, null, 'expecting a new callback but the last ' + this._expects[0].expect + ' have not being called');
@@ -67,6 +76,10 @@ CallbackTester.prototype._assert = function (actual) {
     strictEqual(actual, expect, error || message || '' + expect + ' called');
     this._unexpect = {};
     //console.log('CallbackTester: ' + actual);
+};
+
+CallbackTester.prototype.onCreate = function () {
+    this._assert(CallbackTester.OnCreate);
 };
 
 CallbackTester.prototype.onEnable = function () {

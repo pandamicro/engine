@@ -21,7 +21,7 @@ RenderContext = (function () {
         return new FIRE.Vec2(this.renderer.width, this.renderer.height);
     });
     RenderContext.prototype.__defineSetter__('size', function (value) {
-        return this.renderer.resize(value.x, value.y);
+        this.renderer.resize(value.x, value.y);
     });
 
     RenderContext.prototype.render = function () {

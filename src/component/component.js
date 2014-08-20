@@ -38,10 +38,12 @@
         return this._enabled && this.entity.activeInHierarchy;
     });
 
-    /* virtual functions
+    /* callback functions
+    Component.prototype.onCreate = function () {};
     Component.prototype.onEnable = function () {};
     Component.prototype.onDisable = function () {};
     Component.prototype.update = function () {};
+    Component.prototype.onDestroy = function () {};
     */
 
     // overrides

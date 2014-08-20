@@ -33,6 +33,7 @@
         }
     });
     Entity.prototype.__defineGetter__('activeInHierarchy', function () {
+        // TODO: use while to avoid function call
         return this._active && (!this.transform.parent || this.transform.parent.entity.activeInHierarchy);
     });
 
@@ -74,6 +75,12 @@
         component.entity = this;
         this._components.push(component);
         
+        // call onInit
+        if (component.onCreate) {
+            component.onCreate();
+        }
+
+        // call onEnable
         if (this.activeInHierarchy) {
             component._onEntityActivated(true);
         }
