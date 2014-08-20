@@ -48,8 +48,8 @@ FIRE.Engine = (function () {
      * @param w {number}
      * @param h {number}
      */
-    Engine.init = function ( w, h ) {
-        renderContext = new RenderContext( new FIRE.Vec2(w,h) );
+    Engine.init = function ( w, h, canvas ) {
+        renderContext = new RenderContext( new FIRE.Vec2(w,h), canvas );
         return renderContext.element;
     };
 
