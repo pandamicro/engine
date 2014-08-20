@@ -48,7 +48,6 @@ FIRE.Engine = (function () {
      * @param screenSize {FIRE.Vec2}
      */
     Engine.init = function (screenSize) {
-        scene_ = new FIRE.Scene();
         renderContext = new RenderContext(screenSize);
         return renderContext.element;
     };
