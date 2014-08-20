@@ -1,6 +1,4 @@
-﻿/* global Ticker: false */
-
-FIRE.Engine = (function () {
+var Engine = (function () {
 
     var Engine = {};
 
@@ -62,7 +60,7 @@ FIRE.Engine = (function () {
         }
         inited = true;
 
-        Engine._scene = scene || new FIRE.Scene();
+        Engine._scene = scene || new Scene();
         Engine._renderContext = new RenderContext( new FIRE.Vec2(w,h), canvas );
         return Engine._renderContext.element;
     };
@@ -79,7 +77,7 @@ FIRE.Engine = (function () {
         isPlaying = true;
 
         var now = Ticker.now();
-        FIRE.Time._restart(now);
+        Time._restart(now);
         update();
     };
 
@@ -106,7 +104,7 @@ FIRE.Engine = (function () {
     };
 
     var doUpdate = function (updateLogic) {
-        //console.log('canUpdateLogic: ' + updateLogic + ' Time: ' + FIRE.Time);
+        //console.log('canUpdateLogic: ' + updateLogic + ' Time: ' + Time);
         // TODO: scheduler
         if (updateLogic) {
             Engine._scene.update();
@@ -130,12 +128,12 @@ FIRE.Engine = (function () {
         var updateLogic = !isPaused || stepOnce;
         stepOnce = false;
         var now = Ticker.now();
-        FIRE.Time._update(now, !updateLogic);
+        Time._update(now, !updateLogic);
         doUpdate(updateLogic);
 
         // for test
-        if (FIRE.__TESTONLY__.update) {
-            FIRE.__TESTONLY__.update(updateLogic);
+        if (__TESTONLY__.update) {
+            __TESTONLY__.update(updateLogic);
         }
     };
     Engine.update = update;
@@ -152,3 +150,5 @@ FIRE.Engine = (function () {
 
     return Engine;
 })();
+
+FIRE.Engine = Engine;

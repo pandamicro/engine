@@ -1,5 +1,5 @@
-﻿FIRE.Transform = (function () {
-    var _super = FIRE.Component;
+﻿var Transform = (function () {
+    var _super = Component;
 
     // constructor
     function Transform () {
@@ -73,3 +73,5 @@
 
     return Transform;
 })();
+
+FIRE.Transform = Transform;

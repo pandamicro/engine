@@ -55,4 +55,4 @@
     return Ticker;
 })();
 
-FIRE.__TESTONLY__.Ticker = Ticker;
+__TESTONLY__.Ticker = Ticker;

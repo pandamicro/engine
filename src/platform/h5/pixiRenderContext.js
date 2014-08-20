@@ -1,7 +1,7 @@
-﻿/**
+/**
  * The web renderer implemented rely on pixi.js
  */
-RenderContext = (function () {
+var RenderContext = (function () {
 
     /**
      * @param screenSize {FIRE.Vec2}
@@ -24,6 +24,8 @@ RenderContext = (function () {
         this.renderer.resize(value.x, value.y);
     });
 
+    // render functions
+
     RenderContext.prototype.render = function () {
         this.renderer.render(this.stage);
     };
@@ -31,4 +33,4 @@ RenderContext = (function () {
     return RenderContext;
 })();
 
-FIRE.__TESTONLY__.RenderContext = RenderContext;
+__TESTONLY__.RenderContext = RenderContext;

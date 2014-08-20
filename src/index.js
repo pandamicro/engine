@@ -1,6 +1,7 @@
 var FIRE;
 (function (FIRE) {
-    FIRE.__TESTONLY__ = {};
+    var __TESTONLY__ = {};
+    FIRE.__TESTONLY__ = __TESTONLY__;
 
     // jshint ignore: start
     <%=contents%>

@@ -1,4 +1,4 @@
-﻿FIRE.Time = (function () {
+﻿var Time = (function () {
     var Time = {};
 
     Time.time = 0;
@@ -39,3 +39,5 @@
 
     return Time;
 })();
+
+FIRE.Time = Time;

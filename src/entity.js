@@ -1,4 +1,4 @@
-﻿FIRE.Entity = (function () {
+﻿var Entity = (function () {
     var _super = FIRE.FObject;
 
     // constructor
@@ -15,7 +15,7 @@
         self._components = [];
 
         self.name = name || "Entity";
-        self.transform = new FIRE.Transform();
+        self.transform = new Transform();
         self.addComponent(self.transform);
     };
 
@@ -151,3 +151,5 @@
 
     return Entity;
 })();
+
+FIRE.Entity = Entity;

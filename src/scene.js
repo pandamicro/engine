@@ -1,4 +1,4 @@
-﻿FIRE.Scene = (function () {
+﻿var Scene = (function () {
     var _super = FIRE.Asset;
 
     // constructor
@@ -57,3 +57,5 @@
 
     return Scene;
 })();
+
+FIRE.Scene = Scene;
