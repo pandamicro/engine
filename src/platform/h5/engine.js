@@ -45,10 +45,11 @@ FIRE.Engine = (function () {
     // functions
 
     /**
-     * @param screenSize {FIRE.Vec2}
+     * @param w {number}
+     * @param h {number}
      */
-    Engine.init = function (screenSize) {
-        renderContext = new RenderContext(screenSize);
+    Engine.init = function ( w, h ) {
+        renderContext = new RenderContext( new FIRE.Vec2(w,h) );
         return renderContext.element;
     };
 
