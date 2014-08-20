@@ -50,15 +50,19 @@ FIRE.Engine = (function () {
     // functions
 
     /**
-     * @param w {number}
-     * @param h {number}
+     * @param [w] {number}
+     * @param [h] {number}
+     * @param [canvas] {number}
+     * @param [scene] {FIRE.Scene}
      */
-    Engine.init = function ( w, h, canvas ) {
+    Engine.init = function ( w, h, canvas, scene ) {
         if (inited) {
             console.error('Engine already inited');
             return;
         }
         inited = true;
+
+        scene_ = scene || new FIRE.Scene();
         renderContext = new RenderContext( new FIRE.Vec2(w,h), canvas );
         return renderContext.element;
     };
