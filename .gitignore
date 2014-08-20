@@ -45,6 +45,7 @@ bin/
 publish/
 test/unit/**/*.html
 _references.js
+npm-debug.log
 
 # scripts
 *.bat
