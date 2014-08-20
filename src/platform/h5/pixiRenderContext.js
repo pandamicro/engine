@@ -6,11 +6,11 @@ RenderContext = (function () {
     /**
      * @param screenSize {FIRE.Vec2}
      */
-    function RenderContext (screenSize) {
+    function RenderContext (screenSize, canvas) {
         screenSize = screenSize || new FIRE.Vec2(800, 600);
         PIXI.dontSayHello = true;
         this.stage = new PIXI.Stage(0x000000);
-        this.renderer = PIXI.autoDetectRenderer(screenSize.x, screenSize.y);
+        this.renderer = PIXI.autoDetectRenderer(screenSize.x, screenSize.y, canvas);
     }
 
     RenderContext.prototype.__defineGetter__('element', function () {
@@ -25,7 +25,7 @@ RenderContext = (function () {
     });
 
     RenderContext.prototype.render = function () {
-	    this.renderer.render(this.stage);
+        this.renderer.render(this.stage);
     };
 
     return RenderContext;

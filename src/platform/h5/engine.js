@@ -50,17 +50,16 @@ FIRE.Engine = (function () {
     // functions
 
     /**
-     * @param screenSize {FIRE.Vec2}
+     * @param w {number}
+     * @param h {number}
      */
-    Engine.init = function (screenSize) {
+    Engine.init = function ( w, h, canvas ) {
         if (inited) {
             console.error('Engine already inited');
             return;
         }
         inited = true;
-        scene_ = new FIRE.Scene();
-        renderContext = new RenderContext(screenSize);
-        inited = true;
+        renderContext = new RenderContext( new FIRE.Vec2(w,h), canvas );
         return renderContext.element;
     };
 
