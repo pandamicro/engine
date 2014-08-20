@@ -30,7 +30,13 @@
             var oldParent = this._parent;
             this._parent = value;
             if (value) {
+                if (!oldParent) {
+                    Engine._scene.removeRoot(this.entity);
+                }
                 value._children.push(this);
+            }
+            else {
+                Engine._scene.appendRoot(this.entity);
             }
             if (oldParent && !oldParent.entity.isDestroying) {
                 oldParent._children.splice(oldParent._children.indexOf(this), 1);
@@ -50,8 +56,17 @@
 
     // built-in functions
 
+    Transform.prototype.onCreate = function () {
+        Engine._scene.appendRoot(this.entity);
+    }
+
     Transform.prototype.onDestroy = function () {
-        this.parent = null; // TODO: may call onEnable on other component's
+        if (this._parent) {
+            this.parent = null; // TODO: may call onEnable on other component's
+        }
+        else {
+            Engine._scene.removeRoot(this.entity);
+        }
         // destroy child entitys
         var children = this._children;
         for (var i = 0, len = children.length; i < len; ++i) {

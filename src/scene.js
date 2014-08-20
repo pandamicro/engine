@@ -53,6 +53,25 @@
 
     Scene.prototype.render = function (renderContext) {
         
+
+    Scene.prototype.appendRoot = function (_entity) {
+        this.entities.push(_entity);
+    };
+
+    Scene.prototype.removeRoot = function (_entity) {
+        // TODO: performence test
+        var entities = this.entities;
+        if (entities.length > 0 && entities[entities.length - 1] === _entity) {
+            entities.pop();
+            return;
+        }
+        var index = entities.indexOf(_entity);
+        if (index !== -1) {
+            entities.splice(index, 1);
+        }
+        else {
+            console.error('entity ' + _entity + ' not contains in roots of hierarchy');
+        }
     };
 
     return Scene;
