@@ -13,7 +13,7 @@
     var init = function (self) {
         self._parent = null;
         self._children = [];
-        self._position = new FIRE.Vec2(0, 0);
+        self._position = new Vec2(0, 0);
     };
 
     // properties

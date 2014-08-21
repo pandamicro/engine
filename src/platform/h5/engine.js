@@ -61,7 +61,7 @@ var Engine = (function () {
         inited = true;
 
         Engine._scene = scene || new Scene();
-        Engine._renderContext = new RenderContext( new FIRE.Vec2(w,h), canvas );
+        Engine._renderContext = new RenderContext( new Vec2(w,h), canvas );
         return Engine._renderContext.element;
     };
 
@@ -108,7 +108,7 @@ var Engine = (function () {
         // TODO: scheduler
         if (updateLogic) {
             Engine._scene.update();
-            FIRE.FObject._deferredDestroy();
+            FObject._deferredDestroy();
         }
         // render
         Engine._scene.render(Engine._renderContext);

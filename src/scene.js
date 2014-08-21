@@ -1,5 +1,5 @@
 ﻿var Scene = (function () {
-    var _super = FIRE.Asset;
+    var _super = Asset;
 
     // constructor
     function Scene () {

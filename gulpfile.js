@@ -84,14 +84,55 @@ gulp.task('cp-all', ['cp-core' ] );
 var embedIntoModule = function (template) {
     var template = fs.readFileSync(template);
     return es.map(function(file, callback) {
-        var data = { file: file, contents: '\n' + file.contents.toString() };
+        var data = { file: file, contents: '\n\n' + file.contents.toString() };
         file.contents = new Buffer(gutil.template(template, data));
         callback(null, file);
     });
 };
 
+var insertCoreShortcut = function (path, moduleName, filter) {
+    var finished = false;
+    filter = filter || function (key) {
+        return this[key].prototype && this[key].prototype.__classname__;
+    };
+    function createShortcut(path, moduleName, filter) {
+        var m = require(path);
+        var keys = Object.getOwnPropertyNames(m);
+        //var code = '';
+        //for (var i = 0; i < keys.length; i++) {
+        //    var key = keys[i];
+        //    if (filter(key, m[key])) {
+        //        code += 'var ' + key + ' = ' + moduleName + '.' + key + ';\n';
+        //    }
+        //}
+        var code = 
+"// declare shortcuts of core\n\
+(function () {\n\
+    var shortcuts = '" + keys.filter(filter, m).join(',') + "'.split(',');\n\
+    for (var i = 0; i < shortcuts.length; i++) {\n\
+        this[shortcuts[i]] = " + moduleName + "[shortcuts[i]];\n\
+    }\n\
+})();\n"
+        return code;
+    }
+    function write(file) {
+        if (file.isStream()) return this.emit('error', new PluginError('insertCoreShortcut', 'Streaming not supported'));
+        if (!finished) {
+            var shortcut = file.clone();
+            shortcut.contents = new Buffer(createShortcut(path, moduleName, filter));
+            this.emit('data', shortcut);
+            finished = true;
+        }
+        this.emit('data', file);
+    }
+    return through(write, function () {
+        this.emit('end');
+    });
+};
+
 gulp.task('js-dev', function() {
     return gulp.src(paths.src)
+               .pipe(insertCoreShortcut('./ext/fire-core/bin/core.min.js', 'FIRE'))
                .pipe(jshint({
                    multistr: true,
                }))

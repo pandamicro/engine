@@ -1,5 +1,5 @@
 ﻿var Component = (function () {
-    var _super = FIRE.FObject;
+    var _super = FObject;
 
     // constructor
     function Component () {

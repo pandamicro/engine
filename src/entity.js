@@ -1,5 +1,5 @@
 ﻿var Entity = (function () {
-    var _super = FIRE.FObject;
+    var _super = FObject;
 
     // constructor
     function Entity (name) {
