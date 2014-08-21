@@ -50,7 +50,7 @@ var Engine = (function () {
     /**
      * @param [w] {number}
      * @param [h] {number}
-     * @param [canvas] {number}
+     * @param [canvas] {Canvas}
      * @param [scene] {FIRE.Scene}
      */
     Engine.init = function ( w, h, canvas, scene ) {
@@ -61,7 +61,7 @@ var Engine = (function () {
         inited = true;
 
         Engine._scene = scene || new Scene();
-        Engine._renderContext = new RenderContext( new Vec2(w,h), canvas );
+        Engine._renderContext = new RenderContext( w, h, canvas );
         return Engine._renderContext.element;
     };
 

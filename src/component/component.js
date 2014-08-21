@@ -37,6 +37,9 @@
     Component.prototype.__defineGetter__('enabledInHierarchy', function () {
         return this._enabled && this.entity.activeInHierarchy;
     });
+    Component.prototype.__defineGetter__('transform', function () {
+        return this.entity.transform;
+    });
 
     /* callback functions
     Component.prototype.onCreate = function () {};

@@ -45,13 +45,20 @@
         }
     });
 
+    /**
+     * @property {number} child count
+     */
     Transform.prototype.__defineGetter__('childCount', function () {
         return this._children.length;
     });
 
+    /**
+     * @property {FIRE.Vec2} position
+     */
     Transform.prototype.__defineGetter__('position', function () { return this._position; });
     Transform.prototype.__defineSetter__('position', function (value) {
-        this._position = value;
+        this._position.x = value.x;
+        this._position.y = value.y;
     });
 
     // built-in functions

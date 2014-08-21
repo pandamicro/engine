@@ -21,6 +21,7 @@ var paths = {
         'src/platform/h5/pixiRenderContext.js',
         'src/component/component.js',
         'src/component/transform.js',
+        'src/component/spriteRenderer.js',
         'src/entity.js',
         'src/scene.js',
         'src/platform/h5/engine.js',
@@ -135,6 +136,7 @@ gulp.task('js-dev', function() {
                .pipe(insertCoreShortcut('./ext/fire-core/bin/core.min.js', 'FIRE'))
                .pipe(jshint({
                    multistr: true,
+                   smarttabs: false,
                }))
                .pipe(jshint.reporter(stylish))
                .pipe(concat(paths.engine_dev))
