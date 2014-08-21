@@ -29,7 +29,7 @@
         for (var i = 0, len = transform.childCount; i < len; ++i) {\
             var subEntity = transform._children[i].entity;\
             if (subEntity._active) {\
-                call_FUNC_NAME_Recursively(subEntity);\
+                _FUNC_NAME_Recursively(subEntity);\
             }\
         }\
     }';
@@ -52,7 +52,8 @@
     };
 
     Scene.prototype.render = function (renderContext) {
-        
+        renderContext.render();
+    };
 
     Scene.prototype.appendRoot = function (_entity) {
         this.entities.push(_entity);

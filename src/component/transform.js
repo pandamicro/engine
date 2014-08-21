@@ -58,7 +58,7 @@
 
     Transform.prototype.onCreate = function () {
         Engine._scene.appendRoot(this.entity);
-    }
+    };
 
     Transform.prototype.onDestroy = function () {
         if (this._parent) {
