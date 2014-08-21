@@ -81,10 +81,10 @@ gulp.task('cp-all', ['cp-core' ] );
 // build
 /////////////////////////////////////////////////////////////////////////////
 
-var delcareFireScope = function (template) {
+var embedIntoModule = function (template) {
     var template = fs.readFileSync(template);
     return es.map(function(file, callback) {
-        var data = { file: file, contents: file.contents };
+        var data = { file: file, contents: '\n' + file.contents.toString() };
         file.contents = new Buffer(gutil.template(template, data));
         callback(null, file);
     });
@@ -97,7 +97,7 @@ gulp.task('js-dev', function() {
                }))
                .pipe(jshint.reporter(stylish))
                .pipe(concat(paths.engine_dev))
-               .pipe(delcareFireScope(paths.index))
+               .pipe(embedIntoModule(paths.index))
                .pipe(gulp.dest(paths.output))
                ;
 });
