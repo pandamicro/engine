@@ -6,8 +6,7 @@
         _super.call(this);
         init(this, name);
     }
-    FIRE.extend(Entity, _super);
-    Entity.prototype.__classname__ = "FIRE.Entity";
+    FIRE.extend("FIRE.Entity", Entity, _super);
 
     // init
     var init = function (self, name) {

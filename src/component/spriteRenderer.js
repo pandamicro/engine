@@ -6,8 +6,7 @@
         _super.call(this);
         init(this);
     }
-    FIRE.extend(SpriteRenderer, _super);
-    SpriteRenderer.prototype.__classname__ = "FIRE.SpriteRenderer";
+    FIRE.extend("FIRE.SpriteRenderer", SpriteRenderer, _super);
 
     // init
     var init = function (self) {

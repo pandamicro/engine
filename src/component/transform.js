@@ -18,7 +18,7 @@
 
         this._worldTransform = new Matrix3();
     }
-    FIRE.extend(Transform, _super, "FIRE.Transform");
+    FIRE.extend("FIRE.Transform", Transform, _super);
 
     // properties
 

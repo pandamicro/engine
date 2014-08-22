@@ -6,8 +6,7 @@
         _super.call(this);
         init(this);
     }
-    FIRE.extend(Component, _super);
-    Component.prototype.__classname__ = "FIRE.Component";
+    FIRE.extend("FIRE.Component", Component, _super);
     
     // init
     var init = function (self) {

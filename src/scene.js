@@ -11,7 +11,7 @@
         /** @member {FIRE.Entity[]} - root entities */
         this.entities = [];
     }
-    FIRE.extend(Scene, _super, "FIRE.Scene");
+    FIRE.extend("FIRE.Scene", Scene, _super);
 
     // visit functions
 
