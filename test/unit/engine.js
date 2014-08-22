@@ -22,6 +22,8 @@ var Engine = FIRE.Engine;
 var TestOnly = FIRE.__TESTONLY__;
 Engine.init();
 
+var tolerance = 0.01;   // Ticker获取当前时间时，就算是同一帧也可能拿到不同的时间，因为每行代码都有时间开销。
+
 test('basic state transition', function() {
     strictEqual(Engine.isPlaying, false, 'init state');
     strictEqual(Engine.isPaused, false, 'init state');
@@ -86,7 +88,6 @@ test('step state transition', function() {
 });
 
 asyncTest('stop -> play -> stop', function () {
-    var tolerance = 0.01;   // Ticker获取当前时间时，就算是同一帧也可能拿到不同的时间，因为每行代码都有时间开销。
     TestOnly.update = function (updateLogic) {
         // first frame
         close(Time.time, 0, tolerance, 'reset Time');
@@ -126,9 +127,9 @@ asyncTest('stop -> play -> stop', function () {
 asyncTest('stop -> play -> stop, all in 1 frame', 4, function () {
     TestOnly.update = function (updateLogic) {
         // first frame
-        strictEqual(Time.time, 0, 'reset time');
-        strictEqual(Time.realTime, 0, 'reset time');
-        strictEqual(Time.frameCount, 1, 'reset time');
+        close(Time.time, 0, tolerance, 'reset time');
+        close(Time.realTime, 0, tolerance, 'reset realTime');
+        strictEqual(Time.frameCount, 1, 'reset frameCount');
         strictEqual(updateLogic, true, 'update logic');
 
         TestOnly.update = function () {

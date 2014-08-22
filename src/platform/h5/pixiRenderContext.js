@@ -14,10 +14,14 @@ var RenderContext = (function () {
         var transparent = false;
         var antialias = false;
 
-        PIXI.dontSayHello = true;
         this.stage = new PIXI.Stage(0x000000);
         this.renderer = PIXI.autoDetectRenderer(width, height, canvas, transparent, antialias);
     }
+    
+    // Setup PIXI
+
+    PIXI.dontSayHello = true;
+    PIXI.DisplayObject.prototype.updateTransform = function () {};
 
     var emptyTexture = new PIXI.Texture(new PIXI.BaseTexture());
 
@@ -97,7 +101,7 @@ var RenderContext = (function () {
     RenderContext.prototype.updateTransform = function (target) {
         var obj = target._pixiElement;
         if (obj) {
-            obj.position = target.transform.position;
+            obj.worldTransform = target.transform._worldTransform;
         }
         else {
             console.error('' + target + ' must be added to render context first!');

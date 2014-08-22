@@ -1,18 +1,17 @@
 ﻿var Scene = (function () {
     var _super = Asset;
-
-    // constructor
+    /**
+     * @class
+     * @alias FIRE.Scene
+     * @extends FIRE.Asset
+     */ 
     function Scene () {
         _super.call(this);
-        init(this);
-    }
-    FIRE.extend(Scene, _super);
-    Scene.prototype.__classname__ = "FIRE.Scene";
 
-    // init
-    var init = function (self) {
-        self.entities = [];     // root entities
-    };
+        /** @member {FIRE.Entity[]} - root entities */
+        this.entities = [];
+    }
+    FIRE.extend(Scene, _super, "FIRE.Scene");
 
     // visit functions
 
@@ -52,6 +51,8 @@
     };
 
     Scene.prototype.render = function (renderContext) {
+        // updateTransform
+        this.updateTransform();
         // call onPreRender
         var self = this;
         var entities = self.entities;
@@ -60,6 +61,13 @@
         }
         // render
         renderContext.render();
+    };
+
+    Scene.prototype.updateTransform = function () {
+        var entities = this.entities;
+        for (var i = 0, len = entities.length; i < len; ++i) {
+            entities[i].transform._updateRootTransform();
+        }
     };
 
     Scene.prototype.appendRoot = function (_entity) {

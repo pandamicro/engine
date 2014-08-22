@@ -1,23 +1,32 @@
 ﻿var Transform = (function () {
     var _super = Component;
 
-    // constructor
+    /**
+     * @class
+     * @alias FIRE.Transform
+     * @extends FIRE.Component
+     */ 
     function Transform () {
         _super.call(this);
-        init(this);
-    }
-    FIRE.extend(Transform, _super);
-    Transform.prototype.__classname__ = "FIRE.Transform";
 
-    // init
-    var init = function (self) {
-        self._parent = null;
-        self._children = [];
-        self._position = new Vec2(0, 0);
-    };
+        this._parent = null;
+        this._children = [];
+
+        this._position = new Vec2(0, 0);
+        this._rotation = 0;
+        this._scale = new Vec2(1, 1);
+
+        this._worldTransform = new Matrix3();
+    }
+    FIRE.extend(Transform, _super, "FIRE.Transform");
 
     // properties
 
+    /**
+     * The parent of the transform.
+     * Changing the parent will keep the local space position, rotation and scale the same but modify the world space position, scale and rotation.
+     * @member {FIRE.Transform} FIRE.Transform#parent
+     */
     Transform.prototype.__defineGetter__('parent', function () { return this._parent; });
     Transform.prototype.__defineSetter__('parent', function (value) {
         // jshint eqeqeq: false
@@ -46,22 +55,26 @@
     });
 
     /**
-     * @property {number} child count
+     * Get the amount of children
+     * @member {number} FIRE.Transform#childCount
      */
     Transform.prototype.__defineGetter__('childCount', function () {
         return this._children.length;
     });
 
     /**
-     * @property {FIRE.Vec2} position
+     * The local position in its parent's coordinate system
+     * @member {FIRE.Vec2} FIRE.Transform#position
      */
-    Transform.prototype.__defineGetter__('position', function () { return this._position; });
+    Transform.prototype.__defineGetter__('position', function () {
+        return new Vec2(this._position.x, this._position.y); 
+    });
     Transform.prototype.__defineSetter__('position', function (value) {
         this._position.x = value.x;
         this._position.y = value.y;
     });
 
-    // built-in functions
+    // override functions
 
     Transform.prototype.onCreate = function () {
         Engine._scene.appendRoot(this.entity);
@@ -91,6 +104,68 @@
 
     Transform.prototype.getChild = function (index) {
         return this._children[index];
+    };
+
+    Transform.prototype._updateTransform = function () {
+        var _sr = this._rotation === 0 ? 0 : Math.sin(this._rotation);
+        var _cr = this._rotation === 0 ? 1 : Math.cos(this._rotation);
+
+        var parentTransform = this._parent._worldTransform;
+        var _worldTransform = this._worldTransform;
+
+        //var px = this._pivot.x;
+        //var py = this._pivot.y;
+
+        var a00 = _cr * this._scale.x,
+            a01 = -_sr * this._scale.y,
+            a10 = _sr * this._scale.x,
+            a11 = _cr * this._scale.y,
+            a02 = this._position.x/* - a00 * px - py * a01*/,
+            a12 = this._position.y/* - a11 * py - px * a10*/,
+            b00 = parentTransform.a, b01 = parentTransform.b,
+            b10 = parentTransform.c, b11 = parentTransform.d;
+
+        _worldTransform.a = b00 * a00 + b01 * a10;
+        _worldTransform.b = b00 * a01 + b01 * a11;
+        _worldTransform.tx = b00 * a02 + b01 * a12 + parentTransform.tx;
+
+        _worldTransform.c = b10 * a00 + b11 * a10;
+        _worldTransform.d = b10 * a01 + b11 * a11;
+        _worldTransform.ty = b10 * a02 + b11 * a12 + parentTransform.ty;
+
+        //this._worldAlpha = this._alpha * this._parent._worldAlpha;
+
+        // update children
+        var children = this._children;
+        for (var i = 0, len = children.length; i < len; i++) {
+            children[i]._updateTransform();
+        }
+    };
+
+    Transform.prototype._updateRootTransform = function () {
+        var _sr = this._rotation === 0 ? 0 : Math.sin(this._rotation);
+        var _cr = this._rotation === 0 ? 1 : Math.cos(this._rotation);
+
+        var _worldTransform = this._worldTransform;
+
+        //var px = this._pivot.x;
+        //var py = this._pivot.y;
+        
+        _worldTransform.a = _cr * this._scale.x;    // 00
+        _worldTransform.b = -_sr * this._scale.y;   // 01
+        _worldTransform.tx = this._position.x/* - _worldTransform.a * px - py * _worldTransform.b*/;    //  02
+
+        _worldTransform.c = _sr * this._scale.x;    // 10
+        _worldTransform.d = _cr * this._scale.y;    // 11
+        _worldTransform.ty = this._position.y/* - _worldTransform.d * py - px * _worldTransform.c*/;    // 12
+
+        //this._worldAlpha = this._alpha;
+
+        // update children
+        var children = this._children;
+        for (var i = 0, len = children.length; i < len; i++) {
+            children[i]._updateTransform();
+        }
     };
 
     return Transform;

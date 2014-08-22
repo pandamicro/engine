@@ -43,6 +43,7 @@
 
     /* callback functions
     Component.prototype.onCreate = function () {};
+    Component.prototype.onStart = function () {};   // (NYI) called just before first update, but after onEnable
     Component.prototype.onEnable = function () {};
     Component.prototype.onDisable = function () {};
     Component.prototype.update = function () {};
