@@ -54,8 +54,8 @@ var RenderContext = (function () {
     RenderContext.prototype.addSprite = function (target) {
         var sprite = target.sprite;
         var tex = createTexture(sprite) || emptyTexture;
-        target._pixiElement = new PIXI.Sprite(tex);
-        this.stage.addChild(target._pixiElement);
+        target._renderObj = new PIXI.Sprite(tex);
+        this.stage.addChild(target._renderObj);
     };
 
     /**
@@ -63,7 +63,7 @@ var RenderContext = (function () {
      * @param show {boolean}
      */
     RenderContext.prototype.show = function (target, show) {
-        target._pixiElement.visible = show;
+        target._renderObj.visible = show;
     };
 
     /**
@@ -71,10 +71,10 @@ var RenderContext = (function () {
      * @param show {boolean}
      */
     RenderContext.prototype.remove = function (target) {
-        var obj = target._pixiElement;
+        var obj = target._renderObj;
         if (obj) {
             this.stage.removeChild(obj);
-            delete target._pixiElement;
+            target._renderObj = null;
         }
         else {
             console.error('' + target + ' not in render context');
@@ -85,7 +85,7 @@ var RenderContext = (function () {
      * @param target {FIRE.SpriteRenderer}
      */
     RenderContext.prototype.updateMaterial = function (target) {
-        var obj = target._pixiElement;
+        var obj = target._renderObj;
         if (obj) {
             var tex = createTexture(target.sprite);
             obj.setTexture(tex || emptyTexture);
@@ -99,7 +99,7 @@ var RenderContext = (function () {
      * @param target {FIRE.SpriteRenderer}
      */
     RenderContext.prototype.updateTransform = function (target) {
-        var obj = target._pixiElement;
+        var obj = target._renderObj;
         if (obj) {
             obj.worldTransform = target.transform._worldTransform;
         }

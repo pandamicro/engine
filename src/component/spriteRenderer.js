@@ -4,14 +4,10 @@
     // constructor
     function SpriteRenderer () {
         _super.call(this);
-        init(this);
+        this._sprite = null;
+        this._renderObj = null;
     }
     FIRE.extend("FIRE.SpriteRenderer", SpriteRenderer, _super);
-
-    // init
-    var init = function (self) {
-        self._sprite = null;
-    };
 
     // properties
     SpriteRenderer.prototype.__defineGetter__('sprite', function () { return this._sprite; });
