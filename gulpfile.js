@@ -99,21 +99,25 @@ var insertCoreShortcut = function (path, moduleName, filter) {
     function createShortcut(path, moduleName, filter) {
         var m = require(path);
         var keys = Object.getOwnPropertyNames(m);
-        //var code = '';
-        //for (var i = 0; i < keys.length; i++) {
-        //    var key = keys[i];
-        //    if (filter(key, m[key])) {
-        //        code += 'var ' + key + ' = ' + moduleName + '.' + key + ';\n';
-        //    }
-        //}
-        var code = 
+        if ('readable') {
+            var code = '';
+            for (var i = 0; i < keys.length; i++) {
+                var key = keys[i];
+                if (filter.call(m, key)) {
+                    code += 'var ' + key + ' = ' + moduleName + '.' + key + ';\n';
+                }
+            }
+        }
+        else {
+            code =
 "// declare shortcuts of core\n\
 (function () {\n\
     var shortcuts = '" + keys.filter(filter, m).join(',') + "'.split(',');\n\
     for (var i = 0; i < shortcuts.length; i++) {\n\
         this[shortcuts[i]] = " + moduleName + "[shortcuts[i]];\n\
     }\n\
-})();\n"
+})();\n";
+        }
         return code;
     }
     function write(file) {
@@ -141,6 +145,7 @@ gulp.task('js-dev', function() {
                .pipe(jshint.reporter(stylish))
                .pipe(concat(paths.engine_dev))
                .pipe(embedIntoModule(paths.index))
+               .pipe(jshint.reporter(stylish))
                .pipe(gulp.dest(paths.output))
                ;
 });

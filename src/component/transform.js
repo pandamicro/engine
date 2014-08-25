@@ -32,6 +32,10 @@
         // jshint eqeqeq: false
         if (this._parent != value) {
         // jshint eqeqeq: true
+            if (value === this) {
+			    console.warn("A transform can't be set as the parent of itself.");
+			    return;
+            }
             if (value && value instanceof Transform === false) {
                 console.error('Parent must be a Transform or null');
                 return;
@@ -67,11 +71,35 @@
      * @member {FIRE.Vec2} FIRE.Transform#position
      */
     Transform.prototype.__defineGetter__('position', function () {
-        return new Vec2(this._position.x, this._position.y); 
+        return new Vec2(this._position.x, this._position.y);
     });
     Transform.prototype.__defineSetter__('position', function (value) {
         this._position.x = value.x;
         this._position.y = value.y;
+    });
+
+    /**
+     * The local rotation in radians relative to the parent
+     * @member {number} FIRE.Transform#rotation
+     */
+    Transform.prototype.__defineGetter__('rotation', function () {
+        return this._rotation;
+    });
+    Transform.prototype.__defineSetter__('rotation', function (value) {
+        this._rotation = value;
+    });
+
+    /**
+     * The local scale factor relative to the parent
+     * @member {FIRE.Vec2} FIRE.Transform#scale
+     * @default new Vec2(1, 1)
+     */
+    Transform.prototype.__defineGetter__('scale', function () {
+        return new Vec2(this._scale.x, this._scale.y);
+    });
+    Transform.prototype.__defineSetter__('scale', function (value) {
+        this._scale.x = value.x;
+        this._scale.y = value.y;
     });
 
     // override functions
@@ -166,6 +194,18 @@
         for (var i = 0, len = children.length; i < len; i++) {
             children[i]._updateTransform();
         }
+    };
+
+    Transform.prototype.isChildOf = function (parent) {
+        var child = this;
+        do {
+            if (child === parent) {
+                return true;
+            }
+            child = child._parent;
+        }
+        while (child);
+        return false;
     };
 
     return Transform;
