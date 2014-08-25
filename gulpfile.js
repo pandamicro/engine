@@ -13,6 +13,8 @@ var qunit = require('gulp-qunit');
 var rename = require('gulp-rename');
 var uglify = require('gulp-uglify');
 
+var fb = require('gulp-fb');
+
 var paths = {
     // source
     src: [
@@ -32,32 +34,36 @@ var paths = {
     ext_core: '../core/bin/**/*.js',
 
     // test
-    unit_test: 'test/unit/**/*.js',
-    runner_template: 'test/lib/runner.html',
-    runner_lib_dev: [
-        'ext/pixi/bin/pixi.dev.js',
-        'ext/fire-core/bin/core.dev.js',
-        'bin/engine.dev.js',
-    ],
-    runner_lib_min: [
-        'ext/pixi/bin/pixi.js',
-        'ext/fire-core/bin/core.min.js',
-        'bin/engine.min.js',
-    ],
+    test: {
+        src: 'test/unit/**/*.js',
+        runner: 'test/lib/runner.html',
+        lib_dev: [
+            'ext/pixi/bin/pixi.dev.js',
+            'ext/fire-core/bin/core.dev.js',
+            'bin/engine.dev.js',
+        ],
+        lib_min: [
+            'ext/pixi/bin/pixi.js',
+            'ext/fire-core/bin/core.min.js',
+            'bin/engine.min.js',
+        ],
+    },
 
     // output
     output: 'bin/',
     engine_dev: 'engine.dev.js',
     engine_min: 'engine.min.js',
 
-    // generate references
-    ref_libs: [
-        'ext/pixi/bin/pixi.dev.js',
-        'ext/fire-core/bin/core.dev.js',
-        'test/lib/*.js',
-        'test/unit/_*.js',
-    ],
-    ref: '_references.js',
+    // references
+    ref: {
+        src: [
+            'ext/pixi/bin/pixi.dev.js',
+            'ext/fire-core/bin/core.dev.js',
+            'test/lib/*.js',
+            'test/unit/_*.js',
+        ],
+        dest: '_references.js',
+    },
 };
 
 // clean
@@ -72,8 +78,8 @@ gulp.task('clean', function() {
 
 // copy local core to ext for rapid test
 gulp.task('cp-core', function() {
-    return gulp.src(paths.ext_core)
-               .pipe(gulp.dest('ext/fire-core/bin'));
+    return gulp.src(paths.ext_core, { base: '../core' })
+               .pipe(gulp.dest('ext/fire-core'));
 });
 
 gulp.task('cp-all', ['cp-core' ] );
@@ -135,7 +141,7 @@ var insertCoreShortcut = function (path, moduleName, filter) {
     });
 };
 
-gulp.task('js-dev', function() {
+gulp.task('js-dev', ['cp-core'], function() {
     return gulp.src(paths.src)
                .pipe(insertCoreShortcut('./ext/fire-core/bin/core.min.js', 'FIRE'))
                .pipe(jshint({
@@ -162,87 +168,17 @@ gulp.task('js', ['js-dev'], function() {
 // test
 /////////////////////////////////////////////////////////////////////////////
 
-var toFileList = function () {
-    var firstFile = null;
-    var fileList = [];
-    function write(file) {
-        if (file.isStream()) return this.emit('error', new PluginError('toFileList', 'Streaming not supported'));
-        if (!firstFile) firstFile = file;
-        fileList.push(file.relative);
-    }
-    function end() {
-        if (firstFile) {
-            firstFile.contents = new Buffer(fileList.join(',') + ',');
-        }
-        else {
-            firstFile = new gutil.File({
-                contents: new Buffer(0),
-            });
-        }
-        this.emit('data', firstFile);
-        this.emit('end');
-    }
-    return through(write, end);
-};
-
-var trySortByDepends = function (fileList) {
-    var indexInSrc = function (filePath) {
-        var basename = Path.basename(filePath);
-        for (var i = 0; i < paths.src.length; i++) {
-            if (Path.basename(paths.src[i]) === basename) {
-                return i;
-            }
-        }
-        return -1;
-    };
-    fileList.sort(function (lhs, rhs) {
-        return compare = indexInSrc(lhs) - indexInSrc(rhs);
-    });
-}
-
-var generateRunner = function (templatePath, dest) {
-    var template = fs.readFileSync(templatePath);
-
-    function generateContents(fileList, dev) {
-        var scriptElements = '';
-        for (var i = 0; i < fileList.length; i++) {
-            if (fileList[i]) {
-                if (i > 0) {
-                    scriptElements += '\r\n    ';
-                }
-                scriptElements += ('<script src="' + Path.relative(dest, fileList[i]) + '"></script>');
-            }
-        }
-        var data = { file: null, scripts: scriptElements };
-        return new Buffer(gutil.template(template, data));
-    }
-    function write(file) {
-        var fileList = file.contents.toString().split(',');
-        trySortByDepends(fileList);
-        // runner.html
-        file.contents = generateContents(paths.runner_lib_min.concat(fileList));
-        file.path = Path.join(file.base, Path.basename(templatePath));
-        this.emit('data', file);
-        // runner.dev.html
-        var ext = Path.extname(file.path);
-        var filename = Path.basename(file.path, ext) + '.dev' + ext;
-        this.emit('data', new gutil.File({
-            contents: generateContents(paths.runner_lib_dev.concat(fileList)),
-            base: file.base,
-            path: Path.join(file.base, filename)
-        }));
-
-        this.emit('end');
-    }
-    return through(write);
-};
-
 gulp.task('unit-runner', function() {
-    var js = paths.unit_test;
-    var dest = paths.unit_test.split('*')[0];
+    var js = paths.test.src;
+    var dest = paths.test.src.split('*')[0];
     return gulp.src(js, { read: false, base: './' })
-               .pipe(toFileList())
-               .pipe(generateRunner(paths.runner_template, dest))
+               .pipe(fb.toFileList())
+               .pipe(fb.generateRunner(paths.test.runner,
+                                         dest,
+                                         'Fire Engine Test Suite',
+                                         paths.test.lib_min,
+                                         paths.test.lib_dev,
+                                         paths.src))
                .pipe(gulp.dest(dest))
                ;
 });
@@ -257,35 +193,16 @@ gulp.task('test', ['js', 'unit-runner'], function() {
                ;
 });
 
-gulp.task('ref', ['cp-all'], function() {
-    var files = paths.ref_libs.concat(paths.src);
-    var destPath = paths.ref;
-    var destDir = Path.dirname(destPath);
-    return gulp.src(files, { read: false, base: './' })
-               .pipe(toFileList())
-               .pipe(through(function (file) {
-                   function generateContents(fileList) {
-                       var scriptElements = '';
-                       for (var i = 0; i < fileList.length; i++) {
-                           if (fileList[i]) {
-                               scriptElements += ('/// <reference path="' + Path.relative(destDir, fileList[i]) + '" />\r\n');
-                           }
-                       }
-                       return new Buffer(scriptElements);
-                   }
-                   var fileList = file.contents.toString().split(',');
-                   file.contents = generateContents(fileList);
-                   file.base = destDir;
-                   file.path = destPath;
-                   this.emit('data', file);
-                   this.emit('end');
-                }))
-               .pipe(gulp.dest(destDir));
-});
-
 /////////////////////////////////////////////////////////////////////////////
 // tasks
 /////////////////////////////////////////////////////////////////////////////
+
+// ref
+gulp.task('ref', ['cp-all'], function() {
+    var files = paths.ref.src.concat(paths.src);
+    var destPath = paths.ref.dest;
+    return fb.generateReference(files, destPath);
+});
 
 // watch
 gulp.task('watch', function() {
