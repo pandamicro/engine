@@ -6,7 +6,7 @@ var CallbackTester = FIRE.simpleExtend(FIRE.Component, function () {
     this._unexpect = {};
 });
 
-CallbackTester.OnCreate = 'onCreate';
+CallbackTester.OnLoad = 'onLoad';
 CallbackTester.OnEnable = 'onEnable';
 CallbackTester.OnDisable = 'onDisable';
 CallbackTester.OnDestroy = 'onDestroy';
@@ -78,8 +78,8 @@ CallbackTester.prototype._assert = function (actual) {
     //console.log('CallbackTester: ' + actual);
 };
 
-CallbackTester.prototype.onCreate = function () {
-    this._assert(CallbackTester.OnCreate);
+CallbackTester.prototype.onLoad = function () {
+    this._assert(CallbackTester.OnLoad);
 };
 
 CallbackTester.prototype.onEnable = function () {

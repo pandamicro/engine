@@ -104,7 +104,7 @@
 
     // override functions
 
-    Transform.prototype.onCreate = function () {
+    Transform.prototype.onLoad = function () {
         Engine._scene.appendRoot(this.entity);
     };
 

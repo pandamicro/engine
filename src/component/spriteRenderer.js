@@ -17,7 +17,7 @@
     });
 
     // built-in functions
-    SpriteRenderer.prototype.onCreate = function () {
+    SpriteRenderer.prototype.onLoad = function () {
         Engine._renderContext.addSprite(this);
     };
     SpriteRenderer.prototype.onEnable = function () {

@@ -74,9 +74,9 @@
         component.entity = this;
         this._components.push(component);
         
-        // call onInit
-        if (component.onCreate) {
-            component.onCreate();
+        // call onLoad
+        if (component.onLoad) {
+            component.onLoad();
         }
 
         // call onEnable

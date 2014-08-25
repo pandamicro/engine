@@ -41,7 +41,8 @@
     });
 
     /* callback functions
-    Component.prototype.onCreate = function () {};
+    Component.prototype.onCreate = function () {};  // (NYI) customized constructor for template
+    Component.prototype.onLoad = function () {};    // attached in runtime or entity loaded
     Component.prototype.onStart = function () {};   // (NYI) called just before first update, but after onEnable
     Component.prototype.onEnable = function () {};
     Component.prototype.onDisable = function () {};

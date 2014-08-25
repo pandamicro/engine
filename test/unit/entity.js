@@ -61,7 +61,7 @@ test('component', function () {
     var obj = new Entity();
     var comp = new MyComponent();
 
-    comp.expect(CallbackTester.OnCreate, 'call onCreate while attaching to entity');
+    comp.expect(CallbackTester.OnLoad, 'call onLoad while attaching to entity');
     comp.expect(CallbackTester.OnEnable, 'then call onEnable if entity active', true);
     obj.addComponent(comp); // onEnable
 
@@ -100,7 +100,7 @@ test('component in hierarchy', 4, function () {
     parent.active = false;
 
     var comp = new CallbackTester();
-    comp.expect(CallbackTester.OnCreate, 'call onCreate while attaching to entity');
+    comp.expect(CallbackTester.OnLoad, 'call onLoad while attaching to entity');
     child.addComponent(comp);
 
     comp.expect(CallbackTester.OnEnable, 'should enable when parent become active');
@@ -118,7 +118,7 @@ test('destroy', function () {
     var child = new Entity();
 
     // add child component
-    var childComp = child.addComponent(new CallbackTester().expect([CallbackTester.OnCreate, CallbackTester.OnEnable]));
+    var childComp = child.addComponent(new CallbackTester().expect([CallbackTester.OnLoad, CallbackTester.OnEnable]));
     
     // expect ondisable
     childComp.expect(CallbackTester.OnDisable, 'should disable while destroy parent');
@@ -135,14 +135,14 @@ test('destroy', function () {
     // try add component after destroy
 
     var childComp_new = new CallbackTester();
-    childComp_new.expect(CallbackTester.OnCreate, 'new child component should onCreate even if added after destroy');
+    childComp_new.expect(CallbackTester.OnLoad, 'new child component should onLoad even if added after destroy');
     childComp_new.expect(CallbackTester.OnEnable, 'new child component should enable even if added after destroy', true);
     childComp_new.expect(CallbackTester.OnDisable, 'new component\'s onDisable should be called before its onDestroy', true);
     childComp_new.expect(CallbackTester.OnDestroy, 'new component should also destroyed at the end of frame', true);
     child.addComponent(childComp_new);
 
     var newParentComp = new CallbackTester();
-    newParentComp.expect([CallbackTester.OnCreate,
+    newParentComp.expect([CallbackTester.OnLoad,
                           CallbackTester.OnEnable,
                           CallbackTester.OnDisable,
                           CallbackTester.OnDestroy]);
@@ -152,7 +152,7 @@ test('destroy', function () {
 
     var newChildEntity = new Entity();
     newChildEntity.transform.parent = parent.transform;
-    newChildEntity.addComponent(new CallbackTester().expect([CallbackTester.OnCreate,
+    newChildEntity.addComponent(new CallbackTester().expect([CallbackTester.OnLoad,
                                                              CallbackTester.OnEnable,
                                                              CallbackTester.OnDisable,
                                                              CallbackTester.OnDestroy]));
