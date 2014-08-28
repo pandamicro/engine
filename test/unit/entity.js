@@ -55,8 +55,8 @@ test('component', function () {
     // 这里主要测试entity，不是测试component
 
     // my component
-    var MyComponentBase = FIRE.simpleExtend(CallbackTester);
-    var MyComponent = FIRE.simpleExtend(MyComponentBase);
+    var MyComponentBase = FIRE.define('', CallbackTester);
+    var MyComponent = FIRE.define('', MyComponentBase);
 
     var obj = new Entity();
     var comp = new MyComponent();

@@ -11,8 +11,8 @@
     var startTime = 0;
 
     /**
-     * @method FIRE.Time#_update
-     * @param paused {boolean} if true, only realTime will be updated, can omit
+     * @method FIRE.Time._update
+     * @param {boolean} [paused=false] if true, only realTime will be updated
      * @private
      */ 
     Time._update = function (timestamp, paused) {
