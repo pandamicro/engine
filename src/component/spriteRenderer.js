@@ -10,10 +10,14 @@
     FIRE.extend("FIRE.SpriteRenderer", SpriteRenderer, _super);
 
     // properties
-    SpriteRenderer.prototype.__defineGetter__('sprite', function () { return this._sprite; });
-    SpriteRenderer.prototype.__defineSetter__('sprite', function (value) {
-        this._sprite = value;
-        Engine._renderContext.updateMaterial(this);
+    Object.defineProperty(SpriteRenderer.prototype, 'sprite', {
+        get: function () {
+            return this._sprite;
+        },
+        set: function (value) {
+            this._sprite = value;
+            Engine._renderContext.updateMaterial(this);
+        }
     });
 
     // built-in functions

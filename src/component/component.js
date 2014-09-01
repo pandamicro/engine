@@ -22,24 +22,34 @@
     };
 
     // properties
-    Component.prototype.__defineGetter__('enabled', function () { return this._enabled; });
-    Component.prototype.__defineSetter__('enabled', function (value) {
-        // jshint eqeqeq: false
-        if (this._enabled != value) {
-        // jshint eqeqeq: true
-            this._enabled = value;
-            if (this.entity.activeInHierarchy) {
-                _callOnEnable(this, value);
+    Object.defineProperty(Component.prototype, 'enabled', {
+        get: function () {
+            return this._enabled;
+        },
+        set: function (value) {
+            // jshint eqeqeq: false
+            if (this._enabled != value) {
+                // jshint eqeqeq: true
+                this._enabled = value;
+                if (this.entity.activeInHierarchy) {
+                    _callOnEnable(this, value);
+                }
             }
         }
     });
-    Component.prototype.__defineGetter__('enabledInHierarchy', function () {
-        return this._enabled && this.entity.activeInHierarchy;
-    });
-    Component.prototype.__defineGetter__('transform', function () {
-        return this.entity.transform;
+
+    Object.defineProperty(Component.prototype, 'enabledInHierarchy', {
+        get: function () {
+            return this._enabled && this.entity.activeInHierarchy;
+        }
     });
 
+    Object.defineProperty(Component.prototype, 'transform', {
+        get: function () {
+            return this.entity.transform;
+        }
+    });
+   
     /* callback functions
     Component.prototype.onCreate = function () {};  // (NYI) customized constructor for template
     Component.prototype.onLoad = function () {};    // attached in runtime or entity loaded

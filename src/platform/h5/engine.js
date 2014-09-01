@@ -17,32 +17,37 @@ var Engine = (function () {
     Engine._renderContext = null;
 
     // is rendering and allow update logic
-    Engine.__defineGetter__('isPlaying', function () {
-        return isPlaying;
+    Object.defineProperty(Engine, 'isPlaying', {
+        get: function () {
+            return isPlaying;
+        },
     });
 
     // is logic paused
-    Engine.__defineGetter__('isPaused', function () {
-        return isPaused;
-    });
-
-    /**
-     * @return {FIRE.Vec2}
-     */
-    Engine.__defineGetter__('screenSize', function () {
-        return Engine._renderContext.size;
+    Object.defineProperty(Engine, 'isPaused', {
+        get: function () {
+            return isPaused;
+        },
     });
 
     /**
      * @param value {FIRE.Vec2}
+     * @return {FIRE.Vec2}
      */
-    Engine.__defineSetter__('screenSize', function (value) {
-        Engine._renderContext.size = value;
+    Object.defineProperty(Engine, 'screenSize', {
+        get: function () {
+            return Engine._renderContext.size;
+        },
+        set: function (value) {
+            Engine._renderContext.size = value;
+        }
     });
 
     var inited = false;
-    Engine.__defineGetter__('inited', function () {
-        return inited;
+    Object.defineProperty(Engine, 'inited', {
+        get: function () {
+            return inited;
+        },
     });
 
     // functions

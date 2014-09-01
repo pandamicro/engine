@@ -27,19 +27,20 @@ var RenderContext = (function () {
 
 
     // properties
-
-
-    RenderContext.prototype.__defineGetter__('element', function () {
-        return this.renderer.view;
+    Object.defineProperty(RenderContext.prototype, 'element', {
+        get: function () {
+            return this.renderer.view;
+        }
     });
 
-    RenderContext.prototype.__defineGetter__('size', function () {
-        return new Vec2(this.renderer.width, this.renderer.height);
+    Object.defineProperty(RenderContext.prototype, 'size', {
+        get: function () {
+            return new Vec2(this.renderer.width, this.renderer.height);
+        },
+        set: function (value) {
+            this.renderer.resize(value.x, value.y);
+        }
     });
-    RenderContext.prototype.__defineSetter__('size', function (value) {
-        this.renderer.resize(value.x, value.y);
-    });
-
 
     // functions
 

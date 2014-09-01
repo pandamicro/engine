@@ -27,33 +27,37 @@
      * Changing the parent will keep the local space position, rotation and scale the same but modify the world space position, scale and rotation.
      * @member {FIRE.Transform} FIRE.Transform#parent
      */
-    Transform.prototype.__defineGetter__('parent', function () { return this._parent; });
-    Transform.prototype.__defineSetter__('parent', function (value) {
-        // jshint eqeqeq: false
-        if (this._parent != value) {
-        // jshint eqeqeq: true
-            if (value === this) {
-			    console.warn("A transform can't be set as the parent of itself.");
-			    return;
-            }
-            if (value && value instanceof Transform === false) {
-                console.error('Parent must be a Transform or null');
-                return;
-            }
-            var oldParent = this._parent;
-            this._parent = value;
-            if (value) {
-                if (!oldParent) {
-                    Engine._scene.removeRoot(this.entity);
+    Object.defineProperty(Transform.prototype, 'parent', {
+        get: function () {
+            return this._parent;
+        },
+        set: function (value) {
+            // jshint eqeqeq: false
+            if (this._parent != value) {
+                // jshint eqeqeq: true
+                if (value === this) {
+                    console.warn("A transform can't be set as the parent of itself.");
+                    return;
                 }
-                value._children.push(this);
-            }
-            else {
-                Engine._scene.appendRoot(this.entity);
-            }
-            if (oldParent && !oldParent.entity.isDestroying) {
-                oldParent._children.splice(oldParent._children.indexOf(this), 1);
-                this.entity._onHierarchyChanged(oldParent);
+                if (value && value instanceof Transform === false) {
+                    console.error('Parent must be a Transform or null');
+                    return;
+                }
+                var oldParent = this._parent;
+                this._parent = value;
+                if (value) {
+                    if (!oldParent) {
+                        Engine._scene.removeRoot(this.entity);
+                    }
+                    value._children.push(this);
+                }
+                else {
+                    Engine._scene.appendRoot(this.entity);
+                }
+                if (oldParent && !oldParent.entity.isDestroying) {
+                    oldParent._children.splice(oldParent._children.indexOf(this), 1);
+                    this.entity._onHierarchyChanged(oldParent);
+                }
             }
         }
     });
@@ -62,31 +66,37 @@
      * Get the amount of children
      * @member {number} FIRE.Transform#childCount
      */
-    Transform.prototype.__defineGetter__('childCount', function () {
-        return this._children.length;
+    Object.defineProperty(Transform.prototype, 'childCount', {
+        get: function () {
+            return this._children.length;
+        },
     });
 
     /**
      * The local position in its parent's coordinate system
      * @member {FIRE.Vec2} FIRE.Transform#position
      */
-    Transform.prototype.__defineGetter__('position', function () {
-        return new Vec2(this._position.x, this._position.y);
-    });
-    Transform.prototype.__defineSetter__('position', function (value) {
-        this._position.x = value.x;
-        this._position.y = value.y;
+    Object.defineProperty(Transform.prototype, 'position', {
+        get: function () {
+            return new Vec2(this._position.x, this._position.y);
+        },
+        set: function (value) {
+            this._position.x = value.x;
+            this._position.y = value.y;
+        }
     });
 
     /**
      * The local rotation in radians relative to the parent
      * @member {number} FIRE.Transform#rotation
      */
-    Transform.prototype.__defineGetter__('rotation', function () {
-        return this._rotation;
-    });
-    Transform.prototype.__defineSetter__('rotation', function (value) {
-        this._rotation = value;
+    Object.defineProperty(Transform.prototype, 'rotation', {
+        get: function () {
+            return this._rotation;
+        },
+        set: function (value) {
+            this._rotation = value;
+        }
     });
 
     /**
@@ -94,12 +104,14 @@
      * @member {FIRE.Vec2} FIRE.Transform#scale
      * @default new Vec2(1, 1)
      */
-    Transform.prototype.__defineGetter__('scale', function () {
-        return new Vec2(this._scale.x, this._scale.y);
-    });
-    Transform.prototype.__defineSetter__('scale', function (value) {
-        this._scale.x = value.x;
-        this._scale.y = value.y;
+    Object.defineProperty(Transform.prototype, 'scale', {
+        get: function () {
+            return new Vec2(this._scale.x, this._scale.y);
+        },
+        set: function (value) {
+            this._scale.x = value.x;
+            this._scale.y = value.y;
+        }
     });
 
     // override functions

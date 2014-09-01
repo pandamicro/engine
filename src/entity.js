@@ -19,21 +19,27 @@
     };
 
     // properties
-    Entity.prototype.__defineGetter__('active', function () { return this._active; });
-    Entity.prototype.__defineSetter__('active', function (value) {
-        // jshint eqeqeq: false
-        if (this._active != value) {
-        // jshint eqeqeq: true
-            this._active = value;
-            var canActiveInHierarchy = (!this.transform.parent || this.transform.parent.entity.activeInHierarchy);
-            if (canActiveInHierarchy) {
-                _onActivatedInHierarchy(this, value);
+    Object.defineProperty(Entity.prototype, 'active', {
+        get: function () {
+            return this._active;
+        },
+        set: function (value) {
+            // jshint eqeqeq: false
+            if (this._active != value) {
+                // jshint eqeqeq: true
+                this._active = value;
+                var canActiveInHierarchy = (!this.transform.parent || this.transform.parent.entity.activeInHierarchy);
+                if (canActiveInHierarchy) {
+                    _onActivatedInHierarchy(this, value);
+                }
             }
         }
     });
-    Entity.prototype.__defineGetter__('activeInHierarchy', function () {
-        // TODO: use while to avoid function call
-        return this._active && (!this.transform.parent || this.transform.parent.entity.activeInHierarchy);
+
+    Object.defineProperty(Entity.prototype, 'activeInHierarchy', {
+        get: function () {
+            return this._active && (!this.transform.parent || this.transform.parent.entity.activeInHierarchy);
+        },
     });
 
     // overrides
