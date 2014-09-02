@@ -208,6 +208,9 @@ gulp.task('watch', function() {
     gulp.watch(paths.ext_core, ['cp-3rd']).on ( 'error', gutil.log );
     gulp.watch(paths.src.concat(paths.index), ['js']).on ( 'error', gutil.log );
 });
+gulp.task('watch-self', function() {
+    gulp.watch(paths.src.concat(paths.index), ['js']).on ( 'error', gutil.log );
+});
 
 // tasks
 gulp.task('default', ['js' ] );
