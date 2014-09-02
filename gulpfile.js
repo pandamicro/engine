@@ -82,8 +82,6 @@ gulp.task('cp-core', function() {
                .pipe(gulp.dest('ext/fire-core'));
 });
 
-gulp.task('cp-all', ['cp-core' ] );
-
 /////////////////////////////////////////////////////////////////////////////
 // build
 /////////////////////////////////////////////////////////////////////////////
@@ -199,7 +197,7 @@ gulp.task('test', ['js', 'unit-runner'], function() {
 /////////////////////////////////////////////////////////////////////////////
 
 // ref
-gulp.task('ref', ['cp-all'], function() {
+gulp.task('ref', ['cp-core'], function() {
     var files = paths.ref.src.concat(paths.src);
     var destPath = paths.ref.dest;
     return fb.generateReference(files, destPath);
@@ -212,6 +210,6 @@ gulp.task('watch', function() {
 });
 
 // tasks
-gulp.task('default', ['cp-all', 'js' ] );
+gulp.task('default', ['js' ] );
 gulp.task('all', ['default', 'test', 'ref'] );
 gulp.task('ci', ['js', 'test'] );
