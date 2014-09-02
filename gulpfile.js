@@ -89,7 +89,7 @@ gulp.task('cp-all', ['cp-core' ] );
 /////////////////////////////////////////////////////////////////////////////
 
 var embedIntoModule = function (template) {
-    var template = fs.readFileSync(template);
+    template = fs.readFileSync(template);
     return es.map(function(file, callback) {
         var data = { file: file, contents: '\n\n' + file.contents.toString() };
         file.contents = new Buffer(gutil.template(template, data));
@@ -105,8 +105,9 @@ var insertCoreShortcut = function (path, moduleName, filter) {
     function createShortcut(path, moduleName, filter) {
         var m = require(path);
         var keys = Object.getOwnPropertyNames(m);
+        var code = '';
+
         if ('readable') {
-            var code = '';
             for (var i = 0; i < keys.length; i++) {
                 var key = keys[i];
                 if (filter.call(m, key)) {
@@ -143,7 +144,7 @@ var insertCoreShortcut = function (path, moduleName, filter) {
 
 gulp.task('js-dev', ['cp-core'], function() {
     return gulp.src(paths.src)
-               .pipe(insertCoreShortcut('./ext/fire-core/bin/core.min.js', 'FIRE'))
+               // .pipe(insertCoreShortcut('./ext/fire-core/bin/core.min.js', 'FIRE'))
                .pipe(jshint({
                    multistr: true,
                    smarttabs: false,
