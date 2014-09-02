@@ -140,7 +140,7 @@ var insertCoreShortcut = function (path, moduleName, filter) {
     });
 };
 
-gulp.task('js-dev', ['cp-core'], function() {
+gulp.task('js-dev', function() {
     return gulp.src(paths.src)
                // .pipe(insertCoreShortcut('./ext/fire-core/bin/core.min.js', 'FIRE'))
                .pipe(jshint({
