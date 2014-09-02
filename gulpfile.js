@@ -82,14 +82,12 @@ gulp.task('cp-core', function() {
                .pipe(gulp.dest('ext/fire-core'));
 });
 
-gulp.task('cp-all', ['cp-core' ] );
-
 /////////////////////////////////////////////////////////////////////////////
 // build
 /////////////////////////////////////////////////////////////////////////////
 
 var embedIntoModule = function (template) {
-    var template = fs.readFileSync(template);
+    template = fs.readFileSync(template);
     return es.map(function(file, callback) {
         var data = { file: file, contents: '\n\n' + file.contents.toString() };
         file.contents = new Buffer(gutil.template(template, data));
@@ -105,8 +103,9 @@ var insertCoreShortcut = function (path, moduleName, filter) {
     function createShortcut(path, moduleName, filter) {
         var m = require(path);
         var keys = Object.getOwnPropertyNames(m);
+        var code = '';
+
         if ('readable') {
-            var code = '';
             for (var i = 0; i < keys.length; i++) {
                 var key = keys[i];
                 if (filter.call(m, key)) {
@@ -141,9 +140,9 @@ var insertCoreShortcut = function (path, moduleName, filter) {
     });
 };
 
-gulp.task('js-dev', ['cp-core'], function() {
+gulp.task('js-dev', function() {
     return gulp.src(paths.src)
-               .pipe(insertCoreShortcut('./ext/fire-core/bin/core.min.js', 'FIRE'))
+               // .pipe(insertCoreShortcut('./ext/fire-core/bin/core.min.js', 'FIRE'))
                .pipe(jshint({
                    multistr: true,
                    smarttabs: false,
@@ -198,7 +197,7 @@ gulp.task('test', ['js', 'unit-runner'], function() {
 /////////////////////////////////////////////////////////////////////////////
 
 // ref
-gulp.task('ref', ['cp-all'], function() {
+gulp.task('ref', ['cp-core'], function() {
     var files = paths.ref.src.concat(paths.src);
     var destPath = paths.ref.dest;
     return fb.generateReference(files, destPath);
@@ -209,8 +208,11 @@ gulp.task('watch', function() {
     gulp.watch(paths.ext_core, ['cp-3rd']).on ( 'error', gutil.log );
     gulp.watch(paths.src.concat(paths.index), ['js']).on ( 'error', gutil.log );
 });
+gulp.task('watch-self', function() {
+    gulp.watch(paths.src.concat(paths.index), ['js']).on ( 'error', gutil.log );
+});
 
 // tasks
-gulp.task('default', ['cp-all', 'js' ] );
+gulp.task('default', ['js' ] );
 gulp.task('all', ['default', 'test', 'ref'] );
 gulp.task('ci', ['js', 'test'] );

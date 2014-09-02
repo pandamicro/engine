@@ -21,7 +21,7 @@
     "gulp-uglify": "",
     "gulp-util": "",
     "jshint-stylish": "",
-    "through": "^2.3.4"
+    "through": ""
   },
   "scripts": {
     "postinstall": "bower install && cd ext/fire-core && npm install && gulp",
