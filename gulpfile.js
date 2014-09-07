@@ -21,6 +21,7 @@ var paths = {
         'src/time.js',
         'src/platform/h5/ticker.js',
         'src/platform/h5/pixiRenderContext.js',
+        'src/platform/h5/loaders.js',
         'src/component/component.js',
         'src/component/transform.js',
         'src/component/spriteRenderer.js',
