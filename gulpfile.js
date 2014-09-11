@@ -69,8 +69,9 @@ var paths = {
 
 // clean
 gulp.task('clean', function() {
-    return gulp.src(output + '*', { read: false })
-               .pipe(clean());
+    return gulp.src('bin/**/*', { read: false })
+    .pipe(clean())
+    ;
 });
 
 /////////////////////////////////////////////////////////////////////////////
