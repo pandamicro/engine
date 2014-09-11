@@ -97,12 +97,12 @@ var AssetLibrary = (function () {
          * @param {string} baseUrl
          * @param {object} [uuidToUrl]
          */
-        init: function (baseUrl, uuidToUrl) {
-            this.baseUrl = baseUrl;
-            console.log('AssetLibrary: assets: ' + baseUrl);
+        init: function (libraryPath, uuidToUrl) {
+            // this.baseUrl = baseUrl;
+            // console.log('AssetLibrary: assets: ' + baseUrl);
 
-            _libraryBase = FIRE.Path.basename(baseUrl) + FIRE.Path.sep + 'library';
-            console.log('AssetLibrary: library: ' + _libraryBase);
+            _libraryBase = libraryPath;
+            console.log('[AssetLibrary] library: ' + _libraryBase);
             _libraryBase += FIRE.Path.sep;
 
             _uuidToUrl = uuidToUrl;
@@ -116,7 +116,7 @@ var AssetLibrary = (function () {
          * 
          * @property {string} FIRE.AssetLibrary.baseUrl
          */
-        baseUrl: '',
+        // baseUrl: '',
     };
 
     var _doLoad = function (url, callback, context) {
@@ -129,7 +129,7 @@ var AssetLibrary = (function () {
                 }
             }, 
             function (error) {
-                var loading = context.uuidLoaded
+                var loading = context.uuidLoaded;
             });
     };
 

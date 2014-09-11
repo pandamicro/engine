@@ -29,7 +29,7 @@ var paths = {
         'src/scene.js',
         'src/loadManager.js',
         'src/platform/h5/engine.js',
-        'src/platform/h5/assetLibrary.js',
+        'src/platform/assetLibrary.js',
     ],
     index: 'src/index.js',
 
