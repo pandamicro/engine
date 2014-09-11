@@ -27,7 +27,9 @@ var paths = {
         'src/component/spriteRenderer.js',
         'src/entity.js',
         'src/scene.js',
+        'src/loadManager.js',
         'src/platform/h5/engine.js',
+        'src/platform/h5/assetLibrary.js',
     ],
     index: 'src/index.js',
 
@@ -66,13 +68,6 @@ var paths = {
         dest: '_references.js',
     },
 };
-
-// clean
-gulp.task('clean', function() {
-    return gulp.src('bin/**/*', { read: false })
-    .pipe(clean())
-    ;
-});
 
 /////////////////////////////////////////////////////////////////////////////
 // copy
@@ -198,6 +193,12 @@ gulp.task('test', ['js', 'unit-runner'], function() {
 // tasks
 /////////////////////////////////////////////////////////////////////////////
 
+// clean
+gulp.task('clean', function() {
+    return gulp.src(paths.output, { read: false })
+               .pipe(clean());
+});
+
 // ref
 gulp.task('ref', ['cp-core'], function() {
     var files = paths.ref.src.concat(paths.src);
@@ -216,5 +217,6 @@ gulp.task('watch-self', function() {
 
 // tasks
 gulp.task('default', ['js' ] );
+gulp.task('dev', ['default'] );
 gulp.task('all', ['default', 'test', 'ref'] );
 gulp.task('ci', ['js', 'test'] );

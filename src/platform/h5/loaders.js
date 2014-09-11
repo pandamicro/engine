@@ -1,14 +1,17 @@
+
 /**
  * 
  */
-
-function LoadImage(url, onLoad, onError, onProgress) {
+function ImageLoader(url, callback, onProgress) {
     var image = document.createElement('img');
-    if (onLoad) {
-        image.addEventListener('load', onLoad, false);
-    }
-    if (onError) {
-        image.addEventListener('error', onProgress, false);
+    if (callback) {
+        image.addEventListener('load', function () {
+            callback(this);
+        }, false);
+        image.addEventListener('error', function (msg, line, url) {
+            var error = 'Failed to load image: ' + msg + ' Url: ' + url;
+            callback(null, error);
+        }, false);
     }
     if (onProgress) {
         image.addEventListener('progress', onProgress, false);
@@ -20,16 +23,16 @@ function LoadImage(url, onLoad, onError, onProgress) {
 /**
  * @param {string} [responseType="text"] - the XMLHttpRequestResponseType
  */
-function LoadFromXHR(url, onLoad, onError, onProgress, responseType) {
+function _LoadFromXHR(url, callback, onProgress, responseType) {
     var xhr = new XMLHttpRequest();
     var total = 0;
     xhr.onreadystatechange = function () {
-        if (onLoad && xhr.readyState === xhr.DONE) {
+        if (callback && xhr.readyState === xhr.DONE) {
             if (xhr.status === 200 || xhr.status === 0) {
-                onLoad(xhr);
+                callback(xhr);
             }
             else {
-                onError('LoadFromXHR: Could not load "' + url + '", status: ' + xhr.status);
+                callback(null, 'LoadFromXHR: Could not load "' + url + '", status: ' + xhr.status);
             }
         }
         if (onProgress && xhr.readyState === xhr.LOADING && !('onprogress' in xhr)) {
@@ -56,14 +59,14 @@ function LoadFromXHR(url, onLoad, onError, onProgress, responseType) {
     xhr.send();
 }
 
-function LoadText(url, onLoad, onError, onProgress) {
-    LoadFromXHR(url, function(xhr) {
-        if (xhr.responseText) {
-            onLoad(xhr.responseText);
+function TextLoader(url, callback, onProgress) {
+    _LoadFromXHR(url, function(xhr, error) {
+        if (xhr && xhr.responseText) {
+            callback(xhr.responseText);
         }
         else {
-            onError('LoadText: "' + url + '" seems to be unreachable or the file is empty.');
+            callback(null, 'LoadText: "' + url + 
+                '" seems to be unreachable or the file is empty. InnerMessage: ' + error);
         }
-    },
-    onError, onProgress);
+    }, onProgress);
 }
