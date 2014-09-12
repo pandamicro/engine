@@ -6,7 +6,8 @@
         _super.call(this);
         init(this, name);
     }
-    FIRE.extend("FIRE.Entity", Entity, _super);
+    FIRE.extend(Entity, _super);
+    FIRE.registerClass("FIRE.Entity", Entity);
 
     // init
     var init = function (self, name) {

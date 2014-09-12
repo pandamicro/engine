@@ -7,7 +7,8 @@
         this._sprite = null;
         this._renderObj = null;
     }
-    FIRE.extend("FIRE.SpriteRenderer", SpriteRenderer, _super);
+    FIRE.extend(SpriteRenderer, _super);
+    FIRE.registerClass('FIRE.SpriteRenderer', SpriteRenderer);
 
     // properties
     Object.defineProperty(SpriteRenderer.prototype, 'sprite', {

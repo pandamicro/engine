@@ -11,7 +11,8 @@
         /** @member {FIRE.Entity[]} - root entities */
         this.entities = [];
     }
-    FIRE.extend("FIRE.Scene", Scene, _super);
+    FIRE.extend(Scene, _super);
+    FIRE.registerClass("FIRE.Scene", Scene);
 
     // visit functions
 

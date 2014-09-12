@@ -6,7 +6,8 @@
         _super.call(this);
         init(this);
     }
-    FIRE.extend("FIRE.Component", Component, _super);
+    FIRE.extend(Component, _super);
+    FIRE.registerClass('FIRE.Component', Component);
     
     // init
     var init = function (self) {
