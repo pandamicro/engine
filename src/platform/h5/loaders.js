@@ -25,6 +25,7 @@ function ImageLoader(url, callback, onProgress) {
  */
 function _LoadFromXHR(url, callback, onProgress, responseType) {
     var xhr = new XMLHttpRequest();
+    //xhr.withCredentials = true;   // INVALID_STATE_ERR: DOM Exception 11 in phantomjs
     var total = 0;
     xhr.onreadystatechange = function () {
         if (callback && xhr.readyState === xhr.DONE) {
@@ -49,7 +50,7 @@ function _LoadFromXHR(url, callback, onProgress, responseType) {
     if (responseType) {
         xhr.responseType = responseType;
     }
-    if ('onprogress' in xhr) {
+    if (onProgress && 'onprogress' in xhr) {
         xhr.addEventListener('progress', function (event) {
             if (event.lengthComputable) {
                 onProgress(event.loaded, event.total);

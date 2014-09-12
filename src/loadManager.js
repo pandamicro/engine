@@ -2,15 +2,15 @@
 /**
  * The manager scheduling resources loading
  * - It will:
- *   - limit the max concurrent request (NYI)
  *   - merge same url request
- * - It will not:
+ *   - limit the max concurrent request (NYI)
+ * - It will NOT:
  *   - cache what has being loaded
- *   - cares about loading context
+ *   - load depends of resource
  */
 var LoadManager = (function () {
 
-    var urlToCallbacks = {};
+    var urlToCallbacks = new FIRE.CallbacksInvoker();
     //var curConcurrent = 0;
 
     //var loadNext = function () {
@@ -24,25 +24,12 @@ var LoadManager = (function () {
         //maxConcurrent: 10,
 
         load: function (loader, url, callback) {
-            var callbackList = urlToCallbacks[url];
-            if (callbackList) {
-                callbackList.push(url);
-                // TODO: what if same url use difference loader ?
-                return;
-            
+            // TODO: what if same url use difference loader ?
+            if (urlToCallbacks.add(url, callback)) {
+                // download
+                loader(url, urlToCallbacks.bind(url, true));
+                //loadNext();
             }
-            urlToCallbacks[url] = [url];
-            
-            // download
-            loader(url,
-                function (asset, error) {
-                    for (var i = 0; i < callbackList.length; i++) {
-                        var cb = callbackList[i];
-                        cb(asset, error);
-                    }
-                    delete urlToCallbacks[url];
-                });
-            //loadNext();
         },
     };
 

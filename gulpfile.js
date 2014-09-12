@@ -143,6 +143,7 @@ gulp.task('js-dev', function() {
                .pipe(jshint({
                    multistr: true,
                    smarttabs: false,
+                   loopfunc: true,
                }))
                .pipe(jshint.reporter(stylish))
                .pipe(concat(paths.engine_dev))
@@ -180,7 +181,11 @@ gulp.task('unit-runner', function() {
 });
 
 gulp.task('test', ['js', 'unit-runner'], function() {
-    return gulp.src('test/unit/runner.html')
+    return gulp.src('test/unit/runner.html', { read: false })
+               //.pipe(fb.callback(function () {
+               //    // launch server
+               //    require('./test/server.js');
+               //}))
                .pipe(qunit())
                .on('error', function(err) {
                    // Make sure failed tests cause gulp to exit non-zero
@@ -218,5 +223,5 @@ gulp.task('watch-self', function() {
 // tasks
 gulp.task('default', ['js' ] );
 gulp.task('dev', ['default'] );
-gulp.task('all', ['default', 'test', 'ref'] );
+gulp.task('all', ['cp-core', 'default', 'test', 'ref'] );
 gulp.task('ci', ['js', 'test'] );
