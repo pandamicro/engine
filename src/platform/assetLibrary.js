@@ -130,12 +130,12 @@ var AssetLibrary = (function () {
                         var dependsUuid = info.uuidList[i];
                         var obj = info.uuidObjList[i];
                         var prop = info.uuidPropList[i];
-                        AssetLibrary.loadAssetByUuid(dependsUuid, function (asset, error) {
+                        AssetLibrary.loadAssetByUuid(dependsUuid, function (dependsAsset, error) {
                             if (error) {
                                 console.error('[AssetLibrary] Failed to load "' + dependsUuid + '", ' + error);
                             }
                             // update reference
-                            obj[prop] = asset;
+                            obj[prop] = dependsAsset;
                             // check all finished
                             --pendingCount;
                             if (pendingCount === 0) {
@@ -185,11 +185,7 @@ var AssetLibrary = (function () {
          * @param {object} [uuidToUrl]
          */
         init: function (libraryPath, uuidToUrl) {
-            // ensure end with sep
-            if (libraryPath[libraryPath.length - 1] !== '\\' && libraryPath[libraryPath.length - 1] !== '/') {
-                libraryPath += FIRE.Path.sep;
-            }
-            _libraryBase = libraryPath;
+            _libraryBase = FIRE.Path.setEndWithSep(libraryPath);
             console.log('[AssetLibrary] library: ' + _libraryBase);
 
             _uuidToUrl = uuidToUrl;
