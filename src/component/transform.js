@@ -1,25 +1,25 @@
 ﻿var Transform = (function () {
-    var _super = Component;
 
     /**
      * @class
      * @alias FIRE.Transform
      * @extends FIRE.Component
      */ 
-    function Transform () {
-        _super.call(this);
-
-        this._parent = null;
+    var Transform = FIRE.define('FIRE.Transform', Component, function () {
+        Component.call(this);
+        
         this._children = [];
-
         this._position = new Vec2(0, 0);
-        this._rotation = 0;
         this._scale = new Vec2(1, 1);
 
         this._worldTransform = new Matrix3();
-    }
-    FIRE.extend(Transform, _super);
-    FIRE.registerClass("FIRE.Transform", Transform);
+    });
+
+    Transform.prop('_parent', null, FIRE.HideInInspector);
+    Transform.prop('_children', null, FIRE.HideInInspector);
+    Transform.prop('_position', null, FIRE.HideInInspector);
+    Transform.prop('_rotation', 0, FIRE.HideInInspector);
+    Transform.prop('_scale', null, FIRE.HideInInspector);
 
     // properties
 
@@ -73,47 +73,49 @@
         },
     });
 
+    
+
     /**
      * The local position in its parent's coordinate system
      * @member {FIRE.Vec2} FIRE.Transform#position
      */
-    Object.defineProperty(Transform.prototype, 'position', {
-        get: function () {
+    Transform.getset('position', 
+        function () {
             return new Vec2(this._position.x, this._position.y);
         },
-        set: function (value) {
+        function (value) {
             this._position.x = value.x;
             this._position.y = value.y;
         }
-    });
+    );
 
     /**
      * The local rotation in radians relative to the parent
      * @member {number} FIRE.Transform#rotation
      */
-    Object.defineProperty(Transform.prototype, 'rotation', {
-        get: function () {
+    Transform.getset('rotation', 
+        function () {
             return this._rotation;
         },
-        set: function (value) {
+        function (value) {
             this._rotation = value;
         }
-    });
+    );
 
     /**
      * The local scale factor relative to the parent
      * @member {FIRE.Vec2} FIRE.Transform#scale
      * @default new Vec2(1, 1)
      */
-    Object.defineProperty(Transform.prototype, 'scale', {
-        get: function () {
+    Transform.getset('scale',
+        function () {
             return new Vec2(this._scale.x, this._scale.y);
         },
-        set: function (value) {
+        function (value) {
             this._scale.x = value.x;
             this._scale.y = value.y;
         }
-    });
+    );
 
     // override functions
 

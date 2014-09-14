@@ -1,25 +1,22 @@
 ﻿var SpriteRenderer = (function () {
-    var _super = Component;
 
-    // constructor
-    function SpriteRenderer () {
-        _super.call(this);
-        this._sprite = null;
+    var SpriteRenderer = FIRE.define('FIRE.SpriteRenderer', Component, function () {
+        Component.call(this);
+
         this._renderObj = null;
-    }
-    FIRE.extend(SpriteRenderer, _super);
-    FIRE.registerClass('FIRE.SpriteRenderer', SpriteRenderer);
+    });
 
-    // properties
-    Object.defineProperty(SpriteRenderer.prototype, 'sprite', {
-        get: function () {
+    SpriteRenderer.prop('_sprite', null, FIRE.HideInInspector);
+    SpriteRenderer.getset('sprite',
+        function () {
             return this._sprite;
         },
-        set: function (value) {
+        function (value) {
             this._sprite = value;
             Engine._renderContext.updateMaterial(this);
-        }
-    });
+        },
+        FIRE.ObjectType(FIRE.Sprite)
+    );
 
     // built-in functions
     SpriteRenderer.prototype.onLoad = function () {

@@ -186,7 +186,7 @@ var AssetLibrary = (function () {
          */
         init: function (libraryPath, uuidToUrl) {
             _libraryBase = FIRE.Path.setEndWithSep(libraryPath);
-            console.log('[AssetLibrary] library: ' + _libraryBase);
+            //console.log('[AssetLibrary] library: ' + _libraryBase);
 
             _uuidToUrl = uuidToUrl;
         },
