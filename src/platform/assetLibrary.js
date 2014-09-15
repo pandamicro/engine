@@ -71,7 +71,7 @@ var AssetLibrary = (function () {
 
             // step 4
             if (!url) {
-                url = _libraryBase + uuid;
+                url = _libraryBase + uuid.substring(0, 2) + FIRE.Path.sep + uuid;
             }
 
             // step 5

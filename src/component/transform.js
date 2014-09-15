@@ -8,7 +8,6 @@
     var Transform = FIRE.define('FIRE.Transform', Component, function () {
         Component.call(this);
         
-        this._children = [];
         this._position = new Vec2(0, 0);
         this._scale = new Vec2(1, 1);
 
@@ -16,7 +15,7 @@
     });
 
     Transform.prop('_parent', null, FIRE.HideInInspector);
-    Transform.prop('_children', null, FIRE.HideInInspector);
+    Transform.prop('_children', [], FIRE.HideInInspector);
     Transform.prop('_position', null, FIRE.HideInInspector);
     Transform.prop('_rotation', 0, FIRE.HideInInspector);
     Transform.prop('_scale', null, FIRE.HideInInspector);

@@ -10,7 +10,9 @@ var Engine = (function () {
     // last ticker will not cancel correctly.
     var requestId = -1;
 
-    // current scene
+    /**
+     * @property {FIRE.Scene} Engine._scene - current scene
+     */
     Engine._scene = null;
 
     // main renderer
@@ -31,7 +33,7 @@ var Engine = (function () {
     });
 
     /**
-     * @param value {FIRE.Vec2}
+     * @param {FIRE.Vec2} value
      * @return {FIRE.Vec2}
      */
     Object.defineProperty(Engine, 'screenSize', {
@@ -53,10 +55,10 @@ var Engine = (function () {
     // functions
 
     /**
-     * @param [w] {number}
-     * @param [h] {number}
-     * @param [canvas] {Canvas}
-     * @param [scene] {FIRE.Scene}
+     * @param {number} [w]
+     * @param {number} [h]
+     * @param {Canvas} [canvas]
+     * @param {FIRE.Scene} [scene]
      */
     Engine.init = function ( w, h, canvas, scene ) {
         if (inited) {
@@ -69,7 +71,7 @@ var Engine = (function () {
         Engine._renderContext = new RenderContext( w, h, canvas );
         return Engine._renderContext.element;
     };
-
+    
     Engine.play = function () {
         if (isPlaying && !isPaused) {
             console.warn('Fireball is already playing');
@@ -121,7 +123,7 @@ var Engine = (function () {
 
     /**
      * @method FIRE.Engine.update
-     * @param [unused] {float} not used parameter, can omit
+     * @param {float} [unused] - not used parameter, can omit
      * @private
      */
     var update = function (unused) {
@@ -146,7 +148,7 @@ var Engine = (function () {
     /**
      * Set current scene directly, only used in Editor
      * @method FIRE.Engine._loadScene
-     * @param scene {FIRE.Scene}
+     * @param {FIRE.Scene} scene
      * @private
      */
     Engine._loadScene = function (scene) {
