@@ -1,13 +1,19 @@
 ﻿var Component = (function () {
 
+    /**
+     * Not allowed to use construction parameters for its subclasses.
+     * @class FIRE.Component
+     */
     var Component = FIRE.define('FIRE.Component', FObject, function () {
         FObject.call(this);
 
         // used in _callOnEnable to ensure onEnable and onDisable will be called alternately
-        self._calledEnable = false;
+        this._isOnEnableCalled = false;     // TODO: use flag
             // 从逻辑上来说OnEnable和OnDisable的交替调用不需要由额外的变量进行保护，但那样会使设计变得复杂
             // 例如Entity.destory调用后但还未真正销毁时，会调用所有Component的OnDisable。
             // 这时如果又有addComponent，Entity需要对这些新来的Component特殊处理。将来调度器做了之后可以尝试去掉这个标记。
+        
+        this._isOnLoadCalled = false;   // TODO: use flag
     });
 
     Component.prop('entity', null, FIRE.HideInInspector);
@@ -46,7 +52,7 @@
    
     /* callback functions
     Component.prototype.onCreate = function () {};  // (NYI) customized constructor for template
-    Component.prototype.onLoad = function () {};    // attached in runtime or entity loaded
+    Component.prototype.onLoad = function () {};    // when attaching to an active entity or its entity first activated
     Component.prototype.onStart = function () {};   // (NYI) called just before first update, but after onEnable
     Component.prototype.onEnable = function () {};
     Component.prototype.onDisable = function () {};
@@ -67,20 +73,26 @@
     // Should not call onEnable/onDisable in other place
     var _callOnEnable = function (self, enable) {
         if (enable) {
-            if (!self._calledEnable && self.onEnable) {
+            if (!self._isOnEnableCalled && self.onEnable) {
                 self.onEnable();
-                self._calledEnable = true;
+                self._isOnEnableCalled = true;
             }
         }
         else {
-            if (self._calledEnable && self.onDisable) {
+            if (self._isOnEnableCalled && self.onDisable) {
                 self.onDisable();
-                self._calledEnable = false;
+                self._isOnEnableCalled = false;
             }
         }
     };
 
     Component.prototype._onEntityActivated = function (activeInHierarchy) {
+        if (!this._isOnLoadCalled) {
+            this._isOnLoadCalled = true;
+            if (this.onLoad) {
+                this.onLoad();
+            }
+        }
         if (this._enabled) {
             _callOnEnable(this, activeInHierarchy);
         }

@@ -23,7 +23,15 @@ asyncTest('load', function () {
     Engine.loadScene('74325665', function (scene) {
         clearTimeout(timerId);
         ok(scene, 'can load scene');
-        //scene
+
+        var ent = Entity.find('/Entity');
+        ok(scene, 'can load entity');
+        ok(ent.transform, 'can load transform');
+
+        var sr = ent.getComponent(FIRE.SpriteRenderer);
+        ok(sr, 'can load component');
+        ok(sr.sprite.texture.image, 'can load asset');
+
         start();
     });
     var timerId = setTimeout(function () {

@@ -103,13 +103,8 @@
         component.entity = this;
         this._components.push(component);
         
-        // call onLoad
-        if (component.onLoad) {
-            component.onLoad();
-        }
-
-        // call onEnable
         if (this.activeInHierarchy) {
+            // call onLoad/onEnable
             component._onEntityActivated(true);
         }
         return component;
