@@ -23,7 +23,7 @@ asyncTest('load', function () {
     Engine.loadScene('74325665', function (scene) {
         clearTimeout(timerId);
         ok(scene, 'can load scene');
-        scene
+        //scene
         start();
     });
     var timerId = setTimeout(function () {

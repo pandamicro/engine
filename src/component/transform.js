@@ -39,8 +39,13 @@
                     console.warn("A transform can't be set as the parent of itself.");
                     return;
                 }
-                if (value && value instanceof Transform === false) {
-                    console.error('Parent must be a Transform or null');
+                if (value && !(value instanceof Transform)) {
+                    if (value instanceof Entity) {
+                        console.error('transform.parent can not be an Entity, use entity.transform instead.');
+                    }
+                    else {
+                        console.error('transform.parent must be instance of Transform (or must be null)');
+                    }
                     return;
                 }
                 var oldParent = this._parent;

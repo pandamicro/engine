@@ -92,6 +92,45 @@
         }
     };
 
+    Scene.prototype.findEntity = function (path) {
+        var nameList = path.split('/');
+        var match = null;
+
+        // visit root entities
+        var name = nameList[1];     // skip first '/'
+        var entities = this.entities;
+        for (var i = 0; i < entities.length; i++) {
+            if (entities[i].isValid && entities[i].name === name) {
+                match = entities[i];
+                break;
+            }
+        }
+        if (!match) {
+            return null;
+        }
+
+        // parse path
+        var n = 2;                  // skip first '/' and roots
+        for (n; n < nameList.length; n++) {
+            name = nameList[n];
+            // visit sub entities
+            var transform = match.transform;
+            match = null;
+            for (var t = 0, len = transform.childCount; t < len; ++t) {
+                var subEntity = transform._children[t].entity;
+                if (subEntity.name === name) {
+                    match = subEntity;
+                    break;
+                }
+            }
+            if (!match) {
+                return null;
+            }
+        }
+
+        return match;
+    };
+
     Scene.prototype.destroy = function () {
         _super.prototype.destroy.call(this);
         var entities = this.entities;

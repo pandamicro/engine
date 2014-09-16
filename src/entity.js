@@ -9,12 +9,34 @@
     FIRE.extend(Entity, _super);
     FIRE.registerClass("FIRE.Entity", Entity);
 
+    // static
+
+    /**
+     * Finds an entity by hierarchy path, the path is case-sensitive, and must start with a '/' character.
+     * It will traverse the hierarchy by splitting the path using '/' character.
+     * It is recommended to not use this function every frame instead cache the result at startup.
+     * @method FIRE.Entity.find
+     * @param {string} path
+     * @return {FIRE.Entity} the entity or null if not found
+     */
+    Entity.find = function (path) {
+        if (!path && path !== '') {
+            console.error('Argument must be non-nil');
+            return;
+        }
+        if (path[0] !== '/') {
+            console.error("Path must start with a '/' character");
+            return;
+        }
+        return Engine._scene.findEntity(path);
+    };
+
     // init
     var init = function (self, name) {
         self._active = true;
         self._components = [];
 
-        self.name = name || "Entity";
+        self.name = typeof name !== 'undefined' ? name : "New Entity";
         self.transform = new Transform();
         self.addComponent(self.transform);
     };
