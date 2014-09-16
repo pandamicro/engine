@@ -1,0 +1,56 @@
+[
+    {
+        "__type__": "FIRE.Scene",
+        "entities": [
+            {
+                "__id__": 1
+            }
+        ]
+    },
+    {
+        "__type__": "FIRE.Entity",
+        "_active": true,
+        "_components": [
+            {
+                "__id__": 2
+            },
+            {
+                "__id__": 3
+            }
+        ],
+        "name": "Entity",
+        "transform": {
+            "__id__": 2
+        }
+    },
+    {
+        "__type__": "FIRE.Transform",
+        "entity": {
+            "__id__": 1
+        },
+        "_enabled": true,
+        "_parent": null,
+        "_children": [],
+        "_position": {
+            "__type__": "FIRE.Vec2",
+            "x": 0,
+            "y": 0
+        },
+        "_rotation": 0,
+        "_scale": {
+            "__type__": "FIRE.Vec2",
+            "x": 1,
+            "y": 1
+        }
+    },
+    {
+        "__type__": "FIRE.SpriteRenderer",
+        "entity": {
+            "__id__": 1
+        },
+        "_enabled": true,
+        "_sprite": {
+            "__uuid__": "65341123490"
+        }
+    }
+] 

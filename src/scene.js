@@ -2,8 +2,8 @@
     var _super = Asset;
     /**
      * @class
-     * @alias FIRE.Scene
      * @extends FIRE.Asset
+     * @private
      */ 
     function Scene () {
         _super.call(this);
@@ -14,7 +14,9 @@
     FIRE.extend(Scene, _super);
     FIRE.registerClass("FIRE.Scene", Scene);
 
+    ////////////////////////////////////////////////////////////////////
     // visit functions
+    ////////////////////////////////////////////////////////////////////
 
     // 当引入DestroyImmediate后，entity和component可能会在遍历过程中变少，需要复制一个新的数组，或者做一些标记
     var visitFunctionTmpl = '(function (entity) {\
@@ -38,10 +40,7 @@
     var updateRecursively = eval(visitFunctionTmpl.replace(/_FUNC_NAME_/g, 'update'));
     var onPreRenderRecursively = eval(visitFunctionTmpl.replace(/_FUNC_NAME_/g, 'onPreRender'));
     // jshint evil: false
-
-    // other functions
     
-    // visit entities and components
     Scene.prototype.update = function () {
         // call update
         var self = this;
@@ -63,6 +62,8 @@
         // render
         renderContext.render();
     };
+
+    // other functions
 
     Scene.prototype.updateTransform = function () {
         var entities = this.entities;
@@ -91,7 +92,18 @@
         }
     };
 
+    Scene.prototype.destroy = function () {
+        _super.prototype.destroy.call(this);
+        var entities = this.entities;
+        for (var i = 0; i < entities.length; ++i) {
+            var entity = entities[i];
+            if (entity.isValid) {
+                entity.destroy();
+            }
+        }
+    };
+
     return Scene;
 })();
 
-FIRE.Scene = Scene;
+FIRE._Scene = Scene;

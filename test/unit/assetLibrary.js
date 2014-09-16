@@ -6,7 +6,11 @@ var libPath = projPath + '/library';
 var grossini_uuid = '748321';
 var grossiniSprite_uuid = '1232218';
 
-largeModule('AssetLibrary');
+largeModule('AssetLibrary', {
+    setup: function () {
+        AssetLibrary.init(libPath);
+    }
+});
 AssetLibrary = FIRE.AssetLibrary;
 
 asyncTest('load asset with host', function () {
@@ -15,8 +19,6 @@ asyncTest('load asset with host', function () {
     //texture.width = 321;
     //console.log(FIRE.serialize(texture));
     
-    AssetLibrary.init(libPath);
-
     AssetLibrary.loadAssetByUuid(grossini_uuid, function (asset) {
         clearTimeout(timerId);
         ok(asset, 'can load asset by uuid');
@@ -36,8 +38,6 @@ asyncTest('load asset with depends asset', function () {
     //sprite.texture = new FIRE.Texture();
     //sprite.texture._uuid = grossini_uuid;
     //console.log(FIRE.serialize(sprite));
-    
-    AssetLibrary.init(libPath);
 
     AssetLibrary.loadAssetByUuid(grossiniSprite_uuid, function (asset) {
         clearTimeout(timerId);

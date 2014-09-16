@@ -5,13 +5,14 @@ var Engine = (function () {
     var isPlaying = false;
     var isPaused = false;
     var stepOnce = false;
+    var isLoadingScene = false;
 
     // We should use this id to cancel ticker, otherwise if the engine stop and replay immediately,
     // last ticker will not cancel correctly.
     var requestId = -1;
 
     /**
-     * @property {FIRE.Scene} Engine._scene - current scene
+     * @property {Scene} Engine._scene - current scene
      */
     Engine._scene = null;
 
@@ -29,6 +30,13 @@ var Engine = (function () {
     Object.defineProperty(Engine, 'isPaused', {
         get: function () {
             return isPaused;
+        },
+    });
+
+    // is logic paused
+    Object.defineProperty(Engine, 'isLoadingScene', {
+        get: function () {
+            return isLoadingScene;
         },
     });
 
@@ -58,7 +66,7 @@ var Engine = (function () {
      * @param {number} [w]
      * @param {number} [h]
      * @param {Canvas} [canvas]
-     * @param {FIRE.Scene} [scene]
+     * @param {Scene} [scene]
      */
     Engine.init = function ( w, h, canvas, scene ) {
         if (inited) {
@@ -92,6 +100,7 @@ var Engine = (function () {
         // reset states
         isPlaying = false;
         isPaused = false;
+        isLoadingScene = false; // TODO: what if loading scene ?
         if (requestId !== -1) {
             Ticker.cancelAnimationFrame(requestId);
             requestId = -1;
@@ -132,6 +141,10 @@ var Engine = (function () {
         }
         requestId = Ticker.requestAnimationFrame(update);
 
+        if (isLoadingScene) {
+            return;
+        }
+
         var updateLogic = !isPaused || stepOnce;
         stepOnce = false;
         var now = Ticker.now();
@@ -148,11 +161,45 @@ var Engine = (function () {
     /**
      * Set current scene directly, only used in Editor
      * @method FIRE.Engine._loadScene
-     * @param {FIRE.Scene} scene
+     * @param {Scene} scene
      * @private
      */
     Engine._loadScene = function (scene) {
+        if (!scene) {
+            console.error('Argument must be non-nil');
+            return;
+        }
+        // unload scene
+        var oldScene = Engine._scene;
+        if (FObject.isValid(oldScene)) {
+            oldScene.destroy();
+            FObject._deferredDestroy(); // simulate destroy immediate
+        }
+
+        // load scene
         Engine._scene = scene;
+    };
+
+    /**
+     * Load scene sync
+     * @method FIRE.Engine.loadScene
+     * @param {string} name - the scene name
+     */
+    Engine.loadScene = function (uuid, callback) {
+        // TODO: lookup uuid by name
+        isLoadingScene = true;
+        AssetLibrary.loadAssetByUuid(uuid, function (scene, error) {
+            if (error) {
+                console.error('Failed to load scene: ' + error);
+                isLoadingScene = false;
+                callback(scene, error);
+                return;
+            }
+            Engine._loadScene(scene);
+
+            isLoadingScene = false;
+            callback(scene, error);
+        });
     };
 
     return Engine;

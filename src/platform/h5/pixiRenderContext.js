@@ -77,9 +77,6 @@ var RenderContext = (function () {
             this.stage.removeChild(obj);
             target._renderObj = null;
         }
-        else {
-            console.error('' + target + ' not in render context');
-        }
     };
 
     /**

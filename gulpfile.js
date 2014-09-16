@@ -28,8 +28,8 @@ var paths = {
         'src/entity.js',
         'src/scene.js',
         'src/loadManager.js',
-        'src/platform/h5/engine.js',
         'src/platform/assetLibrary.js',
+        'src/platform/h5/engine.js',
     ],
     index: 'src/index.js',
 
