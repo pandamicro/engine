@@ -18,6 +18,7 @@ var fb = require('gulp-fb');
 var paths = {
     // source
     src: [
+        'src/define.js',
         'src/time.js',
         'src/platform/h5/ticker.js',
         'src/platform/h5/pixiRenderContext.js',
@@ -30,6 +31,9 @@ var paths = {
         'src/loadManager.js',
         'src/assetLibrary.js',
         'src/platform/h5/engine.js',
+        // editor only
+        'src/platform/editor/scene.js',
+        'src/platform/editor/engine.js',
     ],
     index: 'src/index.js',
 

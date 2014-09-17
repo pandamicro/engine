@@ -66,7 +66,8 @@ var Engine = (function () {
      * @param {number} [w]
      * @param {number} [h]
      * @param {Canvas} [canvas]
-     * @param {Scene} [scene]
+     * @param {FIRE._Scene} [scene]
+     * @returns {Canvas}
      */
     Engine.init = function ( w, h, canvas, scene ) {
         if (inited) {
@@ -128,6 +129,9 @@ var Engine = (function () {
         }
         // render
         Engine._scene.render(Engine._renderContext);
+        //if (Engine._renderContext.scene) {
+        //    Engine._scene.render(Engine._renderContext.scene);
+        //}
     };
 
     /**

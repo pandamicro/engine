@@ -4,18 +4,24 @@
 var RenderContext = (function () {
 
     /**
-     * @param width {number}
-     * @param height {number}
-     * @param [canvas] {Canvas}
+     * @param {number} width
+     * @param {number} height
+     * @param {Canvas} [canvas]
      */
-    function RenderContext (width, height, canvas) {
+    function RenderContext (width, height, canvas/*, showGizmos*/) {
         width = width || 800;
         height = height || 600;
+        //showGizmos = typeof showGizmos !== 'undefined' ? showGizmos : false;
+
         var transparent = false;
         var antialias = false;
-
         this.stage = new PIXI.Stage(0x000000);
         this.renderer = PIXI.autoDetectRenderer(width, height, canvas, transparent, antialias);
+
+        //this.showGizmos = showGizmos;
+
+        // the shared render context allow display the object which marked as FIRE.ObjectFlags.SceneGizmo
+        this.scene = null;
     }
     
     // Setup PIXI
@@ -50,21 +56,34 @@ var RenderContext = (function () {
     };
 
     /**
-     * @param target {FIRE.SpriteRenderer}
+     * @param {FIRE.SpriteRenderer} target
      */
     RenderContext.prototype.addSprite = function (target) {
-        var sprite = target.sprite;
-        var tex = createTexture(sprite) || emptyTexture;
-        target._renderObj = new PIXI.Sprite(tex);
-        this.stage.addChild(target._renderObj);
+        var tex = createTexture(target.sprite) || emptyTexture;
+
+        var isGizmo = (target.entity._objFlags & SceneGizmo);
+        if (!isGizmo) {
+            target._renderObj = new PIXI.Sprite(tex);
+            this.stage.addChild(target._renderObj);
+        }
+
+        if (this.scene) {
+            target._renderObjInScene = new PIXI.Sprite(tex);    // pixi can not share display object between stages at the same time
+            this.scene.stage.addChild(target._renderObjInScene);
+        }
     };
 
     /**
-     * @param target {FIRE.SpriteRenderer}
-     * @param show {boolean}
+     * @param {FIRE.SpriteRenderer} target
+     * @param {boolean} show
      */
     RenderContext.prototype.show = function (target, show) {
-        target._renderObj.visible = show;
+        if (target._renderObj) {
+            target._renderObj.visible = show;
+        }
+        if (target._renderObjInScene) {
+            target._renderObjInScene.visible = show;
+        }
     };
 
     /**
@@ -72,10 +91,13 @@ var RenderContext = (function () {
      * @param show {boolean}
      */
     RenderContext.prototype.remove = function (target) {
-        var obj = target._renderObj;
-        if (obj) {
-            this.stage.removeChild(obj);
+        if (target._renderObj) {
+            this.stage.removeChild(target._renderObj);
             target._renderObj = null;
+        }
+        if (target._renderObjInScene) {
+            this.scene.stage.removeChild(target._renderObjInScene);
+            target._renderObjInScene = null;
         }
     };
 
@@ -83,10 +105,14 @@ var RenderContext = (function () {
      * @param target {FIRE.SpriteRenderer}
      */
     RenderContext.prototype.updateMaterial = function (target) {
-        var obj = target._renderObj;
-        if (obj) {
-            var tex = createTexture(target.sprite);
-            obj.setTexture(tex || emptyTexture);
+        if (target._renderObj || target._renderObjInScene) {
+            var tex = createTexture(target.sprite) || emptyTexture;
+            if (target._renderObj) {
+                target._renderObj.setTexture(tex);
+            }
+            if (target._renderObjInScene) {
+                target._renderObjInScene.setTexture(tex);
+            }
         }
         else {
             console.error('' + target + ' must be added to render context first!');
@@ -97,9 +123,13 @@ var RenderContext = (function () {
      * @param target {FIRE.SpriteRenderer}
      */
     RenderContext.prototype.updateTransform = function (target) {
-        var obj = target._renderObj;
-        if (obj) {
-            obj.worldTransform = target.transform._worldTransform;
+        if (target._renderObj || target._renderObjInScene) {
+            if (target._renderObj) {
+                target._renderObj.worldTransform = target.transform._worldTransform;
+            }
+            if (target._renderObjInScene) {
+                target._renderObjInScene.worldTransform = target.transform._worldTransform;
+            }
         }
         else {
             console.error('' + target + ' must be added to render context first!');
@@ -124,5 +154,3 @@ var RenderContext = (function () {
 
     return RenderContext;
 })();
-
-__TESTONLY__.RenderContext = RenderContext;

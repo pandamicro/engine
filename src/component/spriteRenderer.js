@@ -4,6 +4,7 @@
         Component.call(this);
 
         this._renderObj = null;
+        this._renderObjInScene = null;
     });
 
     SpriteRenderer.prop('_sprite', null, FIRE.HideInInspector);
