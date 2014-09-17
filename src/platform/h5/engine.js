@@ -160,11 +160,11 @@ var Engine = (function () {
 
     /**
      * Set current scene directly, only used in Editor
-     * @method FIRE.Engine._loadScene
+     * @method FIRE.Engine._setCurrentScene
      * @param {Scene} scene
      * @private
      */
-    Engine._loadScene = function (scene) {
+    Engine._setCurrentScene = function (scene) {
         if (!scene) {
             console.error('Argument must be non-nil');
             return;
@@ -195,7 +195,7 @@ var Engine = (function () {
                 callback(scene, error);
                 return;
             }
-            Engine._loadScene(scene);
+            Engine._setCurrentScene(scene);
 
             isLoadingScene = false;
             callback(scene, error);
