@@ -123,10 +123,6 @@
 
     // override functions
 
-    Transform.prototype.onLoad = function () {
-        Engine._scene.appendRoot(this.entity);
-    };
-
     Transform.prototype.onDestroy = function () {
         if (this._parent) {
             this.parent = null; // TODO: may call onEnable on other component's

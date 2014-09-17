@@ -4,7 +4,20 @@
     // constructor
     function Entity (name) {
         _super.call(this);
-        init(this, name);
+
+        this._active = true;
+        this._components = [];
+
+        this.name = typeof name !== 'undefined' ? name : "New Entity";
+
+        // transform的onLoad/onEnable/onDisable都不会被调用
+        this.transform = new Transform();
+        this.transform.entity = this;
+        this._components.push(this.transform);
+
+        if (Engine._scene) {
+            Engine._scene.appendRoot(this);
+        }
     }
     FIRE.extend(Entity, _super);
     FIRE.registerClass("FIRE.Entity", Entity);
@@ -29,16 +42,6 @@
             return;
         }
         return Engine._scene.findEntity(path);
-    };
-
-    // init
-    var init = function (self, name) {
-        self._active = true;
-        self._components = [];
-
-        self.name = typeof name !== 'undefined' ? name : "New Entity";
-        self.transform = new Transform();
-        self.addComponent(self.transform);
     };
 
     // properties
@@ -103,13 +106,8 @@
         component.entity = this;
         this._components.push(component);
         
-        // call onLoad
-        if (component.onLoad) {
-            component.onLoad();
-        }
-
-        // call onEnable
         if (this.activeInHierarchy) {
+            // call onLoad/onEnable
             component._onEntityActivated(true);
         }
         return component;

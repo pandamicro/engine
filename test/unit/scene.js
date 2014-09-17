@@ -27,4 +27,11 @@ test('findEntity', function () {
     ok(Entity.find('/.去/Jare Guo') === ent2ent2, 'should found, name contains space');
 });
 
+test('createEntity', function () {
+    var previewScene = new FIRE._Scene();
+    var ent = previewScene.createEntity('preview entity');
+    ok(Entity.find('/preview entity') === null, 'should not create in main scene');
+    ok(previewScene.findEntity('/preview entity') === ent, 'should create in preview scene');
+});
+
 // jshint ignore: end

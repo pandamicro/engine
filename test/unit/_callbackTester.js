@@ -32,10 +32,7 @@ CallbackTester.prototype.expect = function (expect, message, append) {
         this._expects.length = 0;
     }
     else {
-        if (expect in this._unexpect) {
-            ok(false, 'The expected callback is still unexpected, clear unexpect list. The last callback not called yet ?');
-            this._unexpect = {};
-        }
+        delete this._unexpect[expect];
     }
     this._expects.push({
         expect: expect,
