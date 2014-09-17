@@ -90,8 +90,12 @@ var AssetLibrary = (function () {
                         info = new FIRE._DeserializeInfo();
                     }
 
+
                     // deserialize asset
+                    var curScene = Engine._scene;
+                    Engine._scene = null;
                     var asset = FIRE.deserialize(json, info, FIRE.isEditor);
+                    Engine._scene = curScene;
                     
                     // load depends
 
@@ -179,7 +183,7 @@ var AssetLibrary = (function () {
         },
 
         /**
-         * 
+         * init the asset library
          * @method FIRE.AssetLibrary.init
          * @param {string} baseUrl
          * @param {object} [uuidToUrl]
@@ -190,6 +194,12 @@ var AssetLibrary = (function () {
 
             _uuidToUrl = uuidToUrl;
         },
+
+        ///**
+        // * temporary flag for deserializing assets
+        // * @property {boolean} FIRE.AssetLibrary.isLoadingAsset
+        // */
+        //isLoadingAsset: false,
     };
 
     return AssetLibrary;

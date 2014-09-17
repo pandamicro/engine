@@ -12,7 +12,7 @@ var Engine = (function () {
     var requestId = -1;
 
     /**
-     * @property {Scene} Engine._scene - current scene
+     * @property {Scene} Engine._scene - the active scene
      */
     Engine._scene = null;
 

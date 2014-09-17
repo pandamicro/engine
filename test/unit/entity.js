@@ -1,6 +1,14 @@
 ﻿// jshint ignore: start
 
-largeModule('Entity');
+largeModule('Entity', {
+    setup: function () {
+        if (!Engine.inited) {
+            Engine.init();
+        }
+        // force clear scene
+        Engine._scene = new FIRE._Scene();
+    }
+});
 
 var Entity = FIRE.Entity;
 
@@ -63,6 +71,7 @@ test('component', function () {
 
     comp.expect(CallbackTester.OnLoad, 'call onLoad while attaching to entity');
     comp.expect(CallbackTester.OnEnable, 'then call onEnable if entity active', true);
+    
     obj.addComponent(comp); // onEnable
 
     strictEqual(comp.entity, obj, 'can get entity from component');
@@ -100,10 +109,11 @@ test('component in hierarchy', 4, function () {
     parent.active = false;
 
     var comp = new CallbackTester();
-    comp.expect(CallbackTester.OnLoad, 'call onLoad while attaching to entity');
+    comp.notExpect(CallbackTester.OnLoad, 'should not call onLoad while entity inactive');
     child.addComponent(comp);
-
-    comp.expect(CallbackTester.OnEnable, 'should enable when parent become active');
+    
+    comp.expect(CallbackTester.OnLoad, 'should call onLoad while entity activated');
+    comp.expect(CallbackTester.OnEnable, 'should enable when parent become active', true);
     parent.active = true;   // onEnable
 
     comp.expect(CallbackTester.OnDisable, 'should disable when parent become deactive');
