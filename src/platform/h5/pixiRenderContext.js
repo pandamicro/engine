@@ -20,8 +20,11 @@ var RenderContext = (function () {
 
         //this.showGizmos = showGizmos;
 
-        // the shared render context allow display the object which marked as FIRE.ObjectFlags.SceneGizmo
+        // the shared render context that allows display the object which marked as FIRE.ObjectFlags.SceneGizmo
         this.scene = null;
+
+        // binded camera, if supplied the scene will always rendered by this camera
+        this._camera = null;
     }
     
     // Setup PIXI
@@ -45,6 +48,16 @@ var RenderContext = (function () {
         },
         set: function (value) {
             this.renderer.resize(value.x, value.y);
+        }
+    });
+
+    Object.defineProperty(RenderContext.prototype, 'camera', {
+        get: function () {
+            return this._camera;
+        },
+        set: function (value) {
+            this._camera = value;
+            value.renderContext = this;
         }
     });
 

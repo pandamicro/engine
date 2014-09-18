@@ -26,6 +26,7 @@ var paths = {
         'src/component/component.js',
         'src/component/transform.js',
         'src/component/spriteRenderer.js',
+        'src/component/camera.js',
         'src/entity.js',
         'src/scene.js',
         'src/loadManager.js',

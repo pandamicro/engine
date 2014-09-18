@@ -149,12 +149,11 @@
         return this._children[index];
     };
 
-    Transform.prototype._updateTransform = function () {
+    Transform.prototype._updateTransform = function (parentMatrix) {
         var _sr = this._rotation === 0 ? 0 : Math.sin(this._rotation);
         var _cr = this._rotation === 0 ? 1 : Math.cos(this._rotation);
 
-        var parentTransform = this._parent._worldTransform;
-        var _worldTransform = this._worldTransform;
+        var mat = this._worldTransform;
 
         //var px = this._pivot.x;
         //var py = this._pivot.y;
@@ -165,50 +164,89 @@
             a11 = _cr * this._scale.y,
             a02 = this._position.x/* - a00 * px - py * a01*/,
             a12 = this._position.y/* - a11 * py - px * a10*/,
-            b00 = parentTransform.a, b01 = parentTransform.b,
-            b10 = parentTransform.c, b11 = parentTransform.d;
+            b00 = parentMatrix.a, b01 = parentMatrix.b,
+            b10 = parentMatrix.c, b11 = parentMatrix.d;
 
-        _worldTransform.a = b00 * a00 + b01 * a10;
-        _worldTransform.b = b00 * a01 + b01 * a11;
-        _worldTransform.tx = b00 * a02 + b01 * a12 + parentTransform.tx;
+        mat.a = b00 * a00 + b01 * a10;
+        mat.b = b00 * a01 + b01 * a11;
+        mat.tx = b00 * a02 + b01 * a12 + parentMatrix.tx;
 
-        _worldTransform.c = b10 * a00 + b11 * a10;
-        _worldTransform.d = b10 * a01 + b11 * a11;
-        _worldTransform.ty = b10 * a02 + b11 * a12 + parentTransform.ty;
+        mat.c = b10 * a00 + b11 * a10;
+        mat.d = b10 * a01 + b11 * a11;
+        mat.ty = b10 * a02 + b11 * a12 + parentMatrix.ty;
 
         //this._worldAlpha = this._alpha * this._parent._worldAlpha;
 
         // update children
         var children = this._children;
         for (var i = 0, len = children.length; i < len; i++) {
-            children[i]._updateTransform();
+            children[i]._updateTransform(mat);
         }
     };
 
     Transform.prototype._updateRootTransform = function () {
-        var _sr = this._rotation === 0 ? 0 : Math.sin(this._rotation);
-        var _cr = this._rotation === 0 ? 1 : Math.cos(this._rotation);
-
-        var _worldTransform = this._worldTransform;
-
-        //var px = this._pivot.x;
-        //var py = this._pivot.y;
-        
-        _worldTransform.a = _cr * this._scale.x;    // 00
-        _worldTransform.b = -_sr * this._scale.y;   // 01
-        _worldTransform.tx = this._position.x/* - _worldTransform.a * px - py * _worldTransform.b*/;    //  02
-
-        _worldTransform.c = _sr * this._scale.x;    // 10
-        _worldTransform.d = _cr * this._scale.y;    // 11
-        _worldTransform.ty = this._position.y/* - _worldTransform.d * py - px * _worldTransform.c*/;    // 12
-
+        var mat = this._worldTransform;
+        this.getLocalMatrix(mat);
         //this._worldAlpha = this._alpha;
 
         // update children
         var children = this._children;
         for (var i = 0, len = children.length; i < len; i++) {
-            children[i]._updateTransform();
+            children[i]._updateTransform(mat);
         }
+    };
+
+    /**
+     * Get the local matrix that transforms a point from local space into parents space.
+     * @method FIRE.Transform#getLocalMatrix
+     * @param {FIRE.Matrix3} [out]
+     * @returns {FIRE.Matrix3}
+     */
+    Transform.prototype.getLocalMatrix = function (out) {
+        out = out || new Matrix3();
+
+        var _sr = this._rotation === 0 ? 0 : Math.sin(this._rotation);
+        var _cr = this._rotation === 0 ? 1 : Math.cos(this._rotation);
+
+        //var px = this._pivot.x;
+        //var py = this._pivot.y;
+        
+        out.a = _cr * this._scale.x;    // 00
+        out.b = -_sr * this._scale.y;   // 01
+        out.tx = this._position.x/* - out.a * px - py * out.b*/;    // 02
+
+        out.c = _sr * this._scale.x;    // 10
+        out.d = _cr * this._scale.y;    // 11
+        out.ty = this._position.y/* - out.d * py - px * out.c*/;    // 12
+
+        return out;
+    };
+
+    /**
+     * Get the world transform matrix that transforms a point from local space into world space.
+     * @method Transform#getLocalToWorldMatrix
+     * @param {FIRE.Matrix3} [out]
+     * @returns {FIRE.Matrix3}
+     */
+    Transform.prototype.getLocalToWorldMatrix = function (out) {
+        // todo, merge with this._worldTransform
+        out = out || new Matrix3();
+        this.getLocalMatrix(out);
+        var t = new FIRE.Matrix3();
+        for (var p = this._parent; p !== null; p = p._parent) {
+            out.prepend(p.getLocalMatrix(t));
+        }
+        return out;
+    };
+
+    /**
+     * Get the inverse world transform matrix that transforms a point from world space into local space.
+     * @method Transform#getWorldToLocalMatrix
+     * @param {FIRE.Matrix3} [out]
+     * @returns {FIRE.Matrix3}
+     */
+    Transform.prototype.getWorldToLocalMatrix = function (out) {
+        return this.getLocalToWorldMatrix(out).invert();
     };
 
     Transform.prototype.isChildOf = function (parent) {

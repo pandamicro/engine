@@ -8,8 +8,17 @@
     function Scene () {
         _super.call(this);
 
-        /** @member {FIRE.Entity[]} - root entities */
+        /**
+         * root entities 
+         * @member {FIRE.Entity[]} FIRE.Scene#entities
+         */
         this.entities = [];
+
+        /**
+         * the active camera
+         * @member {FIRE.Camera} FIRE.Scene#camera
+         */
+        this.camera = null;
     }
     FIRE.extend(Scene, _super);
     FIRE.registerClass("FIRE.Scene", Scene);
@@ -52,23 +61,38 @@
 
     Scene.prototype.render = function (renderContext) {
         // updateTransform
-        this.updateTransform();
+        this.updateTransform(renderContext);
+
         // call onPreRender
         var self = this;
         var entities = self.entities;
         for (var i = 0, len = entities.length; i < len; ++i) {
             onPreRenderRecursively(entities[i]);
         }
+
         // render
         renderContext.render();
     };
 
     // other functions
 
-    Scene.prototype.updateTransform = function () {
+    Scene.prototype.updateTransform = function (renderContext) {
         var entities = this.entities;
-        for (var i = 0, len = entities.length; i < len; ++i) {
-            entities[i].transform._updateRootTransform();
+        var i;
+        var camera = renderContext.camera || this.camera;
+        if (camera) {
+            // calculate camera transform
+            var cameraMat = camera.worldToCameraMatrix;
+            // transform by camera
+            for (i = 0, len = entities.length; i < len; ++i) {
+                entities[i].transform._updateTransform(cameraMat);
+            }
+        }
+        else {
+            // transform
+            for (i = 0, len = entities.length; i < len; ++i) {
+                entities[i].transform._updateRootTransform();
+            }
         }
     };
 

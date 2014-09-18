@@ -132,6 +132,7 @@ var Engine = (function () {
         //if (Engine._renderContext.scene) {
         //    Engine._scene.render(Engine._renderContext.scene);
         //}
+        // test scene view
     };
 
     /**
