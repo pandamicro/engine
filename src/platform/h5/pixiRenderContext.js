@@ -33,7 +33,7 @@ var RenderContext = (function () {
 
 
     // properties
-    Object.defineProperty(RenderContext.prototype, 'element', {
+    Object.defineProperty(RenderContext.prototype, 'canvas', {
         get: function () {
             return this.renderer.view;
         }

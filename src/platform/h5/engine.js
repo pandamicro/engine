@@ -67,7 +67,7 @@ var Engine = (function () {
      * @param {number} [h]
      * @param {Canvas} [canvas]
      * @param {FIRE._Scene} [scene]
-     * @returns {Canvas}
+     * @returns {RenderContext}
      */
     Engine.init = function ( w, h, canvas, scene ) {
         if (inited) {
@@ -78,7 +78,7 @@ var Engine = (function () {
 
         Engine._scene = scene || new Scene();
         Engine._renderContext = new RenderContext( w, h, canvas );
-        return Engine._renderContext.element;
+        return Engine._renderContext;
     };
     
     Engine.play = function () {
