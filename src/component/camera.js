@@ -33,19 +33,25 @@
     Object.defineProperty(Camera.prototype, 'worldToCameraMatrix', {
         get: function () {
             var tf = this.entity.transform;
+            var px = tf._position.x;
+            var py = tf._position.y;
             var sx = tf._scale.x;
             var sy = tf._scale.y;
 
-            var screenHeight = (this._renderContext || Engine._renderContext).size.y;
-            var scale = this._size / screenHeight; // TODO, use half size?
+            var screenSize = (this._renderContext || Engine._renderContext).size;
+            var scale = this._size / screenSize.y; // TODO, use half size?
 
+            tf._position.x = screenSize.x * -0.5;
+            tf._position.y = screenSize.y * -0.5;
             tf._scale.x = tf._scale.y = scale;
 
             var mat = tf.getWorldToLocalMatrix();
 
             tf._scale.x = sx;   // TODO: set dirty
             tf._scale.y = sy;
-            
+            tf._position.x = px;
+            tf._position.y = py;
+
             return mat;
         }
     });
