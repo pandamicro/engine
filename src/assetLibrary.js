@@ -51,6 +51,10 @@ var AssetLibrary = (function () {
          * @param {FIRE._DeserializeInfo} [info] - reused temp obj
          */
         loadAssetByUuid: function (uuid, callback, info) {
+            if (typeof uuid !== 'string') {
+                callback(null, '[AssetLibrary] uuid must be string');
+                return;
+            }
             // step 1
             var asset = _uuidToAsset[uuid];
             if (asset) {

@@ -3,6 +3,7 @@
     var Camera = FIRE.define('FIRE.Camera', Component, function () {
         Component.call(this);
 
+        this._renderContext = null;
         this.renderContext = Engine._renderContext;
     });
 
@@ -13,7 +14,9 @@
         },
         function (value) {
             this._background = value;
-            //
+            if (this._renderContext) {
+                this._renderContext.stage.setBackgroundColor(value.toRGBValue());
+            }
         }
     );
 
@@ -52,6 +55,8 @@
         set: function (value) {
             this._renderContext = value;
             this.size = value.size.y;
+            // update render settings
+            this.background = this._background;
         }
     });
 

@@ -50,6 +50,7 @@ var Engine = (function () {
         },
         set: function (value) {
             Engine._renderContext.size = value;
+            render();
         }
     });
 
@@ -120,6 +121,15 @@ var Engine = (function () {
         }
     };
 
+    var render = function () {
+        // render
+        Engine._scene.render(Engine._renderContext);
+        //// test scene view
+        //if (Engine._renderContext.scene) {
+        //    Engine._scene.render(Engine._renderContext.scene);
+        //}
+    };
+
     var doUpdate = function (updateLogic) {
         //console.log('canUpdateLogic: ' + updateLogic + ' Time: ' + Time);
         // TODO: scheduler
@@ -127,12 +137,7 @@ var Engine = (function () {
             Engine._scene.update();
             FObject._deferredDestroy();
         }
-        // render
-        Engine._scene.render(Engine._renderContext);
-        //if (Engine._renderContext.scene) {
-        //    Engine._scene.render(Engine._renderContext.scene);
-        //}
-        // test scene view
+        render();
     };
 
     /**
