@@ -48,6 +48,10 @@ var RenderContext = (function () {
         },
         set: function (value) {
             this.renderer.resize(value.x, value.y);
+            // auto resize scene view camera
+            if (this._camera && (this._camera.entity._objFlags & FIRE.ObjectFlags.EditorOnly)) {
+                this._camera.size = value.y;
+            }
         }
     });
 

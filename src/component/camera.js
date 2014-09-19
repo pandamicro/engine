@@ -41,9 +41,10 @@
             var screenSize = (this._renderContext || Engine._renderContext).size;
             var scale = this._size / screenSize.y; // TODO, use half size?
 
-            tf._position.x = screenSize.x * -0.5;
-            tf._position.y = screenSize.y * -0.5;
-            tf._scale.x = tf._scale.y = scale;
+            tf._position.x = screenSize.x * scale * -0.5;
+            tf._position.y = screenSize.y * scale * -0.5;
+            tf._scale.x = scale;
+            tf._scale.y = scale;
 
             var mat = tf.getWorldToLocalMatrix();
 
