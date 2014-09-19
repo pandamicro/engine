@@ -90,19 +90,20 @@
 
     // other functions
 
-    Entity.prototype.addComponent = function (component) {
+    Entity.prototype.addComponent = function (constructor) {
         if (this.isDestroying) {
             console.error('isDestroying');
             return;
         }
-        if (!component) {
+        if (!constructor) {
             console.error('Argument must be non-nil');
             return;
         }
-        if (component.entity) {
-            console.error("Component already added. It can't be added again");
+        if (typeof constructor !== 'function') {
+            console.error("The component to add must be a constructor");
             return;
         }
+        var component = new constructor();
         component.entity = this;
         this._components.push(component);
         

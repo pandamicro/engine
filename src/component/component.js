@@ -1,8 +1,9 @@
 ﻿var Component = (function () {
 
     /**
-     * Not allowed to use construction parameters for its subclasses.
      * @class FIRE.Component
+     * NOTE: Not allowed to use construction parameters for Component's subclasses, 
+     *       because Component is created by the engine.
      */
     var Component = FIRE.define('FIRE.Component', FObject, function () {
         FObject.call(this);

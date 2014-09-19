@@ -30,7 +30,10 @@
         }
     );
     
-    Object.defineProperty(Camera.prototype, 'worldToCameraMatrix', {
+    /**
+     * @property {FIRE.Matrix3} Camera#wvpMatrix - the world view projection matrix
+     */
+    Object.defineProperty(Camera.prototype, 'wvpMatrix', {
         get: function () {
             var tf = this.entity.transform;
             var px = tf._position.x;
