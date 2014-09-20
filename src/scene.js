@@ -82,10 +82,10 @@
         var camera = renderContext.camera || this.camera;
         if (camera) {
             // calculate camera transform
-            var wvp = camera.wvpMatrix;
+            var vp = camera.vpMatrix;
             // transform by camera
             for (i = 0, len = entities.length; i < len; ++i) {
-                entities[i].transform._updateTransform(wvp);
+                entities[i].transform._updateTransform(vp);
             }
         }
         else {

@@ -31,9 +31,9 @@
     );
     
     /**
-     * @property {FIRE.Matrix3} Camera#wvpMatrix - the world view projection matrix
+     * @property {FIRE.Matrix3} Camera#vpMatrix - the view projection matrix
      */
-    Object.defineProperty(Camera.prototype, 'wvpMatrix', {
+    Object.defineProperty(Camera.prototype, 'vpMatrix', {
         get: function () {
             var tf = this.entity.transform;
             var px = tf._position.x;
@@ -84,6 +84,43 @@
     //};
 
     // other functions
+
+    /**
+     * Transforms position from viewport space into screen space.
+     * @method FIRE.Camera#viewportToScreen
+     * @param {FIRE.Vec2} position
+     * @param {FIRE.Vec2} [out] - optional, the receiving vector
+     * @returns {FIRE.Vec2}
+     */
+    Camera.prototype.viewportToScreen = function (position, out) {
+        out = this._renderContext.size.scale(position, out);
+        return out;
+    };
+
+    /**
+     * Transforms position from viewport space into world space.
+     * @method FIRE.Camera#viewportToWorld
+     * @param {FIRE.Vec2} position
+     * @param {FIRE.Vec2} [out] - optional, the receiving vector
+     * @returns {FIRE.Vec2}
+     */
+    Camera.prototype.viewportToWorld = function (position, out) {
+        return this.screenToWorld(this.viewportToScreen(position, out), out);
+    };
+
+    /**
+     * Transforms position from screen space into world space.
+     * @method FIRE.Camera#screenToWorld
+     * @param {FIRE.Vec2} position
+     * @param {FIRE.Vec2} [out] - optional, the receiving vector
+     * @returns {FIRE.Vec2}
+     */
+    Camera.prototype.screenToWorld = function (position, out) {
+        var vp = this.vpMatrix;
+        vp.invert();
+        vp.transformPoint(position, out);
+        return out;
+    };
 
     return Camera;
 })();

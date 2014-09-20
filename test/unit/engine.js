@@ -23,9 +23,6 @@ var asyncEnd = function () {
     start();
 };
 
-var Engine = FIRE.Engine;
-var TestOnly = FIRE.__TESTONLY__;
-
 var tolerance = 0.01;   // Ticker获取当前时间时，就算是同一帧也可能拿到不同的时间，因为每行代码都有时间开销。
 
 test('basic state transition', function() {
