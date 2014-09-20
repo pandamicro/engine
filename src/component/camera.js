@@ -35,27 +35,21 @@
      */
     Object.defineProperty(Camera.prototype, 'vpMatrix', {
         get: function () {
-            var tf = this.entity.transform;
-            var px = tf._position.x;
-            var py = tf._position.y;
-            var sx = tf._scale.x;
-            var sy = tf._scale.y;
-
             var screenSize = (this._renderContext || Engine._renderContext).size;
-            var scale = this._size / screenSize.y; // TODO, use half size?
+            var scale = this._size / screenSize.y;
 
-            tf._position.x = screenSize.x * scale * -0.5;
-            tf._position.y = screenSize.y * scale * -0.5;
-            tf._scale.x = scale;
-            tf._scale.y = scale;
-
+            var tf = this.entity.transform;
             var mat = tf.getWorldToLocalMatrix();
 
-            tf._scale.x = sx;   // TODO: set dirty
-            tf._scale.y = sy;
-            tf._position.x = px;
-            tf._position.y = py;
-
+            // dont calculate scaling for translation
+            var scaledByParent = mat.getScale();
+            mat.tx /= scaledByParent.x;
+            mat.ty /= scaledByParent.y;
+            // align to screen center
+            mat.tx += screenSize.x * 0.5;
+            mat.ty += screenSize.y * 0.5;
+            // set scale
+            mat.setScale(scale, scale);
             return mat;
         }
     });
@@ -98,6 +92,21 @@
     };
 
     /**
+     * Transforms position from screen space into viewport space.
+     * @method FIRE.Camera#screenToViewport
+     * @param {FIRE.Vec2} position
+     * @param {FIRE.Vec2} [out] - optional, the receiving vector
+     * @returns {FIRE.Vec2}
+     */
+    Camera.prototype.screenToViewport = function (position, out) {
+        out = out || new Vec2();
+        var size = this._renderContext.size;
+        out.x = position.x / size.x;
+        out.y = position.y / size.y;
+        return out;
+    };
+
+    /**
      * Transforms position from viewport space into world space.
      * @method FIRE.Camera#viewportToWorld
      * @param {FIRE.Vec2} position
@@ -118,8 +127,7 @@
     Camera.prototype.screenToWorld = function (position, out) {
         var vp = this.vpMatrix;
         vp.invert();
-        vp.transformPoint(position, out);
-        return out;
+        return vp.transformPoint(position, out);
     };
 
     return Camera;

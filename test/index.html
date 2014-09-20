@@ -24,6 +24,37 @@
 </head>
 <body>
     <script>
+        // game view
+        var canvas = FIRE.Engine.init(1366, 768).canvas;
+        document.body.appendChild(canvas);
+
+        // scene view
+        var sceneView = FIRE.Engine.createSceneView(512, 512);
+        document.body.appendChild(sceneView.canvas);
+
+        FIRE.Engine.play();
+        
+        var entity = new FIRE.Entity();
+        var spriteRenderer = entity.addComponent(FIRE.SpriteRenderer);
+        //entity.transform.position = new FIRE.Vec2(-44.5, -22);
+
+        var img = new Image();
+        img.onload = function () {
+            var sprite = new FIRE.Sprite(img);
+            sprite.width = 89;
+            sprite.height = 44;
+            sprite.trimX = 10;
+            sprite.trimY = 20;
+            sprite.x = 0;
+            sprite.y = 49;
+            spriteRenderer.sprite = sprite;
+            //console.log(FIRE.serialize(FIRE.Engine._scene));
+        };
+        img.src = '../test/assets/atlas (1).png';
+
+        var cameraEnt = new FIRE.Entity();
+        cameraEnt._objFlags |= FIRE.ObjectFlags.SceneGizmo;
+        sceneView.camera = cameraEnt.addComponent(FIRE.Camera);
     </script>
 
     </body>

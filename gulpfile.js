@@ -153,7 +153,6 @@ gulp.task('js-dev', function() {
                .pipe(jshint.reporter(stylish))
                .pipe(concat(paths.engine_dev))
                .pipe(embedIntoModule(paths.index))
-               .pipe(jshint.reporter(stylish))
                .pipe(gulp.dest(paths.output))
                ;
 });
