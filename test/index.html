@@ -26,7 +26,7 @@
     <script>
         // game view
         var canvas = FIRE.Engine.init(1366, 768).canvas;
-        document.body.appendChild(canvas);
+        //document.body.appendChild(canvas);
 
         // scene view
         var sceneView = FIRE.Engine.createSceneView(512, 512);
@@ -34,10 +34,10 @@
 
         FIRE.Engine.play();
         
-        var entity = new FIRE.Entity();
-        var spriteRenderer = entity.addComponent(FIRE.SpriteRenderer);
+        var s = new FIRE.Entity();
+        var spriteRenderer = s.addComponent(FIRE.SpriteRenderer);
         //entity.transform.position = new FIRE.Vec2(-44.5, -22);
-
+        s.transform.position = new FIRE.Vec2(256, 256);
         var img = new Image();
         img.onload = function () {
             var sprite = new FIRE.Sprite(img);
@@ -49,12 +49,26 @@
             sprite.y = 49;
             spriteRenderer.sprite = sprite;
             //console.log(FIRE.serialize(FIRE.Engine._scene));
+
+            //var entity = new FIRE.Entity();
+            //entity.addComponent(FIRE.SpriteRenderer).sprite = sprite;
+            //entity.transform.position = new Vec2(100, 0);
+        };
+
+        var c = new FIRE.Entity();
+        c._objFlags |= FIRE.ObjectFlags.SceneGizmo;
+        camera = sceneView.camera = c.addComponent(FIRE.Camera);
+        c.transform.position = new Vec2(256, 256);
+        c.transform.update = function () {
+            if (this.rotation > 1) {
+                this.rotation = -1;
+            }
+            else {
+                this.rotation += 0.01;
+            }
         };
         img.src = '../test/assets/atlas (1).png';
 
-        var cameraEnt = new FIRE.Entity();
-        cameraEnt._objFlags |= FIRE.ObjectFlags.SceneGizmo;
-        sceneView.camera = cameraEnt.addComponent(FIRE.Camera);
     </script>
 
     </body>

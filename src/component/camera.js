@@ -37,7 +37,6 @@
         get: function () {
             var screenSize = (this._renderContext || Engine._renderContext).size;
             var scale = this._size / screenSize.y;
-
             var tf = this.entity.transform;
             var mat = tf.getWorldToLocalMatrix();
 
@@ -114,7 +113,8 @@
      * @returns {FIRE.Vec2}
      */
     Camera.prototype.viewportToWorld = function (position, out) {
-        return this.screenToWorld(this.viewportToScreen(position, out), out);
+        out = this.viewportToScreen(position, out);
+        return this.screenToWorld(out, out);
     };
 
     /**
@@ -128,6 +128,30 @@
         var vp = this.vpMatrix;
         vp.invert();
         return vp.transformPoint(position, out);
+    };
+
+    /**
+     * Transforms position from world space into screen space.
+     * @method FIRE.Camera#worldToScreen
+     * @param {FIRE.Vec2} position
+     * @param {FIRE.Vec2} [out] - optional, the receiving vector
+     * @returns {FIRE.Vec2}
+     */
+    Camera.prototype.worldToScreen = function (position, out) {
+        var vp = this.vpMatrix;
+        return vp.transformPoint(position, out);
+    };
+
+    /**
+     * Transforms position from world space into viewport space.
+     * @method FIRE.Camera#worldToViewport
+     * @param {FIRE.Vec2} position
+     * @param {FIRE.Vec2} [out] - optional, the receiving vector
+     * @returns {FIRE.Vec2}
+     */
+    Camera.prototype.worldToViewport = function (position, out) {
+        out = this.worldToScreen(position, out);
+        return this.screenToViewport(out, out);
     };
 
     return Camera;
