@@ -25,6 +25,7 @@ var paths = {
         'src/platform/h5/loaders.js',
         'src/component/component.js',
         'src/component/transform.js',
+        'src/component/renderer.js',
         'src/component/spriteRenderer.js',
         'src/component/camera.js',
         'src/entity.js',
@@ -35,6 +36,7 @@ var paths = {
         // editor only
         'src/platform/editor/scene.js',
         'src/platform/editor/engine.js',
+        'src/platform/editor/renderContext.js',
     ],
     index: 'src/index.js',
 

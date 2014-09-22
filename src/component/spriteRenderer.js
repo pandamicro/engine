@@ -1,7 +1,7 @@
 ﻿var SpriteRenderer = (function () {
 
-    var SpriteRenderer = FIRE.define('FIRE.SpriteRenderer', Component, function () {
-        Component.call(this);
+    var SpriteRenderer = FIRE.define('FIRE.SpriteRenderer', Renderer, function () {
+        Renderer.call(this);
 
         this._renderObj = null;
         this._renderObjInScene = null;
