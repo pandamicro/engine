@@ -30,28 +30,22 @@
         }
     );
     
-    /**
-     * @property {FIRE.Matrix3} Camera#vpMatrix - the view projection matrix
-     */
-    Object.defineProperty(Camera.prototype, 'vpMatrix', {
-        get: function () {
-            var screenSize = (this._renderContext || Engine._renderContext).size;
-            var scale = this._size / screenSize.y;
-            var tf = this.entity.transform;
-            var mat = tf.getWorldToLocalMatrix();
+    Camera.prototype._calculateTransform = function (out_matrix, out_worldPos) {
+        var screenSize = (this._renderContext || Engine._renderContext).size;
+        var scale = this._size / screenSize.y;
+        var tf = this.entity.transform;
+        var mat = tf.getLocalToWorldMatrix();
 
-            // dont calculate scaling for translation
-            var scaledByParent = mat.getScale();
-            mat.tx /= scaledByParent.x;
-            mat.ty /= scaledByParent.y;
-            // align to screen center
-            mat.tx += screenSize.x * 0.5;
-            mat.ty += screenSize.y * 0.5;
-            // set scale
-            mat.setScale(scale, scale);
-            return mat;
-        }
-    });
+        out_worldPos.x = mat.tx;
+        out_worldPos.y = mat.ty;
+
+        out_matrix.identity();
+        out_matrix.tx = screenSize.x * 0.5;
+        out_matrix.ty = screenSize.y * 0.5;
+        out_matrix.a = scale;
+        out_matrix.d = scale;
+        out_matrix.rotate(mat.getRotation());
+    };
 
     // save the render context this camera belongs to, if null, main render context will be used.
     Object.defineProperty(Camera.prototype, 'renderContext', {
@@ -125,9 +119,15 @@
      * @returns {FIRE.Vec2}
      */
     Camera.prototype.screenToWorld = function (position, out) {
-        var vp = this.vpMatrix;
-        vp.invert();
-        return vp.transformPoint(position, out);
+        var halfScreenSize = (this._renderContext || Engine._renderContext).size.mulSelf(0.5);
+        var pivotToScreen = position.sub(halfScreenSize, halfScreenSize);
+        var mat = new Matrix2x3();
+        var camPos = new Vec2();
+        this._calculateTransform(mat, camPos);
+        mat.invert();
+        mat.tx = camPos.x;
+        mat.ty = camPos.y;
+        return mat.transformPoint(pivotToScreen, out);
     };
 
     /**
@@ -138,8 +138,11 @@
      * @returns {FIRE.Vec2}
      */
     Camera.prototype.worldToScreen = function (position, out) {
-        var vp = this.vpMatrix;
-        return vp.transformPoint(position, out);
+        var mat = new Matrix2x3();
+        var camPos = new Vec2();
+        this._calculateTransform(mat, camPos);
+        var toCamera = position.sub(camPos, camPos);
+        return mat.transformPoint(toCamera, out);
     };
 
     /**

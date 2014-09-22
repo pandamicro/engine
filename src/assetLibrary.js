@@ -111,7 +111,7 @@ var AssetLibrary = (function () {
                         // load depends host objects
                         var attrs = FIRE.attr(asset.constructor, info.hostProp);
                         var hostType = attrs.hostType;
-                        if (hostType === Image || hostType === HTMLImageElement) {
+                        if (hostType === 'Image') {
                             hostLoaded = false;
                             var hostUrl = url + '.host';
                             LoadManager.load(ImageLoader, hostUrl, function (img, error) {

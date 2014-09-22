@@ -81,11 +81,21 @@
         var i;
         var camera = renderContext.camera || this.camera;
         if (camera) {
-            // calculate camera transform
-            var vp = camera.vpMatrix;
             // transform by camera
+            var mat = new Matrix2x3();
+            var camPos = new Vec2();
+            camera._calculateTransform(mat, camPos);
+            var offsetX = -camPos.x;
+            var offsetY = -camPos.y;
             for (i = 0, len = entities.length; i < len; ++i) {
-                entities[i].transform._updateTransform(vp);
+                var pos = entities[i].transform._position;
+                var x = pos.x;
+                var y = pos.y;
+                pos.x += offsetX;
+                pos.y += offsetY;
+                entities[i].transform._updateTransform(mat);
+                pos.x = x;
+                pos.y = y;
             }
         }
         else {

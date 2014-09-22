@@ -6,7 +6,7 @@ var FIRE;
     var FObject = FIRE.FObject;
     var Asset = FIRE.Asset;
     var Vec2 = FIRE.Vec2;
-    var Matrix3 = FIRE.Matrix3;
+    var Matrix2x3 = FIRE.Matrix2x3;
     var Rect = FIRE.Rect;
     var Color = FIRE.Color;
     var Texture = FIRE.Texture;

@@ -11,7 +11,7 @@
         this._position = new Vec2(0, 0);
         this._scale = new Vec2(1, 1);
 
-        this._worldTransform = new Matrix3();
+        this._worldTransform = new Matrix2x3();
     });
 
     Transform.prop('_parent', null, FIRE.HideInInspector);
@@ -199,11 +199,11 @@
     /**
      * Get the local matrix that transforms a point from local space into parents space.
      * @method FIRE.Transform#getLocalMatrix
-     * @param {FIRE.Matrix3} [out]
-     * @returns {FIRE.Matrix3}
+     * @param {FIRE.Matrix2x3} [out]
+     * @returns {FIRE.Matrix2x3}
      */
     Transform.prototype.getLocalMatrix = function (out) {
-        out = out || new Matrix3();
+        out = out || new Matrix2x3();
 
         var _sr = this._rotation === 0 ? 0 : Math.sin(this._rotation);
         var _cr = this._rotation === 0 ? 1 : Math.cos(this._rotation);
@@ -225,14 +225,14 @@
     /**
      * Get the world transform matrix that transforms a point from local space into world space.
      * @method Transform#getLocalToWorldMatrix
-     * @param {FIRE.Matrix3} [out]
-     * @returns {FIRE.Matrix3}
+     * @param {FIRE.Matrix2x3} [out]
+     * @returns {FIRE.Matrix2x3}
      */
     Transform.prototype.getLocalToWorldMatrix = function (out) {
         // todo, merge with this._worldTransform
-        out = out || new Matrix3();
+        out = out || new Matrix2x3();
         this.getLocalMatrix(out);
-        var t = new FIRE.Matrix3();
+        var t = new FIRE.Matrix2x3();
         for (var p = this._parent; p !== null; p = p._parent) {
             out.prepend(p.getLocalMatrix(t));
         }
@@ -242,8 +242,8 @@
     /**
      * Get the inverse world transform matrix that transforms a point from world space into local space.
      * @method Transform#getWorldToLocalMatrix
-     * @param {FIRE.Matrix3} [out]
-     * @returns {FIRE.Matrix3}
+     * @param {FIRE.Matrix2x3} [out]
+     * @returns {FIRE.Matrix2x3}
      */
     Transform.prototype.getWorldToLocalMatrix = function (out) {
         return this.getLocalToWorldMatrix(out).invert();

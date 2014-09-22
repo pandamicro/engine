@@ -125,7 +125,7 @@ var Engine = (function () {
         // render
         Engine._scene.render(Engine._renderContext);
         // test scene view
-        if (FIRE.isWeb && Engine._renderContext.scene) {
+        if (FIRE.isPureWeb && Engine._renderContext.scene) {
             Engine._scene.render(Engine._renderContext.scene);
         }
     };
