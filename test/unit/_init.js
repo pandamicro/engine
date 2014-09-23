@@ -13,6 +13,7 @@ var TestOnly = FIRE.__TESTONLY__;
 var Entity = FIRE.Entity;
 var Engine = FIRE.Engine;
 var Camera = FIRE.Camera;
+var Component = FIRE.Component;
 
 var FO = FIRE.FObject;
 var V2 = FIRE.Vec2;

@@ -10,7 +10,7 @@
 
         this.name = typeof name !== 'undefined' ? name : "New Entity";
 
-        // transform的onLoad/onEnable/onDisable都不会被调用
+        // 绕开AddComponent直接添加Transfrom，因此transform的onLoad/onEnable/onDisable都不会被调用
         this.transform = new Transform();
         this.transform.entity = this;
         this._components.push(this.transform);
@@ -134,6 +134,9 @@
             return;
         }*/
         if (!this.isDestroying) {
+            if (component.onHierarchyChanged) {
+                this.transform._removeListener(component);
+            }
             var i = this._components.indexOf(component);
             if (i !== -1) {
                 this._components.splice(i, 1);

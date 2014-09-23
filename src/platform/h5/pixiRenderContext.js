@@ -1,3 +1,9 @@
+    
+// Setup PIXI
+
+PIXI.dontSayHello = true;
+PIXI.DisplayObject.prototype.updateTransform = function () {};
+
 /**
  * The web renderer implemented rely on pixi.js
  */
@@ -26,14 +32,14 @@ var RenderContext = (function () {
         // binded camera, if supplied the scene will always rendered by this camera
         this._camera = null;
     }
-    
-    // Setup PIXI
-
-    PIXI.dontSayHello = true;
-    PIXI.DisplayObject.prototype.updateTransform = function () {};
-
     var emptyTexture = new PIXI.Texture(new PIXI.BaseTexture());
 
+    // static
+
+    RenderContext.initRenderer = function (renderer) {
+        renderer._renderObj = null;
+        renderer._renderObjInScene = null;
+    };
 
     // properties
     Object.defineProperty(RenderContext.prototype, 'canvas', {
@@ -153,6 +159,24 @@ var RenderContext = (function () {
         }
     };
 
+    /**
+     * @param {FIRE.SpriteRenderer} target
+     * @param {FIRE.SpriteRenderer} transform
+     * @param {FIRE.SpriteRenderer} oldParent
+     */
+    RenderContext.prototype.updateHierarchy = function (target, transform, oldParent) {
+        if (target._renderObj || target._renderObjInScene) {
+            if (target._renderObj) {
+                
+            }
+            if (target._renderObjInScene) {
+                
+            }
+        }
+        else {
+            console.error('' + target + ' must be added to render context first!');
+        }
+    };
 
 
     /**

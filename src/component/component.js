@@ -61,6 +61,16 @@
     Component.prototype.onDestroy = function () {};
     */
 
+    /**
+     * This method will be invoked when the scene graph changed, which is means the parent of its transform changed,
+     * or one of its ancestor's parent changed, or one of their sibling index changed.
+     * NOTE: This callback only available after onLoad
+     * 
+     * @param {FIRE.Transform} transform - the transform which is changed, can be any of this transform's ancestor
+     * @param {FIRE.Transform} oldParent - the transform's old parent, if not changed, its sibling index changed.
+     */
+    //Component.prototype.onHierarchyChanged = function (transform, oldParent) {};
+
     // overrides
 
     Component.prototype.destroy = function () {
@@ -92,6 +102,9 @@
             this._isOnLoadCalled = true;
             if (this.onLoad) {
                 this.onLoad();
+            }
+            if (this.onHierarchyChanged) {
+                this.entity.transform._addListener(this);
             }
         }
         if (this._enabled) {

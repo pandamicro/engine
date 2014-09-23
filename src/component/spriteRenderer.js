@@ -2,9 +2,7 @@
 
     var SpriteRenderer = FIRE.define('FIRE.SpriteRenderer', Renderer, function () {
         Renderer.call(this);
-
-        this._renderObj = null;
-        this._renderObjInScene = null;
+        RenderContext.initRenderer(this);
     });
 
     SpriteRenderer.prop('_sprite', null, FIRE.HideInInspector);
@@ -34,6 +32,9 @@
     };
     SpriteRenderer.prototype.onDestroy = function () {
         Engine._renderContext.remove(this);
+    };
+    SpriteRenderer.prototype.onHierarchyChanged = function (transform, oldParent) {
+        Engine._renderContext.updateHierarchy(this, transform, oldParent);
     };
 
     // other functions

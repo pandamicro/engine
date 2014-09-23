@@ -12,6 +12,8 @@
         this._scale = new Vec2(1, 1);
 
         this._worldTransform = new Matrix2x3();
+
+        this._hierarchyChangedListeners = null;
     });
 
     Transform.prop('_parent', null, FIRE.HideInInspector);
@@ -19,6 +21,7 @@
     Transform.prop('_position', null, FIRE.HideInInspector);
     Transform.prop('_rotation', 0, FIRE.HideInInspector);
     Transform.prop('_scale', null, FIRE.HideInInspector);
+    Transform.prop('_index', null, FIRE.HideInInspector);
 
     // properties
 
@@ -32,9 +35,7 @@
             return this._parent;
         },
         set: function (value) {
-            // jshint eqeqeq: false
-            if (this._parent != value) {
-                // jshint eqeqeq: true
+            if (this._parent !== value) {
                 if (value === this) {
                     console.warn("A transform can't be set as the parent of itself.");
                     return;
@@ -63,6 +64,7 @@
                     oldParent._children.splice(oldParent._children.indexOf(this), 1);
                     this.entity._onHierarchyChanged(oldParent);
                 }
+                this._onHierarchyChanged(this, oldParent);
             }
         }
     });
@@ -249,6 +251,9 @@
         return this.getLocalToWorldMatrix(out).invert();
     };
 
+    /**
+     * is or is child of
+     */
     Transform.prototype.isChildOf = function (parent) {
         var child = this;
         do {
@@ -259,6 +264,116 @@
         }
         while (child);
         return false;
+    };
+
+    /**
+     * Get the sibling index.
+     * @method FIRE.Transform#getSiblingIndex
+     * @returns {number}
+     */
+    Transform.prototype.getSiblingIndex = function () {
+        if (this._parent) {
+            return this._parent._children.indexOf(this);
+        }
+        else {
+            return Engine._scene.entities.indexOf(this.entity);
+        }
+    };
+
+    /**
+     * Set the sibling index.
+     * @method FIRE.Transform#setSiblingIndex
+     * @param {number} index
+     */
+    Transform.prototype.setSiblingIndex = function (index) {
+        var array = this._parent ? this._parent._children : Engine._scene.entities;
+        var item = this._parent ? this : this.entity;
+        var oldIndex = array.indexOf(item);
+        if (index !== oldIndex) {
+            array.splice(oldIndex, 1);
+            if (index < array.length) {
+                array.splice(index, 0, item);
+            }
+            else {
+                array.push(item);
+            }
+            // callback
+            this._onHierarchyChanged(this, this.parent);
+        }
+    };
+    
+    /**
+     * Move the transform to the top.
+     * @method FIRE.Transform#setAsFirstSibling
+     */
+    Transform.prototype.setAsFirstSibling = function () {
+        this.setSiblingIndex(0);
+    };
+
+    /**
+     * Move the transform to the bottom.
+     * @method FIRE.Transform#setAsFirstSibling
+     */
+    Transform.prototype.setAsLastSibling = function () {
+        if (this._parent) {
+            this.setSiblingIndex(this._parent._children.length);
+        }
+        else {
+            this.setSiblingIndex(Engine._scene.entities.length);
+        }
+    };
+
+    /**
+     * Subscribe the `onHierarchyChanged` event.
+     * When this transform or one of its parents' hierarchy changed, the `onHierarchyChanged` 
+     * method will be invoked on supplied instance of Component. If you want to unsubscribe this event, 
+     * you must destroy the Component.
+     * 这里不支持自定义回调，因为如果忘了反注册很容易就会内存泄漏。
+     * 
+     * @method FIRE.Transform#_addListener
+     * @param {FIRE.Component} component - the component to be invoked.
+     * @private
+     */
+    Transform.prototype._addListener = function (component) {
+        //if (component.entity === this.entity) {
+            if (this._hierarchyChangedListeners) {
+                this._hierarchyChangedListeners.push(component);
+            }
+            else {
+                this._hierarchyChangedListeners = [component];
+            }
+        //}
+        //else {
+        //    console.error("Can not listen other entity's onHierarchyChanged event");
+        //}
+    };
+
+    // 这里就算不调用，内存也不会泄露，因为component本身就会被destroy。
+    // 只不过调用了以后内存能清理的更及时。
+    Transform.prototype._removeListener = function (component) {
+        if (this._hierarchyChangedListeners) {
+            var idx = this._hierarchyChangedListeners.indexOf(component);
+            this._hierarchyChangedListeners.splice(idx, 1);
+        }
+    };
+
+    Transform.prototype._onHierarchyChanged = function (transform, oldParent) {
+        // notify self listener
+        if (this._hierarchyChangedListeners) {
+            for (var i = this._hierarchyChangedListeners.length - 1; i >= 0; --i) {
+                var target = this._hierarchyChangedListeners[i];
+                if (target.isValid) {
+                    target.onHierarchyChanged(transform, oldParent);
+                }
+                else {
+                    this._hierarchyChangedListeners.splice(i, 1);
+                }
+            }
+        }
+        // notify children
+        for (var c = 0, len = this._children.length; c < len; c++) {
+            this._children[c]._onHierarchyChanged(transform, oldParent);
+        }
     };
 
     return Transform;
