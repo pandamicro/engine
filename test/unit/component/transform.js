@@ -28,7 +28,7 @@ test('test', function () {
 
     child1.destroy();
 
-    FIRE.FObject._deferredDestroy();
+    FO._deferredDestroy();
 
     strictEqual(parent.childCount, 1, 'child count should return to 1');
     strictEqual(parent.getChild(0), child2.transform, 'only child2 left');

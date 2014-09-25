@@ -19,8 +19,8 @@
     </style>
 
     <script src="../ext/pixi/bin/pixi.dev.js"></script>
-    <script src="..\ext\fire-core\bin\core.dev.js"></script>
-    <script src="..\bin\engine.dev.js"></script>
+    <script src="../ext/fire-core/bin/core.dev.js"></script>
+    <script src="../bin/engine.dev.js"></script>
 </head>
 <body>
     <script>
@@ -64,6 +64,7 @@
         };
         c.transform.position = new FIRE.Vec2(100, 100);
 
+        Engine._renderContext.checkMatchCurrentScene();
 
 
 

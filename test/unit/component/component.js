@@ -7,7 +7,7 @@ largeModule('Component', {
         }
     }
 });
-
+/*
 test('onHierarchyChanged invoked by setting parent', function () {
     var MyComp = FIRE.define('', Component);
     var onHierarchyChanged = MyComp.prototype.onHierarchyChanged = new callback();
@@ -41,5 +41,5 @@ test('onHierarchyChanged invoked by setting parent', function () {
     onHierarchyChanged.disable();
     comp.destroy();
 });
-
+*/
 // jshint ignore: end

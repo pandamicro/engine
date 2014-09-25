@@ -4,6 +4,7 @@ var FIRE;
     FIRE.__TESTONLY__ = __TESTONLY__;
 
     var FObject = FIRE.FObject;
+    var HashObject = FIRE.HashObject;
     var Asset = FIRE.Asset;
     var Vec2 = FIRE.Vec2;
     var Matrix2x3 = FIRE.Matrix2x3;

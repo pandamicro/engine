@@ -32,6 +32,11 @@ asyncTest('load', function () {
         ok(sr, 'can load component');
         ok(sr.sprite.texture.image, 'can load asset');
 
+        ok(sr._isOnEnableCalled, 'should trigger onEnable');
+        ok(sr._isOnLoadCalled, 'should trigger onLoad');
+        
+        ok(Engine._renderContext.checkMatchCurrentScene(), 'check render context');
+
         start();
     });
     var timerId = setTimeout(function () {

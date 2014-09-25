@@ -33,9 +33,9 @@
     SpriteRenderer.prototype.onDestroy = function () {
         Engine._renderContext.remove(this);
     };
-    SpriteRenderer.prototype.onHierarchyChanged = function (transform, oldParent) {
-        Engine._renderContext.updateHierarchy(this, transform, oldParent);
-    };
+    //SpriteRenderer.prototype.onHierarchyChanged = function (transform, oldParent) {
+    //    return Engine._renderContext.updateHierarchy(this, transform, oldParent);
+    //};
 
     // other functions
 

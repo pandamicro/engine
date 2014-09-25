@@ -12,6 +12,13 @@ var Engine = (function () {
     var requestId = -1;
 
     /**
+     * 当前激活的场景，如果为空，一般是因为正在加载场景或Entity(例如执行FIRE.deserialize)。
+     * 这样是为了防止加载中的东西不小心影响到当前场景。一般代码不用关心这个问题，但大部分构造函数里执行的代码，
+     * 如果涉及到场景物件的操作，都要注意这点。
+     * 也就是说构造函数调用到的代码如果要操作 Engine._scene，必须判断非空，如果操作不直接针对 Engine._scene，
+     * 也判断 Engine._canModifyCurrentScene。
+     * 另外，如果存在辅助场景，当在辅助场景内创建物件时，Engine._scene会被临时修改为辅助场景。
+     * 
      * @property {Scene} Engine._scene - the active scene
      */
     Engine._scene = null;
@@ -33,11 +40,48 @@ var Engine = (function () {
         },
     });
 
-    // is logic paused
+    // is loading scene and its assets asynchronous
     Object.defineProperty(Engine, 'isLoadingScene', {
         get: function () {
             return isLoadingScene;
         },
+    });
+
+    var lockingScene = null;
+
+    /**
+     * You should check whether you can modify the scene in constructors which may called by the engine while deserializing.
+     * @param {boolean} Engine._canModifyCurrentScene
+     */
+    Object.defineProperty(Engine, '_canModifyCurrentScene', {
+        get: function () {
+            return !!this._scene;
+        },
+        set: function (value) {
+            if (value) {
+                // unlock
+                if (lockingScene) {
+                    this._scene = lockingScene;
+                    lockingScene = null;
+                }
+                else if (!this._scene) {
+                    console.error('unknown scene to unlock');
+                }
+            }
+            else {
+                // lock
+                if (this._scene) {
+                    if (lockingScene) {
+                        console.error('another scene still locked: ' + lockingScene.debugName);
+                    }
+                    lockingScene = this._scene;
+                    this._scene = null;
+                }
+                else {
+                    console.error('unknown scene to lock');
+                }
+            }
+        }
     });
 
     /**
@@ -77,8 +121,8 @@ var Engine = (function () {
         }
         inited = true;
 
-        Engine._scene = scene || new Scene();
         Engine._renderContext = new RenderContext( w, h, canvas );
+        Engine._setCurrentScene(scene || new Scene());
         return Engine._renderContext;
     };
     
@@ -186,8 +230,10 @@ var Engine = (function () {
             FObject._deferredDestroy(); // simulate destroy immediate
         }
 
-        // load scene
+        // launch scene
         Engine._scene = scene;
+        Engine._renderContext.onLaunchScene(scene);
+        scene.onLaunch();
     };
 
     /**
@@ -205,6 +251,9 @@ var Engine = (function () {
                 callback(scene, error);
                 return;
             }
+            //scene.onReady();
+            Engine._renderContext.onSceneLoaded(scene);
+
             Engine._setCurrentScene(scene);
 
             isLoadingScene = false;

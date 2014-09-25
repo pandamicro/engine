@@ -1,22 +1,36 @@
 ﻿var Entity = (function () {
-    var _super = FObject;
+    var _super = HashObject;
 
     // constructor
     function Entity (name) {
         _super.call(this);
 
         this._active = true;
-        this._components = [];
 
         this.name = typeof name !== 'undefined' ? name : "New Entity";
 
-        // 绕开AddComponent直接添加Transfrom，因此transform的onLoad/onEnable/onDisable都不会被调用
-        this.transform = new Transform();
-        this.transform.entity = this;
-        this._components.push(this.transform);
+        this._objFlags |= Scene._createWithFlags;
 
-        if (Engine._scene) {
-            Engine._scene.appendRoot(this);
+        if (FIRE._isDeserializing) {
+            // create by deserializer
+            this._components = null;
+            this.transform = null;
+        }
+        else {
+            // create dynamically
+            
+            // 绕开AddComponent直接添加Transfrom，因此transform的onLoad不会被调用，
+            var transform = new Transform();
+            transform.entity = this;
+            
+            this._components = [transform];
+            this.transform = transform;
+
+            // Transform比较特殊，需要二次构造
+            // 因为它构造的时候依赖于entity，所以要在entity赋值后再初始化一次，
+            // 这里不把entity做为构造参数主要是为了和其它Component统一。
+            // create和onLoad不同，onLoad只有添加到场景后并且entity第一次激活才会调用。
+            transform.create();
         }
     }
     FIRE.extend(Entity, _super);
@@ -56,7 +70,7 @@
                 this._active = value;
                 var canActiveInHierarchy = (!this.transform.parent || this.transform.parent.entity.activeInHierarchy);
                 if (canActiveInHierarchy) {
-                    _onActivatedInHierarchy(this, value);
+                    this._onActivatedInHierarchy(value);
                 }
             }
         }
@@ -74,13 +88,13 @@
         if (_super.prototype.destroy.call(this)) {
             // disable hierarchy
             if (this.activeInHierarchy) {
-                _onActivatedInHierarchy(this, false);
+                this._onActivatedInHierarchy(false);
             }
         }
     };
 
     Entity.prototype._onPreDestroy = function () {
-        this.isDestroying = true;
+        this._objFlags |= Destroying;
         // destroy components
         for (var c = 0; c < this._components.length; ++c) {
             var component = this._components[c];
@@ -91,7 +105,7 @@
     // other functions
 
     Entity.prototype.addComponent = function (constructor) {
-        if (this.isDestroying) {
+        if (this._objFlags & Destroying) {
             console.error('isDestroying');
             return;
         }
@@ -133,10 +147,10 @@
             console.error('Argument must be non-nil');
             return;
         }*/
-        if (!this.isDestroying) {
-            if (component.onHierarchyChanged) {
-                this.transform._removeListener(component);
-            }
+        if (!(this._objFlags & Destroying)) {
+            //if (component.onHierarchyChanged) {
+            //    this.transform._removeListener(component);
+            //}
             var i = this._components.indexOf(component);
             if (i !== -1) {
                 this._components.splice(i, 1);
@@ -148,7 +162,8 @@
         }
     };
 
-    var _onActivatedInHierarchy = function (self, value) {
+    Entity.prototype._onActivatedInHierarchy = function (value) {
+        var self = this;
         // 当引入DestroyImmediate后，_components的元素有可能会在遍历过程中变少，需要复制一个新的数组，或者做一些标记
         // var components = self._components.slice();
         
@@ -163,7 +178,7 @@
         for (var i = 0, len = transform.childCount; i < len; ++i) {
             var entity = transform._children[i].entity;
             if (entity._active) {
-                _onActivatedInHierarchy(entity, value);
+                entity._onActivatedInHierarchy(value);
             }
         }
     };
@@ -173,7 +188,7 @@
         var activeInHierarchyBefore = self._active && (!oldParent || oldParent.activeInHierarchy);
         var activeInHierarchyNow = self.activeInHierarchy;
         if (activeInHierarchyBefore !== activeInHierarchyNow) {
-            _onActivatedInHierarchy(self, activeInHierarchyNow);
+            self._onActivatedInHierarchy(activeInHierarchyNow);
         }
     };
 

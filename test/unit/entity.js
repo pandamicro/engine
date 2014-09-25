@@ -6,7 +6,7 @@ largeModule('Entity', {
             Engine.init();
         }
         // force clear scene
-        Engine._scene = new FIRE._Scene();
+        Engine._setCurrentScene(new FIRE._Scene());
     }
 });
 
@@ -95,7 +95,7 @@ test('component', function () {
     strictEqual(obj.getComponent(MyComponent), comp, 'can still get component in this frame');
 
     comp.expect(CallbackTester.OnDestroy);
-    FIRE.FObject._deferredDestroy();    // onDestroy
+    FO._deferredDestroy();    // onDestroy
 
     strictEqual(obj.getComponent(MyComponent), null, 'can not get component after this frame');
 });
@@ -182,7 +182,7 @@ test('destroy', function () {
 
     // do destory
 
-    FIRE.FObject._deferredDestroy();
+    FO._deferredDestroy();
 
     strictEqual(childComp_new.isValid, false, 'entity will finally destroyed with its component which added after calling destroy');
     strictEqual(childComp.isValid, false, 'entity will destroyed with its child components');

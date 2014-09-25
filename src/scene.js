@@ -24,26 +24,40 @@
     FIRE.registerClass("FIRE.Scene", Scene);
 
     ////////////////////////////////////////////////////////////////////
-    // visit functions
+    // static
+    ////////////////////////////////////////////////////////////////////
+
+    /**
+     * the temp property that indicates the current creating entity should 
+     * binded with supplied object flags.
+     * 
+     * @property {number} Scene._createWithFlags
+     * @private
+     */
+    Scene._createWithFlags = 0;
+
+    ////////////////////////////////////////////////////////////////////
+    // traversal operations
     ////////////////////////////////////////////////////////////////////
 
     // 当引入DestroyImmediate后，entity和component可能会在遍历过程中变少，需要复制一个新的数组，或者做一些标记
-    var visitFunctionTmpl = '(function (entity) {\
-        var countBefore = entity._components.length;\
-        for (var c = 0; c < countBefore; ++c) {\
-            var component = entity._components[c];\
-            if (component._enabled && component._FUNC_NAME_) {\
-                component._FUNC_NAME_();\
-            }\
-        }\
-        var transform = entity.transform;\
-        for (var i = 0, len = transform.childCount; i < len; ++i) {\
-            var subEntity = transform._children[i].entity;\
-            if (subEntity._active) {\
-                _FUNC_NAME_Recursively(subEntity);\
-            }\
-        }\
-    })';
+    var visitFunctionTmpl = '\
+(function (entity) {\n\
+    var countBefore = entity._components.length;\n\
+    for (var c = 0; c < countBefore; ++c) {\n\
+        var component = entity._components[c];\n\
+        if (component._enabled && component._FUNC_NAME_) {\n\
+            component._FUNC_NAME_();\n\
+        }\n\
+    }\n\
+    var transform = entity.transform;\n\
+    for (var i = 0, len = transform.childCount; i < len; ++i) {\n\
+        var subEntity = transform._children[i].entity;\n\
+        if (subEntity._active) {\n\
+            _FUNC_NAME_Recursively(subEntity);\n\
+        }\n\
+    }\n\
+})';
 
     // jshint evil: true
     var updateRecursively = eval(visitFunctionTmpl.replace(/_FUNC_NAME_/g, 'update'));
@@ -61,7 +75,7 @@
 
     Scene.prototype.render = function (renderContext) {
         // updateTransform
-        this.updateTransform(renderContext);
+        this.updateTransform(renderContext.camera || this.camera);
 
         // call onPreRender
         var self = this;
@@ -74,12 +88,13 @@
         renderContext.render();
     };
 
+    ////////////////////////////////////////////////////////////////////
     // other functions
+    ////////////////////////////////////////////////////////////////////
 
-    Scene.prototype.updateTransform = function (renderContext) {
+    Scene.prototype.updateTransform = function (camera) {
         var entities = this.entities;
         var i;
-        var camera = renderContext.camera || this.camera;
         if (camera) {
             // transform by camera
             var mat = new Matrix2x3();
@@ -165,16 +180,29 @@
         return match;
     };
 
+    Scene.prototype.onLaunch = function () {
+        var entities = this.entities;
+        for (var i = 0, len = entities.length; i < len; ++i) {
+            var entity = entities[i];
+            if (entity._active) {
+                entity._onActivatedInHierarchy(true);
+            }
+        }
+    };
+
     Scene.prototype.destroy = function () {
         _super.prototype.destroy.call(this);
         var entities = this.entities;
-        for (var i = 0; i < entities.length; ++i) {
+        for (var i = 0, len = entities.length; i < len; ++i) {
             var entity = entities[i];
             if (entity.isValid) {
                 entity.destroy();
             }
         }
     };
+
+    //Scene.prototype.onReady = function () {
+    //};
 
     return Scene;
 })();

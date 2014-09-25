@@ -13,7 +13,7 @@
 
         this._worldTransform = new Matrix2x3();
 
-        this._hierarchyChangedListeners = null;
+        //this._hierarchyChangedListeners = null;
     });
 
     Transform.prop('_parent', null, FIRE.HideInInspector);
@@ -60,11 +60,12 @@
                 else {
                     Engine._scene.appendRoot(this.entity);
                 }
-                if (oldParent && !oldParent.entity.isDestroying) {
+                if (oldParent && !(oldParent.entity._objFlags & Destroying)) {
                     oldParent._children.splice(oldParent._children.indexOf(this), 1);
                     this.entity._onHierarchyChanged(oldParent);
                 }
-                this._onHierarchyChanged(this, oldParent);
+                Engine._renderContext.updateNodeParent(this, oldParent);
+                //this._onHierarchyChanged(this, oldParent);
             }
         }
     });
@@ -126,12 +127,15 @@
     // override functions
 
     Transform.prototype.onDestroy = function () {
+        Engine._renderContext.removeNode(this);
+
         if (this._parent) {
             this.parent = null; // TODO: may call onEnable on other component's
         }
         else {
             Engine._scene.removeRoot(this.entity);
         }
+
         // destroy child entitys
         var children = this._children;
         for (var i = 0, len = children.length; i < len; ++i) {
@@ -146,6 +150,13 @@
     };
     
     // other functions
+
+    Transform.prototype.create = function () {
+        if (Engine._scene) {
+            Engine._scene.appendRoot(this);
+        }
+        Engine._renderContext.createNode(this);
+    };
 
     Transform.prototype.getChild = function (index) {
         return this._children[index];
@@ -281,6 +292,21 @@
     };
 
     /**
+     * Get the indexed sibling.
+     * @method FIRE.Transform#getSibling
+     * @param {number} index
+     * @returns {FIRE.Transform}
+     */
+    Transform.prototype.getSibling = function (index) {
+        if (this._parent) {
+            return this._parent._children[index];
+        }
+        else {
+            return Engine._scene.entities[index];
+        }
+    };
+
+    /**
      * Set the sibling index.
      * @method FIRE.Transform#setSiblingIndex
      * @param {number} index
@@ -298,7 +324,8 @@
                 array.push(item);
             }
             // callback
-            this._onHierarchyChanged(this, this.parent);
+            Engine._renderContext.updateNodeSiblingIndex(this, index, oldIndex);
+            //this._onHierarchyChanged(this, this.parent);
         }
     };
     
@@ -323,58 +350,61 @@
         }
     };
 
-    /**
-     * Subscribe the `onHierarchyChanged` event.
-     * When this transform or one of its parents' hierarchy changed, the `onHierarchyChanged` 
-     * method will be invoked on supplied instance of Component. If you want to unsubscribe this event, 
-     * you must destroy the Component.
-     * 这里不支持自定义回调，因为如果忘了反注册很容易就会内存泄漏。
-     * 
-     * @method FIRE.Transform#_addListener
-     * @param {FIRE.Component} component - the component to be invoked.
-     * @private
-     */
-    Transform.prototype._addListener = function (component) {
-        //if (component.entity === this.entity) {
-            if (this._hierarchyChangedListeners) {
-                this._hierarchyChangedListeners.push(component);
-            }
-            else {
-                this._hierarchyChangedListeners = [component];
-            }
-        //}
-        //else {
-        //    console.error("Can not listen other entity's onHierarchyChanged event");
-        //}
-    };
+    ///**
+    // * Subscribe the `onHierarchyChanged` event.
+    // * When this transform or one of its parents' hierarchy changed, the `onHierarchyChanged` 
+    // * method will be invoked on supplied instance of Component. If you want to unsubscribe this event, 
+    // * you must destroy the Component.
+    // * 这里不支持自定义回调，因为如果忘了反注册很容易就会内存泄漏。
+    // * 
+    // * @method FIRE.Transform#_addListener
+    // * @param {FIRE.Component} component - the component to be invoked.
+    // * @private
+    // */
+    //Transform.prototype._addListener = function (component) {
+    //    //if (component.entity === this.entity) {
+    //        if (this._hierarchyChangedListeners) {
+    //            this._hierarchyChangedListeners.push(component);
+    //        }
+    //        else {
+    //            this._hierarchyChangedListeners = [component];
+    //        }
+    //    //}
+    //    //else {
+    //    //    console.error("Can not listen other entity's onHierarchyChanged event");
+    //    //}
+    //};
 
-    // 这里就算不调用，内存也不会泄露，因为component本身就会被destroy。
-    // 只不过调用了以后内存能清理的更及时。
-    Transform.prototype._removeListener = function (component) {
-        if (this._hierarchyChangedListeners) {
-            var idx = this._hierarchyChangedListeners.indexOf(component);
-            this._hierarchyChangedListeners.splice(idx, 1);
-        }
-    };
+    //// 这里就算不调用，内存也不会泄露，因为component本身就会被destroy。
+    //// 只不过调用了以后内存能清理的更及时。
+    //Transform.prototype._removeListener = function (component) {
+    //    if (this._hierarchyChangedListeners) {
+    //        var idx = this._hierarchyChangedListeners.indexOf(component);
+    //        this._hierarchyChangedListeners.splice(idx, 1);
+    //    }
+    //};
 
-    Transform.prototype._onHierarchyChanged = function (transform, oldParent) {
-        // notify self listener
-        if (this._hierarchyChangedListeners) {
-            for (var i = this._hierarchyChangedListeners.length - 1; i >= 0; --i) {
-                var target = this._hierarchyChangedListeners[i];
-                if (target.isValid) {
-                    target.onHierarchyChanged(transform, oldParent);
-                }
-                else {
-                    this._hierarchyChangedListeners.splice(i, 1);
-                }
-            }
-        }
-        // notify children
-        for (var c = 0, len = this._children.length; c < len; c++) {
-            this._children[c]._onHierarchyChanged(transform, oldParent);
-        }
-    };
+    //Transform.prototype._onHierarchyChanged = function (transform, oldParent) {
+    //    // notify self listener
+    //    if (this._hierarchyChangedListeners) {
+    //        for (var i = this._hierarchyChangedListeners.length - 1; i >= 0; --i) {
+    //            var target = this._hierarchyChangedListeners[i];
+    //            if (target.isValid) {
+    //                if (target.onHierarchyChanged(transform, oldParent)) {
+    //                    // TODO: 目前只有一种component会终止事件，如果有多种，这里需要做分类
+    //                    return;
+    //                }
+    //            }
+    //            else {
+    //                this._hierarchyChangedListeners.splice(i, 1);
+    //            }
+    //        }
+    //    }
+    //    // notify children
+    //    for (var c = 0, len = this._children.length; c < len; c++) {
+    //        this._children[c]._onHierarchyChanged(transform, oldParent);
+    //    }
+    //};
 
     return Transform;
 })();

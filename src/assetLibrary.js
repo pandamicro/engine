@@ -96,10 +96,9 @@ var AssetLibrary = (function () {
 
 
                     // deserialize asset
-                    var curScene = Engine._scene;
-                    Engine._scene = null;
+                    Engine._canModifyCurrentScene = false;
                     var asset = FIRE.deserialize(json, info, FIRE.isEditor);
-                    Engine._scene = curScene;
+                    Engine._canModifyCurrentScene = true;
                     
                     // load depends
 

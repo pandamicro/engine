@@ -5,8 +5,8 @@
      * NOTE: Not allowed to use construction parameters for Component's subclasses, 
      *       because Component is created by the engine.
      */
-    var Component = FIRE.define('FIRE.Component', FObject, function () {
-        FObject.call(this);
+    var Component = FIRE.define('FIRE.Component', HashObject, function () {
+        HashObject.call(this);
 
         // used in _callOnEnable to ensure onEnable and onDisable will be called alternately
         this._isOnEnableCalled = false;     // TODO: use flag
@@ -64,10 +64,11 @@
     /**
      * This method will be invoked when the scene graph changed, which is means the parent of its transform changed,
      * or one of its ancestor's parent changed, or one of their sibling index changed.
-     * NOTE: This callback only available after onLoad
+     * NOTE: This callback only available after onLoad.
      * 
-     * @param {FIRE.Transform} transform - the transform which is changed, can be any of this transform's ancestor
+     * @param {FIRE.Transform} transform - the transform which is changed, can be any of this transform's ancestor.
      * @param {FIRE.Transform} oldParent - the transform's old parent, if not changed, its sibling index changed.
+     * @returns {boolean} return whether stop propagation to this component's child components.
      */
     //Component.prototype.onHierarchyChanged = function (transform, oldParent) {};
 
@@ -103,9 +104,9 @@
             if (this.onLoad) {
                 this.onLoad();
             }
-            if (this.onHierarchyChanged) {
-                this.entity.transform._addListener(this);
-            }
+            //if (this.onHierarchyChanged) {
+            //    this.entity.transform._addListener(this);
+            //}
         }
         if (this._enabled) {
             _callOnEnable(this, activeInHierarchy);
