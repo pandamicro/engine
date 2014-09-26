@@ -121,7 +121,7 @@
     Camera.prototype.screenToWorld = function (position, out) {
         var halfScreenSize = (this._renderContext || Engine._renderContext).size.mulSelf(0.5);
         var pivotToScreen = position.sub(halfScreenSize, halfScreenSize);
-        var mat = new Matrix2x3();
+        var mat = new Matrix23();
         var camPos = new Vec2();
         this._calculateTransform(mat, camPos);
         mat.invert();
@@ -138,7 +138,7 @@
      * @returns {Fire.Vec2}
      */
     Camera.prototype.worldToScreen = function (position, out) {
-        var mat = new Matrix2x3();
+        var mat = new Matrix23();
         var camPos = new Vec2();
         this._calculateTransform(mat, camPos);
         var toCamera = position.sub(camPos, camPos);

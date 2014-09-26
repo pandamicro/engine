@@ -89,7 +89,7 @@
         var i, len;
         if (camera) {
             // transform by camera
-            var mat = new Matrix2x3();
+            var mat = new Matrix23();
             var camPos = new Vec2();
             camera._calculateTransform(mat, camPos);
             var offsetX = -camPos.x;

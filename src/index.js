@@ -7,7 +7,7 @@ var Fire;
     var HashObject = Fire.HashObject;
     var Asset = Fire.Asset;
     var Vec2 = Fire.Vec2;
-    var Matrix2x3 = Fire.Matrix2x3;
+    var Matrix23 = Fire.Matrix23;
     var Rect = Fire.Rect;
     var Color = Fire.Color;
     var Texture = Fire.Texture;
