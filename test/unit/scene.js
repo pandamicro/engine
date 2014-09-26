@@ -10,6 +10,11 @@ largeModule('Scene', {
     }
 });
 
+test('new entity', function () {
+    var ent = new Entity();
+    strictEqual(Engine._scene.entities[0], ent, 'new entity should created in scene');
+});
+
 test('findEntity', function () {
     var ent = new Entity('');
 
@@ -27,7 +32,7 @@ test('findEntity', function () {
     ok(Entity.find('/.去/Jare Guo') === ent2ent2, 'should found, name contains space');
 });
 
-test('createEntity', function () {
+test('createEntity in other scene', function () {
     var previewScene = new FIRE._Scene();
     var ent = previewScene.createEntity('preview entity');
     ok(Entity.find('/preview entity') === null, 'should not create in main scene');

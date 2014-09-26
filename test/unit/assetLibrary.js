@@ -8,6 +8,9 @@ var grossiniSprite_uuid = '1232218';
 
 largeModule('AssetLibrary', {
     setup: function () {
+        if (!Engine.inited) {
+            Engine.init();
+        }
         AssetLibrary.init(libPath);
     }
 });

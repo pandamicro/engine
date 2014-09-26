@@ -98,6 +98,8 @@ test('component', function () {
     FO._deferredDestroy();    // onDestroy
 
     strictEqual(obj.getComponent(MyComponent), null, 'can not get component after this frame');
+
+    comp.stopTest();
 });
 
 test('component in hierarchy', 4, function () {
@@ -122,6 +124,8 @@ test('component in hierarchy', 4, function () {
 
     comp.expect(CallbackTester.OnEnable, 'should enable when entity detached from its parent');
     child.transform.parent = null;
+
+    comp.stopTest();
 });
 
 test('destroy', function () {
@@ -178,7 +182,7 @@ test('destroy', function () {
     });
     var newChildEntity = new Entity();
     newChildEntity.transform.parent = parent.transform;
-    newChildEntity.addComponent(NewChildEntityComp);
+    var newChildEntityComp = newChildEntity.addComponent(NewChildEntityComp);
 
     // do destory
 
@@ -188,6 +192,11 @@ test('destroy', function () {
     strictEqual(childComp.isValid, false, 'entity will destroyed with its child components');
     strictEqual(child.isValid, false, 'entity will destroyed with its children');
     strictEqual(newChildEntity.isValid, false, 'entity will destroyed with its new children');
+
+    childComp.stopTest();
+    childComp_new.stopTest();
+    newParentComp.stopTest();
+    newChildEntityComp.stopTest();
 });
 
 // jshint ignore: end

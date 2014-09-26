@@ -2,12 +2,15 @@
 
 (function () {
     Scene.prototype.createEntity = function (name, flags) {
-        var curScene = Engine._scene;   // save
+        // push
+        Engine._canModifyCurrentScene = false;
         Engine._scene = this;
         Scene._createWithFlags = flags;
+        // create
         var ent = new Entity(name);
-        Scene._createWithFlags = 0;     // restore
-        Engine._scene = curScene;       // restore
+        // pop
+        Scene._createWithFlags = 0;
+        Engine._canModifyCurrentScene = true;
         return ent;
     };
 })();

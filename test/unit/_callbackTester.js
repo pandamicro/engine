@@ -5,6 +5,7 @@ var CallbackTester = FIRE.define('', FIRE.Component, function () {
     this._expects = [];
     this._messages = [];
     this._unexpect = {};
+    this._stopped = false;
 });
 
 CallbackTester.OnLoad = 'onLoad';
@@ -54,7 +55,20 @@ CallbackTester.prototype.notExpect = function (notExpect, message) {
     return this;
 };
 
+/**
+ * stop reporting errors
+ */
+CallbackTester.prototype.stopTest = function () {
+    this._stopped = true;
+    this._expects = null;
+    this._messages = null;
+    this._unexpect = null;
+};
+
 CallbackTester.prototype._assert = function (actual) {
+    if (this._stopped) {
+        return;
+    }
     if (this._expects.length > 0) {
         var current = this._expects.splice(0, 1)[0];
         var expect = current.expect;

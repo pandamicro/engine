@@ -129,8 +129,12 @@
     Transform.prototype.onDestroy = function () {
         Engine._renderContext.removeNode(this);
 
-        if (this._parent) {
-            this.parent = null; // TODO: may call onEnable on other component's
+        var parent = this._parent;
+        if (parent) {
+            if (!(parent.entity._objFlags & Destroying)) {
+                parent._children.splice(parent._children.indexOf(this), 1);
+            }
+            this._parent = null;
         }
         else {
             Engine._scene.removeRoot(this.entity);
@@ -153,7 +157,7 @@
 
     Transform.prototype.create = function () {
         if (Engine._scene) {
-            Engine._scene.appendRoot(this);
+            Engine._scene.appendRoot(this.entity);
         }
         Engine._renderContext.createNode(this);
     };

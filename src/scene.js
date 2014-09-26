@@ -94,7 +94,7 @@
 
     Scene.prototype.updateTransform = function (camera) {
         var entities = this.entities;
-        var i;
+        var i, len;
         if (camera) {
             // transform by camera
             var mat = new Matrix2x3();
@@ -165,8 +165,9 @@
             // visit sub entities
             var transform = match.transform;
             match = null;
-            for (var t = 0, len = transform.childCount; t < len; ++t) {
-                var subEntity = transform._children[t].entity;
+            var children = transform._children;
+            for (var t = 0, len = children.length; t < len; ++t) {
+                var subEntity = children[t].entity;
                 if (subEntity.name === name) {
                     match = subEntity;
                     break;

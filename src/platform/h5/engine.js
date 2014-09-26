@@ -55,31 +55,21 @@ var Engine = (function () {
      */
     Object.defineProperty(Engine, '_canModifyCurrentScene', {
         get: function () {
-            return !!this._scene;
+            return !lockingScene;
         },
         set: function (value) {
             if (value) {
                 // unlock
-                if (lockingScene) {
-                    this._scene = lockingScene;
-                    lockingScene = null;
-                }
-                else if (!this._scene) {
-                    console.error('unknown scene to unlock');
-                }
+                this._scene = lockingScene;
+                lockingScene = null;
             }
             else {
                 // lock
-                if (this._scene) {
-                    if (lockingScene) {
-                        console.error('another scene still locked: ' + lockingScene.debugName);
-                    }
-                    lockingScene = this._scene;
-                    this._scene = null;
+                if (this._scene && lockingScene) {
+                    console.error('another scene still locked: ' + lockingScene.debugName);
                 }
-                else {
-                    console.error('unknown scene to lock');
-                }
+                lockingScene = this._scene;
+                this._scene = null;
             }
         }
     });

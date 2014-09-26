@@ -5,6 +5,8 @@ module('Engine.loadScene', {
             Engine.init();
         }
         TestOnly.update = null;
+        // force clear scene
+        Engine._setCurrentScene(new FIRE._Scene());
         //console.log('setup');
         Engine.stop();
     },

@@ -31,7 +31,7 @@ var RenderContext = (function () {
         //this.showGizmos = showGizmos;
 
         // the shared render context that allows display the object which marked as FIRE.ObjectFlags.SceneGizmo
-        this.scene = null;
+        this.sceneView = null;
 
         // binded camera, if supplied the scene will always rendered by this camera
         this._camera = null;
@@ -99,11 +99,11 @@ var RenderContext = (function () {
                 this.stage.addChild(transform._pixiObj);
             }
         }
-        if (this.scene) {
+        if (this.sceneView) {
             transform._pixiObjInScene = new PIXI.DisplayObjectContainer();
             if (Engine._canModifyCurrentScene) {
                 // attach node if created dynamically
-                this.scene.stage.addChild(transform._pixiObjInScene);
+                this.sceneView.stage.addChild(transform._pixiObjInScene);
             }
         }
     };
@@ -118,9 +118,11 @@ var RenderContext = (function () {
         }
         if (!(transform.entity._objFlags & SceneGizmo)) {
             transform._pixiObj.parent.removeChild(transform._pixiObj);
+            transform._pixiObj = null;
         }
-        if (this.scene) {
+        if (this.sceneView) {
             transform._pixiObjInScene.parent.removeChild(transform._pixiObjInScene);
+            transform._pixiObjInScene = null;
         }
     };
 
@@ -137,12 +139,12 @@ var RenderContext = (function () {
                 this.stage.addChild(transform._pixiObj);
             }
         }
-        if (this.scene) {
+        if (this.sceneView) {
             if (transform.parent) {
                 transform.parent._pixiObjInScene.addChild(transform._pixiObjInScene);
             }
             else {
-                this.scene.stage.addChild(transform._pixiObjInScene);
+                this.sceneView.stage.addChild(transform._pixiObjInScene);
             }
         }
     };
@@ -166,7 +168,7 @@ var RenderContext = (function () {
             }
         }
 
-        if (this.scene) {
+        if (this.sceneView) {
             item = transform._pixiObjInScene;
             array = item.parent.children;
             array.splice(oldIndex, 1);
@@ -180,7 +182,7 @@ var RenderContext = (function () {
     };
 
     RenderContext.prototype.onLaunchScene = function (scene) {
-        // create root nodes
+        // attach root nodes
         var entities = scene.entities;
         var i = 0, len = entities.length;
         for (; i < len; i++) {
@@ -189,27 +191,59 @@ var RenderContext = (function () {
                 this.stage.addChild(objInGame);
             }
         }
-        if (this.scene) {
+        if (this.sceneView) {
             for (i = 0; i < len; i++) {
-                this.scene.stage.addChild(entities[i].transform._pixiObjInScene);
+                this.sceneView.stage.addChild(entities[i].transform._pixiObjInScene);
             }
         }
     };
 
     RenderContext.prototype.onSceneLoaded = function (scene) {
-        // create nodes
         var entities = scene.entities;
-        var i = 0, len = entities.length;
-        for (; i < len; i++) {
-            this.onEntityLoaded(entities[i]);
+        for (var i = 0, len = entities.length; i < len; i++) {
+            this.onTransformLoaded(entities[i].transform);
         }
     };
 
-    RenderContext.prototype.onEntityLoaded = function (entity) {
-        // create node recursively
-        // TODO:
+    /**
+     * create child nodes recursively
+     * @param {FIRE.Transform} transform - must have parent, and not scene gizmo
+     */
+    var _onChildTransformLoaded = function (transform, hasSceneView) {
+        transform._pixiObj = new PIXI.DisplayObjectContainer();
+        transform.parent._pixiObj.addChild(transform._pixiObj);
+        if (hasSceneView) {
+            transform._pixiObjInScene = new PIXI.DisplayObjectContainer();
+            transform.parent._pixiObjInScene.addChild(transform._pixiObjInScene);
+        }
+        var children = transform._children;
+        for (var i = 0, len = children.length; i < len; i++) {
+            _onChildTransformLoaded(children[i], hasSceneView);
+        }
     };
-    
+
+    /**
+     * create nodes recursively
+     * @param {FIRE.Transform} transform - must not scene gizmo
+     */
+    RenderContext.prototype.onTransformLoaded = function (transform) {
+        transform._pixiObj = new PIXI.DisplayObjectContainer();
+        if (transform.parent) {
+            transform.parent._pixiObj.addChild(transform._pixiObj);
+        }
+        if (this.sceneView) {
+            transform._pixiObjInScene = new PIXI.DisplayObjectContainer();
+            if (transform.parent) {
+                transform.parent._pixiObjInScene.addChild(transform._pixiObjInScene);
+            }
+        }
+
+        var children = transform._children;
+        for (var i = 0, len = children.length; i < len; i++) {
+            _onChildTransformLoaded(children[i], this.sceneView);
+        }
+    };
+
     /**
      * @param {FIRE.SpriteRenderer} target
      */
@@ -223,7 +257,7 @@ var RenderContext = (function () {
             transform._pixiObj.addChildAt(target._renderObj, 0);
         }
 
-        if (this.scene) {
+        if (this.sceneView) {
             // pixi can not share display object between stages at the same time, 
             // so another sprite is needed.
             target._renderObjInScene = new PIXI.Sprite(tex);
@@ -307,7 +341,7 @@ var RenderContext = (function () {
     //                this._updateSiblingIndex(transform);
     //            }
     //            if (target._renderObjInScene) {
-    //                this.scene._updateSiblingIndex(transform);
+    //                this.sceneView._updateSiblingIndex(transform);
     //            }
     //            return true;
     //        }
