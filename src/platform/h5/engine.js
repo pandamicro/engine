@@ -12,7 +12,7 @@ var Engine = (function () {
     var requestId = -1;
 
     /**
-     * 当前激活的场景，如果为空，一般是因为正在加载场景或Entity(例如执行FIRE.deserialize)。
+     * 当前激活的场景，如果为空，一般是因为正在加载场景或Entity(例如执行Fire.deserialize)。
      * 这样是为了防止加载中的东西不小心影响到当前场景。一般代码不用关心这个问题，但大部分构造函数里执行的代码，
      * 如果涉及到场景物件的操作，都要注意这点。
      * 也就是说构造函数调用到的代码如果要操作 Engine._scene，必须判断非空，如果操作不直接针对 Engine._scene，
@@ -75,8 +75,8 @@ var Engine = (function () {
     });
 
     /**
-     * @param {FIRE.Vec2} value
-     * @return {FIRE.Vec2}
+     * @param {Fire.Vec2} value
+     * @return {Fire.Vec2}
      */
     Object.defineProperty(Engine, 'screenSize', {
         get: function () {
@@ -101,7 +101,7 @@ var Engine = (function () {
      * @param {number} [w]
      * @param {number} [h]
      * @param {Canvas} [canvas]
-     * @param {FIRE._Scene} [scene]
+     * @param {Fire._Scene} [scene]
      * @returns {RenderContext}
      */
     Engine.init = function ( w, h, canvas, scene ) {
@@ -159,7 +159,7 @@ var Engine = (function () {
         // render
         Engine._scene.render(Engine._renderContext);
         // test scene view
-        if (FIRE.isPureWeb && Engine._renderContext.sceneView) {
+        if (Fire.isPureWeb && Engine._renderContext.sceneView) {
             Engine._scene.render(Engine._renderContext.sceneView);
         }
     };
@@ -175,7 +175,7 @@ var Engine = (function () {
     };
 
     /**
-     * @method FIRE.Engine.update
+     * @method Fire.Engine.update
      * @param {float} [unused] - not used parameter, can omit
      * @private
      */
@@ -204,7 +204,7 @@ var Engine = (function () {
 
     /**
      * Set current scene directly, only used in Editor
-     * @method FIRE.Engine._setCurrentScene
+     * @method Fire.Engine._setCurrentScene
      * @param {Scene} scene
      * @private
      */
@@ -228,7 +228,7 @@ var Engine = (function () {
 
     /**
      * Load scene sync
-     * @method FIRE.Engine.loadScene
+     * @method Fire.Engine.loadScene
      * @param {string} name - the scene name
      */
     Engine.loadScene = function (uuid, callback) {
@@ -254,4 +254,4 @@ var Engine = (function () {
     return Engine;
 })();
 
-FIRE.Engine = Engine;
+Fire.Engine = Engine;

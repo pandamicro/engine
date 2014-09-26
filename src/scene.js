@@ -2,7 +2,7 @@
     var _super = Asset;
     /**
      * @class
-     * @extends FIRE.Asset
+     * @extends Fire.Asset
      * @private
      */ 
     function Scene () {
@@ -10,18 +10,18 @@
 
         /**
          * root entities 
-         * @member {FIRE.Entity[]} FIRE.Scene#entities
+         * @member {Fire.Entity[]} Fire.Scene#entities
          */
         this.entities = [];
 
         /**
          * the active camera
-         * @member {FIRE.Camera} FIRE.Scene#camera
+         * @member {Fire.Camera} Fire.Scene#camera
          */
         this.camera = null;
     }
-    FIRE.extend(Scene, _super);
-    FIRE.registerClass("FIRE.Scene", Scene);
+    Fire.extend(Scene, _super);
+    Fire.registerClass("Fire.Scene", Scene);
 
     ////////////////////////////////////////////////////////////////////
     // static
@@ -200,4 +200,4 @@
     return Scene;
 })();
 
-FIRE._Scene = Scene;
+Fire._Scene = Scene;

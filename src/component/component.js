@@ -1,11 +1,11 @@
 ﻿var Component = (function () {
 
     /**
-     * @class FIRE.Component
+     * @class Fire.Component
      * NOTE: Not allowed to use construction parameters for Component's subclasses, 
      *       because Component is created by the engine.
      */
-    var Component = FIRE.define('FIRE.Component', HashObject, function () {
+    var Component = Fire.define('Fire.Component', HashObject, function () {
         HashObject.call(this);
 
         // used in _callOnEnable to ensure onEnable and onDisable will be called alternately
@@ -17,10 +17,10 @@
         this._isOnLoadCalled = false;   // TODO: use flag
     });
 
-    Component.prop('entity', null, FIRE.HideInInspector);
+    Component.prop('entity', null, Fire.HideInInspector);
 
     // enabled self
-    Component.prop('_enabled', true, FIRE.HideInInspector);
+    Component.prop('_enabled', true, Fire.HideInInspector);
 
     // properties
     Object.defineProperty(Component.prototype, 'enabled', {
@@ -66,8 +66,8 @@
      * or one of its ancestor's parent changed, or one of their sibling index changed.
      * NOTE: This callback only available after onLoad.
      * 
-     * @param {FIRE.Transform} transform - the transform which is changed, can be any of this transform's ancestor.
-     * @param {FIRE.Transform} oldParent - the transform's old parent, if not changed, its sibling index changed.
+     * @param {Fire.Transform} transform - the transform which is changed, can be any of this transform's ancestor.
+     * @param {Fire.Transform} oldParent - the transform's old parent, if not changed, its sibling index changed.
      * @returns {boolean} return whether stop propagation to this component's child components.
      */
     //Component.prototype.onHierarchyChanged = function (transform, oldParent) {};
@@ -127,4 +127,4 @@
     return Component;
 })();
 
-FIRE.Component = Component;
+Fire.Component = Component;

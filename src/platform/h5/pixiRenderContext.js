@@ -30,7 +30,7 @@ var RenderContext = (function () {
 
         //this.showGizmos = showGizmos;
 
-        // the shared render context that allows display the object which marked as FIRE._ObjectFlags.SceneGizmo
+        // the shared render context that allows display the object which marked as Fire._ObjectFlags.SceneGizmo
         this.sceneView = null;
 
         // binded camera, if supplied the scene will always rendered by this camera
@@ -65,7 +65,7 @@ var RenderContext = (function () {
         set: function (value) {
             this.renderer.resize(value.x, value.y);
             // auto resize scene view camera
-            if (this._camera && (this._camera.entity._objFlags & FIRE._ObjectFlags.EditorOnly)) {
+            if (this._camera && (this._camera.entity._objFlags & Fire._ObjectFlags.EditorOnly)) {
                 this._camera.size = value.y;
             }
         }
@@ -88,7 +88,7 @@ var RenderContext = (function () {
     };
 
     /**
-     * @param {FIRE.Transform} transform
+     * @param {Fire.Transform} transform
      */
     RenderContext.prototype.createNode = function (transform) {
         if (!(transform.entity._objFlags & SceneGizmo)) {
@@ -109,7 +109,7 @@ var RenderContext = (function () {
     };
 
     /**
-     * @param {FIRE.Transform} transform
+     * @param {Fire.Transform} transform
      */
     RenderContext.prototype.removeNode = function (transform) {
         if (transform.parent && (transform.parent.entity._objFlags & Destroying)) {
@@ -127,8 +127,8 @@ var RenderContext = (function () {
     };
 
     /**
-     * @param {FIRE.Transform} transform
-     * @param {FIRE.Transform} oldParent
+     * @param {Fire.Transform} transform
+     * @param {Fire.Transform} oldParent
      */
     RenderContext.prototype.updateNodeParent = function (transform, oldParent) {
         if (transform._pixiObj) {
@@ -150,7 +150,7 @@ var RenderContext = (function () {
     };
 
     /**
-     * @param {FIRE.Transform} transform
+     * @param {Fire.Transform} transform
      * @param {number} newIndex
      * @param {number} oldIndex
      */
@@ -207,7 +207,7 @@ var RenderContext = (function () {
 
     /**
      * create child nodes recursively
-     * @param {FIRE.Transform} transform - must have parent, and not scene gizmo
+     * @param {Fire.Transform} transform - must have parent, and not scene gizmo
      */
     var _onChildTransformLoaded = function (transform, hasSceneView) {
         transform._pixiObj = new PIXI.DisplayObjectContainer();
@@ -224,7 +224,7 @@ var RenderContext = (function () {
 
     /**
      * create nodes recursively
-     * @param {FIRE.Transform} transform - must not scene gizmo
+     * @param {Fire.Transform} transform - must not scene gizmo
      */
     RenderContext.prototype.onTransformLoaded = function (transform) {
         transform._pixiObj = new PIXI.DisplayObjectContainer();
@@ -245,7 +245,7 @@ var RenderContext = (function () {
     };
 
     /**
-     * @param {FIRE.SpriteRenderer} target
+     * @param {Fire.SpriteRenderer} target
      */
     RenderContext.prototype.addSprite = function (target) {
         var tex = createTexture(target.sprite) || emptyTexture;
@@ -266,7 +266,7 @@ var RenderContext = (function () {
     };
 
     /**
-     * @param {FIRE.SpriteRenderer} target
+     * @param {Fire.SpriteRenderer} target
      * @param {boolean} show
      */
     RenderContext.prototype.show = function (target, show) {
@@ -279,7 +279,7 @@ var RenderContext = (function () {
     };
 
     /**
-     * @param target {FIRE.SpriteRenderer}
+     * @param target {Fire.SpriteRenderer}
      * @param show {boolean}
      */
     RenderContext.prototype.remove = function (target) {
@@ -294,7 +294,7 @@ var RenderContext = (function () {
     };
 
     /**
-     * @param target {FIRE.SpriteRenderer}
+     * @param target {Fire.SpriteRenderer}
      */
     RenderContext.prototype.updateMaterial = function (target) {
         if (target._renderObj || target._renderObjInScene) {
@@ -312,7 +312,7 @@ var RenderContext = (function () {
     };
 
     /**
-     * @param target {FIRE.SpriteRenderer}
+     * @param target {Fire.SpriteRenderer}
      */
     RenderContext.prototype.updateTransform = function (target) {
         if (target._renderObj || target._renderObjInScene) {
@@ -329,9 +329,9 @@ var RenderContext = (function () {
     };
 
     ///**
-    // * @param {FIRE.SpriteRenderer} target
-    // * @param {FIRE.SpriteRenderer} transform
-    // * @param {FIRE.SpriteRenderer} oldParent
+    // * @param {Fire.SpriteRenderer} target
+    // * @param {Fire.SpriteRenderer} transform
+    // * @param {Fire.SpriteRenderer} oldParent
     // */
     //RenderContext.prototype.updateHierarchy = function (target, transform, oldParent) {
     //    if (target._renderObj || target._renderObjInScene) {
@@ -376,7 +376,7 @@ var RenderContext = (function () {
     //};
 
     /**
-     * @param sprite {FIRE.Sprite}
+     * @param sprite {Fire.Sprite}
      */
     function createTexture(sprite) {
         if (sprite && sprite.texture && sprite.texture.image) {

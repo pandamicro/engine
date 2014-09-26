@@ -1,11 +1,11 @@
 ﻿var SpriteRenderer = (function () {
 
-    var SpriteRenderer = FIRE.define('FIRE.SpriteRenderer', Renderer, function () {
+    var SpriteRenderer = Fire.define('Fire.SpriteRenderer', Renderer, function () {
         Renderer.call(this);
         RenderContext.initRenderer(this);
     });
 
-    SpriteRenderer.prop('_sprite', null, FIRE.HideInInspector);
+    SpriteRenderer.prop('_sprite', null, Fire.HideInInspector);
     SpriteRenderer.getset('sprite',
         function () {
             return this._sprite;
@@ -14,7 +14,7 @@
             this._sprite = value;
             Engine._renderContext.updateMaterial(this);
         },
-        FIRE.ObjectType(FIRE.Sprite)
+        Fire.ObjectType(Fire.Sprite)
     );
 
     // built-in functions
@@ -42,4 +42,4 @@
     return SpriteRenderer;
 })();
 
-FIRE.SpriteRenderer = SpriteRenderer;
+Fire.SpriteRenderer = SpriteRenderer;

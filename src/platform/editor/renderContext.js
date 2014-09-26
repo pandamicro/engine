@@ -3,7 +3,7 @@
     // editor functions for H5 RenderContext
 
     /**
-     * @param {FIRE.Renderer} renderer
+     * @param {Fire.Renderer} renderer
      * @returns {PIXI.DisplayObject}
      */
     RenderContext.prototype.getDisplayObject = function (renderer) {

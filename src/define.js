@@ -1,14 +1,14 @@
 ﻿
 // definitions for FObject._objFlags
 
-var _objFlagIndex = FIRE._ObjFlagIndex.Engine;
-var SceneGizmo = (1 << _objFlagIndex++)/* | FIRE._ObjectFlags.DontSave*/;
+var _objFlagIndex = Fire._ObjFlagIndex.Engine;
+var SceneGizmo = (1 << _objFlagIndex++)/* | Fire._ObjectFlags.DontSave*/;
 var Destroying = (1 << _objFlagIndex++);
 
 /**
  * This flag is readonly, it can only be used as the argument of scene.createEntity().
- * @property {number} FIRE._ObjectFlags.SceneGizmo
+ * @property {number} Fire._ObjectFlags.SceneGizmo
  */
-FIRE._ObjectFlags.SceneGizmo = SceneGizmo;
+Fire._ObjectFlags.SceneGizmo = SceneGizmo;
 
-FIRE._ObjectFlags.Destroying = Destroying;
+Fire._ObjectFlags.Destroying = Destroying;

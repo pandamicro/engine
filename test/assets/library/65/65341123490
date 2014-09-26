@@ -1,5 +1,5 @@
 {
-    "__type__": "FIRE.Sprite",
+    "__type__": "Fire.Sprite",
     "rawTexture": null,
     "texture": {
         "__uuid__": "6545543"

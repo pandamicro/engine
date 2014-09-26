@@ -6,7 +6,7 @@ module('Engine.loadScene', {
         }
         TestOnly.update = null;
         // force clear scene
-        Engine._setCurrentScene(new FIRE._Scene());
+        Engine._setCurrentScene(new Fire._Scene());
         //console.log('setup');
         Engine.stop();
     },
@@ -19,7 +19,7 @@ module('Engine.loadScene', {
 var assetDir = '../assets';
 var projPath = assetDir;
 var libPath = projPath + '/library';
-FIRE.AssetLibrary.init(libPath);
+Fire.AssetLibrary.init(libPath);
 
 asyncTest('load', function () {
     Engine.loadScene('74325665', function (scene) {
@@ -30,7 +30,7 @@ asyncTest('load', function () {
         ok(scene, 'can load entity');
         ok(ent.transform, 'can load transform');
 
-        var sr = ent.getComponent(FIRE.SpriteRenderer);
+        var sr = ent.getComponent(Fire.SpriteRenderer);
         ok(sr, 'can load component');
         ok(sr.sprite.texture.image, 'can load asset');
 

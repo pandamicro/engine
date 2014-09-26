@@ -9,7 +9,7 @@ largeModule('Component', {
 });
 /*
 test('onHierarchyChanged invoked by setting parent', function () {
-    var MyComp = FIRE.define('', Component);
+    var MyComp = Fire.define('', Component);
     var onHierarchyChanged = MyComp.prototype.onHierarchyChanged = new callback();
 
     var parent1 = new Entity();

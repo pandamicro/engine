@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-    <title> FIRE </title>
+    <title> Fire </title>
     <style>
         body {
             margin: 0;
@@ -25,23 +25,23 @@
 <body>
     <script>
         // game view
-        var canvas = FIRE.Engine.init(1366, 768).canvas;
+        var canvas = Fire.Engine.init(1366, 768).canvas;
 //        document.body.appendChild(canvas);
 
         // scene view
-        var sceneView = FIRE.Engine.createSceneView(512, 512);
+        var sceneView = Fire.Engine.createSceneView(512, 512);
         document.body.appendChild(sceneView.canvas);
 
-        FIRE.Engine.play();
+        Fire.Engine.play();
         
-        var s = new FIRE.Entity();
-        var spriteRenderer = s.addComponent(FIRE.SpriteRenderer);
-        //entity.transform.position = new FIRE.Vec2(-44.5, -22);
-        s.transform.position = new FIRE.Vec2(100, 100);
+        var s = new Fire.Entity();
+        var spriteRenderer = s.addComponent(Fire.SpriteRenderer);
+        //entity.transform.position = new Fire.Vec2(-44.5, -22);
+        s.transform.position = new Fire.Vec2(100, 100);
 
         var img = new Image();
         img.onload = function () {
-            var sprite = new FIRE.Sprite(img);
+            var sprite = new Fire.Sprite(img);
             //sprite.width = 89;
             //sprite.height = 44;
             //sprite.trimX = 10;
@@ -54,22 +54,22 @@
             sprite.height = 40;
             spriteRenderer.sprite = sprite;
 
-            bigSprite.getComponent(FIRE.SpriteRenderer).sprite = sprite;
+            bigSprite.getComponent(Fire.SpriteRenderer).sprite = sprite;
         };
         img.src = '../test/assets/atlas (1).png';
 
-        var c = FIRE.Entity._createWithFlags(FIRE._ObjectFlags.SceneGizmo);
-        var cam = sceneView.camera = c.addComponent(FIRE.Camera);
+        var c = Fire.Entity._createWithFlags(Fire._ObjectFlags.SceneGizmo);
+        var cam = sceneView.camera = c.addComponent(Fire.Camera);
         cam.transform.update = function () {
             this.rotation += 0.03;
         };
-        c.transform.position = new FIRE.Vec2(100, 100);
+        c.transform.position = new Fire.Vec2(100, 100);
 
-        FIRE.Engine._renderContext.checkMatchCurrentScene();
+        Fire.Engine._renderContext.checkMatchCurrentScene();
 
-        var bigSprite = new FIRE.Entity();
-        bigSprite.addComponent(FIRE.SpriteRenderer);
-        bigSprite.transform.scale = new FIRE.Vec2(10, 10);
+        var bigSprite = new Fire.Entity();
+        bigSprite.addComponent(Fire.SpriteRenderer);
+        bigSprite.transform.scale = new Fire.Vec2(10, 10);
         bigSprite.transform.setAsFirstSibling();
 
 

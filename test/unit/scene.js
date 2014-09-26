@@ -6,7 +6,7 @@ largeModule('Scene', {
             Engine.init();
         }
         // force clear scene
-        Engine._setCurrentScene(new FIRE._Scene());
+        Engine._setCurrentScene(new Fire._Scene());
     }
 });
 
@@ -33,7 +33,7 @@ test('findEntity', function () {
 });
 
 test('createEntity in other scene', function () {
-    var previewScene = new FIRE._Scene();
+    var previewScene = new Fire._Scene();
     var ent = previewScene.createEntity('preview entity');
     ok(Entity.find('/preview entity') === null, 'should not create in main scene');
     ok(previewScene.findEntity('/preview entity') === ent, 'should create in preview scene');

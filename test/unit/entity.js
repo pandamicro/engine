@@ -6,11 +6,11 @@ largeModule('Entity', {
             Engine.init();
         }
         // force clear scene
-        Engine._setCurrentScene(new FIRE._Scene());
+        Engine._setCurrentScene(new Fire._Scene());
     }
 });
 
-var Entity = FIRE.Entity;
+var Entity = Fire.Entity;
 
 test('basic test', function () {
     var entity = new Entity();
@@ -63,8 +63,8 @@ test('component', function () {
     // 这里主要测试entity，不是测试component
 
     // my component
-    var MyComponentBase = FIRE.define('', CallbackTester);
-    var MyComponent = FIRE.define('', MyComponentBase, function () {
+    var MyComponentBase = Fire.define('', CallbackTester);
+    var MyComponent = Fire.define('', MyComponentBase, function () {
         MyComponentBase.call(this);
         this.expect(CallbackTester.OnLoad, 'call onLoad while attaching to entity');
         this.expect(CallbackTester.OnEnable, 'then call onEnable if entity active', true);
@@ -81,7 +81,7 @@ test('component', function () {
     comp.expect(CallbackTester.OnEnable);
     obj.active = true;  // onEnable
 
-    strictEqual(obj.getComponent(FIRE.Transform), obj.transform, 'getComponent: can get transform');
+    strictEqual(obj.getComponent(Fire.Transform), obj.transform, 'getComponent: can get transform');
     strictEqual(obj.getComponent(MyComponent), comp, 'getComponent: can get my component');
     strictEqual(obj.getComponent(MyComponentBase), comp, 'getComponent: can get component by base type');
 
@@ -109,7 +109,7 @@ test('component in hierarchy', 4, function () {
     child.transform.parent = parent.transform;
     parent.active = false;
 
-    var MyComponent = FIRE.define('', CallbackTester, function () {
+    var MyComponent = Fire.define('', CallbackTester, function () {
         CallbackTester.call(this);
         this.notExpect(CallbackTester.OnLoad, 'should not call onLoad while entity inactive');
     });
@@ -133,7 +133,7 @@ test('destroy', function () {
     var child = new Entity();
 
     // add child component
-    var ChildComp = FIRE.define('', CallbackTester, function () {
+    var ChildComp = Fire.define('', CallbackTester, function () {
         CallbackTester.call(this);
         this.expect([CallbackTester.OnLoad, CallbackTester.OnEnable]);
     });
@@ -153,7 +153,7 @@ test('destroy', function () {
 
     // try add component after destroy
 
-    var ChildComp_new = FIRE.define('', CallbackTester, function () {
+    var ChildComp_new = Fire.define('', CallbackTester, function () {
         CallbackTester.call(this);
         this.expect(CallbackTester.OnLoad, 'new child component should onLoad even if added after destroy');
         this.expect(CallbackTester.OnEnable, 'new child component should enable even if added after destroy', true);
@@ -162,7 +162,7 @@ test('destroy', function () {
     });
     var childComp_new = child.addComponent(ChildComp_new);
 
-    var NewParentComp = FIRE.define('', CallbackTester, function () {
+    var NewParentComp = Fire.define('', CallbackTester, function () {
         CallbackTester.call(this);
         this.expect([CallbackTester.OnLoad,
                      CallbackTester.OnEnable,
@@ -173,7 +173,7 @@ test('destroy', function () {
 
     // try add child after destroy
 
-    var NewChildEntityComp = FIRE.define('', CallbackTester, function () {
+    var NewChildEntityComp = Fire.define('', CallbackTester, function () {
         CallbackTester.call(this);
         this.expect([CallbackTester.OnLoad,
                      CallbackTester.OnEnable,

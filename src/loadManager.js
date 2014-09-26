@@ -10,7 +10,7 @@
  */
 var LoadManager = (function () {
 
-    var urlToCallbacks = new FIRE.CallbacksInvoker();
+    var urlToCallbacks = new Fire.CallbacksInvoker();
     //var curConcurrent = 0;
 
     //var loadNext = function () {

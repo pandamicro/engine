@@ -3,9 +3,9 @@
     /**
      * The base for all renderer
      */
-    var Renderer = FIRE.define('FIRE.Renderer', Component);
+    var Renderer = Fire.define('Fire.Renderer', Component);
 
     return Renderer;
 })();
 
-FIRE.Renderer = Renderer;
+Fire.Renderer = Renderer;

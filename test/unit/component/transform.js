@@ -9,9 +9,9 @@ largeModule('Transform', {
 });
 
 test('test', function () {
-    var parentEntity = new FIRE.Entity();
-    var child1 = new FIRE.Entity();
-    var child2 = new FIRE.Entity();
+    var parentEntity = new Fire.Entity();
+    var child1 = new Fire.Entity();
+    var child2 = new Fire.Entity();
 
     var parent = parentEntity.transform;
     strictEqual(parent.parent, null, 'transform\'s default parent is null');
@@ -38,9 +38,9 @@ test('test', function () {
 });
 
 test('isChildOf', function () {
-    var ent1 = new FIRE.Entity();
-    var ent2 = new FIRE.Entity();
-    var ent3 = new FIRE.Entity();
+    var ent1 = new Fire.Entity();
+    var ent2 = new Fire.Entity();
+    var ent3 = new Fire.Entity();
 
     ent2.transform.parent = ent1.transform;
     ent3.transform.parent = ent2.transform;

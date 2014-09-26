@@ -11,7 +11,7 @@
 
         this._objFlags |= Entity._createWithFlags;
 
-        if (FIRE._isDeserializing) {
+        if (Fire._isDeserializing) {
             // create by deserializer
             this._components = null;
             this.transform = null;
@@ -33,8 +33,8 @@
             transform.create();
         }
     }
-    FIRE.extend(Entity, _super);
-    FIRE.registerClass("FIRE.Entity", Entity);
+    Fire.extend(Entity, _super);
+    Fire.registerClass("Fire.Entity", Entity);
 
     ////////////////////////////////////////////////////////////////////
     // static
@@ -44,9 +44,9 @@
      * Finds an entity by hierarchy path, the path is case-sensitive, and must start with a '/' character.
      * It will traverse the hierarchy by splitting the path using '/' character.
      * It is recommended to not use this function every frame instead cache the result at startup.
-     * @method FIRE.Entity.find
+     * @method Fire.Entity.find
      * @param {string} path
-     * @return {FIRE.Entity} the entity or null if not found
+     * @return {Fire.Entity} the entity or null if not found
      */
     Entity.find = function (path) {
         if (!path && path !== '') {
@@ -202,4 +202,4 @@
     return Entity;
 })();
 
-FIRE.Entity = Entity;
+Fire.Entity = Entity;

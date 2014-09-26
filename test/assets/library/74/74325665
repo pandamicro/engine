@@ -1,6 +1,6 @@
 [
     {
-        "__type__": "FIRE.Scene",
+        "__type__": "Fire.Scene",
         "entities": [
             {
                 "__id__": 1
@@ -8,7 +8,7 @@
         ]
     },
     {
-        "__type__": "FIRE.Entity",
+        "__type__": "Fire.Entity",
         "_active": true,
         "_components": [
             {
@@ -24,7 +24,7 @@
         }
     },
     {
-        "__type__": "FIRE.Transform",
+        "__type__": "Fire.Transform",
         "entity": {
             "__id__": 1
         },
@@ -32,19 +32,19 @@
         "_parent": null,
         "_children": [],
         "_position": {
-            "__type__": "FIRE.Vec2",
+            "__type__": "Fire.Vec2",
             "x": 0,
             "y": 0
         },
         "_rotation": 0,
         "_scale": {
-            "__type__": "FIRE.Vec2",
+            "__type__": "Fire.Vec2",
             "x": 1,
             "y": 1
         }
     },
     {
-        "__type__": "FIRE.SpriteRenderer",
+        "__type__": "Fire.SpriteRenderer",
         "entity": {
             "__id__": 1
         },

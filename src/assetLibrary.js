@@ -32,7 +32,7 @@ var AssetLibrary = (function () {
     /**
      * the loading uuid's callbacks
      */
-    var _uuidToCallbacks = new FIRE.CallbacksInvoker();
+    var _uuidToCallbacks = new Fire.CallbacksInvoker();
 
     // publics
 
@@ -48,7 +48,7 @@ var AssetLibrary = (function () {
          * 
          * @param {string} uuid
          * @param {AssetLibrary~loadCallback} [callback] - the callback to receive the asset
-         * @param {FIRE._DeserializeInfo} [info] - reused temp obj
+         * @param {Fire._DeserializeInfo} [info] - reused temp obj
          */
         loadAssetByUuid: function (uuid, callback, info) {
             if (typeof uuid !== 'string') {
@@ -75,7 +75,7 @@ var AssetLibrary = (function () {
 
             // step 4
             if (!url) {
-                url = _libraryBase + uuid.substring(0, 2) + FIRE.Path.sep + uuid;
+                url = _libraryBase + uuid.substring(0, 2) + Fire.Path.sep + uuid;
             }
 
             // step 5
@@ -91,13 +91,13 @@ var AssetLibrary = (function () {
                         info.reset();
                     }
                     else {
-                        info = new FIRE._DeserializeInfo();
+                        info = new Fire._DeserializeInfo();
                     }
 
 
                     // deserialize asset
                     Engine._canModifyCurrentScene = false;
-                    var asset = FIRE.deserialize(json, info, FIRE.isEditor);
+                    var asset = Fire.deserialize(json, info, Fire.isEditor);
                     Engine._canModifyCurrentScene = true;
                     
                     // load depends
@@ -108,7 +108,7 @@ var AssetLibrary = (function () {
 
                     if (info.hostProp) {
                         // load depends host objects
-                        var attrs = FIRE.attr(asset.constructor, info.hostProp);
+                        var attrs = Fire.attr(asset.constructor, info.hostProp);
                         var hostType = attrs.hostType;
                         if (hostType === 'Image') {
                             hostLoaded = false;
@@ -160,7 +160,7 @@ var AssetLibrary = (function () {
 
         /**
          * @callback AssetLibrary~loadCallback
-         * @param {FIRE.Asset} asset - if failed, asset will be null
+         * @param {Fire.Asset} asset - if failed, asset will be null
          * @param {string} [error] - error info, if succeed, error will be empty or nil
          */
 
@@ -169,8 +169,8 @@ var AssetLibrary = (function () {
          * Fireball will reload the asset from disk or remote if loadAssetByUuid being called again.
          * 如果还有地方引用到asset，除非destroyAsset为true，否则不应该执行这个方法。
          * 
-         * @method FIRE.AssetLibrary.unloadAsset
-         * @param {FIRE.Asset} asset
+         * @method Fire.AssetLibrary.unloadAsset
+         * @param {Fire.Asset} asset
          * @param {boolean} [destroyAsset=false] - When destroyAsset is true, if there are objects 
          *                                         referencing the asset, the references will become invalid.
          */
@@ -187,12 +187,12 @@ var AssetLibrary = (function () {
 
         /**
          * init the asset library
-         * @method FIRE.AssetLibrary.init
+         * @method Fire.AssetLibrary.init
          * @param {string} baseUrl
          * @param {object} [uuidToUrl]
          */
         init: function (libraryPath, uuidToUrl) {
-            _libraryBase = FIRE.Path.setEndWithSep(libraryPath);
+            _libraryBase = Fire.Path.setEndWithSep(libraryPath);
             //console.log('[AssetLibrary] library: ' + _libraryBase);
 
             _uuidToUrl = uuidToUrl;
@@ -200,7 +200,7 @@ var AssetLibrary = (function () {
 
         ///**
         // * temporary flag for deserializing assets
-        // * @property {boolean} FIRE.AssetLibrary.isLoadingAsset
+        // * @property {boolean} Fire.AssetLibrary.isLoadingAsset
         // */
         //isLoadingAsset: false,
     };
@@ -208,4 +208,4 @@ var AssetLibrary = (function () {
     return AssetLibrary;
 })();
 
-FIRE.AssetLibrary = AssetLibrary;
+Fire.AssetLibrary = AssetLibrary;

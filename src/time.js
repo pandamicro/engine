@@ -11,7 +11,7 @@
     var startTime = 0;
 
     /**
-     * @method FIRE.Time._update
+     * @method Fire.Time._update
      * @param {boolean} [paused=false] if true, only realTime will be updated
      * @private
      */ 
@@ -40,4 +40,4 @@
     return Time;
 })();
 
-FIRE.Time = Time;
+Fire.Time = Time;

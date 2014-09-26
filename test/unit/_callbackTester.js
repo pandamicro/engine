@@ -1,6 +1,6 @@
 ﻿// jshint ignore: start
 
-var CallbackTester = FIRE.define('', FIRE.Component, function () {
+var CallbackTester = Fire.define('', Fire.Component, function () {
     CallbackTester.$super.call(this);
     this._expects = [];
     this._messages = [];

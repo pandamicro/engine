@@ -14,13 +14,13 @@ largeModule('AssetLibrary', {
         AssetLibrary.init(libPath);
     }
 });
-AssetLibrary = FIRE.AssetLibrary;
+AssetLibrary = Fire.AssetLibrary;
 
 asyncTest('load asset with host', function () {
-    //var texture = new FIRE.Texture();
+    //var texture = new Fire.Texture();
     //texture.height = 123;
     //texture.width = 321;
-    //console.log(FIRE.serialize(texture));
+    //console.log(Fire.serialize(texture));
     
     AssetLibrary.loadAssetByUuid(grossini_uuid, function (asset) {
         clearTimeout(timerId);
@@ -37,10 +37,10 @@ asyncTest('load asset with host', function () {
 });
 
 asyncTest('load asset with depends asset', function () {
-    //var sprite = new FIRE.Sprite();
-    //sprite.texture = new FIRE.Texture();
+    //var sprite = new Fire.Sprite();
+    //sprite.texture = new Fire.Texture();
     //sprite.texture._uuid = grossini_uuid;
-    //console.log(FIRE.serialize(sprite));
+    //console.log(Fire.serialize(sprite));
 
     AssetLibrary.loadAssetByUuid(grossiniSprite_uuid, function (asset) {
         clearTimeout(timerId);

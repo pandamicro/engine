@@ -2,10 +2,10 @@
 
     /**
      * @class
-     * @alias FIRE.Transform
-     * @extends FIRE.Component
+     * @alias Fire.Transform
+     * @extends Fire.Component
      */ 
-    var Transform = FIRE.define('FIRE.Transform', Component, function () {
+    var Transform = Fire.define('Fire.Transform', Component, function () {
         Component.call(this);
         
         this._position = new Vec2(0, 0);
@@ -16,19 +16,19 @@
         //this._hierarchyChangedListeners = null;
     });
 
-    Transform.prop('_parent', null, FIRE.HideInInspector);
-    Transform.prop('_children', [], FIRE.HideInInspector);
-    Transform.prop('_position', null, FIRE.HideInInspector);
-    Transform.prop('_rotation', 0, FIRE.HideInInspector);
-    Transform.prop('_scale', null, FIRE.HideInInspector);
-    Transform.prop('_index', null, FIRE.HideInInspector);
+    Transform.prop('_parent', null, Fire.HideInInspector);
+    Transform.prop('_children', [], Fire.HideInInspector);
+    Transform.prop('_position', null, Fire.HideInInspector);
+    Transform.prop('_rotation', 0, Fire.HideInInspector);
+    Transform.prop('_scale', null, Fire.HideInInspector);
+    Transform.prop('_index', null, Fire.HideInInspector);
 
     // properties
 
     /**
      * The parent of the transform.
      * Changing the parent will keep the local space position, rotation and scale the same but modify the world space position, scale and rotation.
-     * @member {FIRE.Transform} FIRE.Transform#parent
+     * @member {Fire.Transform} Fire.Transform#parent
      */
     Object.defineProperty(Transform.prototype, 'parent', {
         get: function () {
@@ -72,7 +72,7 @@
 
     /**
      * Get the amount of children
-     * @member {number} FIRE.Transform#childCount
+     * @member {number} Fire.Transform#childCount
      */
     Object.defineProperty(Transform.prototype, 'childCount', {
         get: function () {
@@ -84,7 +84,7 @@
 
     /**
      * The local position in its parent's coordinate system
-     * @member {FIRE.Vec2} FIRE.Transform#position
+     * @member {Fire.Vec2} Fire.Transform#position
      */
     Transform.getset('position', 
         function () {
@@ -98,7 +98,7 @@
 
     /**
      * The local rotation in radians relative to the parent
-     * @member {number} FIRE.Transform#rotation
+     * @member {number} Fire.Transform#rotation
      */
     Transform.getset('rotation', 
         function () {
@@ -111,7 +111,7 @@
 
     /**
      * The local scale factor relative to the parent
-     * @member {FIRE.Vec2} FIRE.Transform#scale
+     * @member {Fire.Vec2} Fire.Transform#scale
      * @default new Vec2(1, 1)
      */
     Transform.getset('scale',
@@ -215,9 +215,9 @@
 
     /**
      * Get the local matrix that transforms a point from local space into parents space.
-     * @method FIRE.Transform#getLocalMatrix
-     * @param {FIRE.Matrix2x3} [out]
-     * @returns {FIRE.Matrix2x3}
+     * @method Fire.Transform#getLocalMatrix
+     * @param {Fire.Matrix2x3} [out]
+     * @returns {Fire.Matrix2x3}
      */
     Transform.prototype.getLocalMatrix = function (out) {
         out = out || new Matrix2x3();
@@ -242,14 +242,14 @@
     /**
      * Get the world transform matrix that transforms a point from local space into world space.
      * @method Transform#getLocalToWorldMatrix
-     * @param {FIRE.Matrix2x3} [out]
-     * @returns {FIRE.Matrix2x3}
+     * @param {Fire.Matrix2x3} [out]
+     * @returns {Fire.Matrix2x3}
      */
     Transform.prototype.getLocalToWorldMatrix = function (out) {
         // todo, merge with this._worldTransform
         out = out || new Matrix2x3();
         this.getLocalMatrix(out);
-        var t = new FIRE.Matrix2x3();
+        var t = new Fire.Matrix2x3();
         for (var p = this._parent; p !== null; p = p._parent) {
             out.prepend(p.getLocalMatrix(t));
         }
@@ -259,8 +259,8 @@
     /**
      * Get the inverse world transform matrix that transforms a point from world space into local space.
      * @method Transform#getWorldToLocalMatrix
-     * @param {FIRE.Matrix2x3} [out]
-     * @returns {FIRE.Matrix2x3}
+     * @param {Fire.Matrix2x3} [out]
+     * @returns {Fire.Matrix2x3}
      */
     Transform.prototype.getWorldToLocalMatrix = function (out) {
         return this.getLocalToWorldMatrix(out).invert();
@@ -283,7 +283,7 @@
 
     /**
      * Get the sibling index.
-     * @method FIRE.Transform#getSiblingIndex
+     * @method Fire.Transform#getSiblingIndex
      * @returns {number}
      */
     Transform.prototype.getSiblingIndex = function () {
@@ -297,9 +297,9 @@
 
     /**
      * Get the indexed sibling.
-     * @method FIRE.Transform#getSibling
+     * @method Fire.Transform#getSibling
      * @param {number} index
-     * @returns {FIRE.Transform}
+     * @returns {Fire.Transform}
      */
     Transform.prototype.getSibling = function (index) {
         if (this._parent) {
@@ -312,7 +312,7 @@
 
     /**
      * Set the sibling index.
-     * @method FIRE.Transform#setSiblingIndex
+     * @method Fire.Transform#setSiblingIndex
      * @param {number} index
      */
     Transform.prototype.setSiblingIndex = function (index) {
@@ -335,7 +335,7 @@
     
     /**
      * Move the transform to the top.
-     * @method FIRE.Transform#setAsFirstSibling
+     * @method Fire.Transform#setAsFirstSibling
      */
     Transform.prototype.setAsFirstSibling = function () {
         this.setSiblingIndex(0);
@@ -343,7 +343,7 @@
 
     /**
      * Move the transform to the bottom.
-     * @method FIRE.Transform#setAsFirstSibling
+     * @method Fire.Transform#setAsFirstSibling
      */
     Transform.prototype.setAsLastSibling = function () {
         if (this._parent) {
@@ -361,8 +361,8 @@
     // * you must destroy the Component.
     // * 这里不支持自定义回调，因为如果忘了反注册很容易就会内存泄漏。
     // * 
-    // * @method FIRE.Transform#_addListener
-    // * @param {FIRE.Component} component - the component to be invoked.
+    // * @method Fire.Transform#_addListener
+    // * @param {Fire.Component} component - the component to be invoked.
     // * @private
     // */
     //Transform.prototype._addListener = function (component) {
@@ -413,4 +413,4 @@
     return Transform;
 })();
 
-FIRE.Transform = Transform;
+Fire.Transform = Transform;

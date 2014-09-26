@@ -5,7 +5,7 @@ largeModule('Engine', {
             Engine.init();
         }
         // force clear scene
-        Engine._setCurrentScene(new FIRE._Scene());
+        Engine._setCurrentScene(new Fire._Scene());
         //console.log('setup');
         Engine.stop();
     },
