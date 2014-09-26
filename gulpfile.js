@@ -34,6 +34,7 @@ var paths = {
         'src/assetLibrary.js',
         'src/platform/h5/engine.js',
         // editor only
+        'src/platform/editor/entity.js',
         'src/platform/editor/scene.js',
         'src/platform/editor/engine.js',
         'src/platform/editor/renderContext.js',

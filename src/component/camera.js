@@ -61,7 +61,7 @@
     //Camera.prototype.onLoad = function () {
     //};
     Camera.prototype.onEnable = function () {
-        if (!(this.entity._objFlags & FIRE.ObjectFlags.SceneGizmo)) {
+        if (!(this.entity._objFlags & FIRE._ObjectFlags.SceneGizmo)) {
             Engine._scene.camera = this;
         }
     };

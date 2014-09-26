@@ -7,7 +7,7 @@
      * @returns {PIXI.DisplayObject}
      */
     RenderContext.prototype.getDisplayObject = function (renderer) {
-        var isSceneView = this.scene;
+        var isSceneView = this.sceneView;
         return isSceneView ? renderer._renderObjInScene : renderer._renderObj;
     };
 
@@ -19,8 +19,8 @@
         var entities = Engine._scene.entities;
         var pixiGameNodes = this.stage.children;
         var pixiSceneNodes;
-        if (this.scene) {
-            pixiSceneNodes = this.scene.stage.children;
+        if (this.sceneView) {
+            pixiSceneNodes = this.sceneView.stage.children;
         }
         if (pixiSceneNodes && pixiSceneNodes.length !== entities.length) {
             console.error('root elements count not matched in scene view');

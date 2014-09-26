@@ -53,22 +53,24 @@
             sprite.width = 40;
             sprite.height = 40;
             spriteRenderer.sprite = sprite;
+
+            bigSprite.getComponent(FIRE.SpriteRenderer).sprite = sprite;
         };
         img.src = '../test/assets/atlas (1).png';
 
-        var c = new FIRE.Entity();
-        c._objFlags |= FIRE.ObjectFlags.SceneGizmo;
+        var c = FIRE.Entity._createWithFlags(FIRE._ObjectFlags.SceneGizmo);
         var cam = sceneView.camera = c.addComponent(FIRE.Camera);
         cam.transform.update = function () {
             this.rotation += 0.03;
         };
         c.transform.position = new FIRE.Vec2(100, 100);
 
-        Engine._renderContext.checkMatchCurrentScene();
+        FIRE.Engine._renderContext.checkMatchCurrentScene();
 
-
-
-
+        var bigSprite = new FIRE.Entity();
+        bigSprite.addComponent(FIRE.SpriteRenderer);
+        bigSprite.transform.scale = new FIRE.Vec2(10, 10);
+        bigSprite.transform.setAsFirstSibling();
 
 
 

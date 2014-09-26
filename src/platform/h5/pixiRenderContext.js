@@ -30,7 +30,7 @@ var RenderContext = (function () {
 
         //this.showGizmos = showGizmos;
 
-        // the shared render context that allows display the object which marked as FIRE.ObjectFlags.SceneGizmo
+        // the shared render context that allows display the object which marked as FIRE._ObjectFlags.SceneGizmo
         this.sceneView = null;
 
         // binded camera, if supplied the scene will always rendered by this camera
@@ -65,7 +65,7 @@ var RenderContext = (function () {
         set: function (value) {
             this.renderer.resize(value.x, value.y);
             // auto resize scene view camera
-            if (this._camera && (this._camera.entity._objFlags & FIRE.ObjectFlags.EditorOnly)) {
+            if (this._camera && (this._camera.entity._objFlags & FIRE._ObjectFlags.EditorOnly)) {
                 this._camera.size = value.y;
             }
         }

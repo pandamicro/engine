@@ -9,7 +9,7 @@
 
         this.name = typeof name !== 'undefined' ? name : "New Entity";
 
-        this._objFlags |= Scene._createWithFlags;
+        this._objFlags |= Entity._createWithFlags;
 
         if (FIRE._isDeserializing) {
             // create by deserializer
@@ -36,7 +36,9 @@
     FIRE.extend(Entity, _super);
     FIRE.registerClass("FIRE.Entity", Entity);
 
+    ////////////////////////////////////////////////////////////////////
     // static
+    ////////////////////////////////////////////////////////////////////
 
     /**
      * Finds an entity by hierarchy path, the path is case-sensitive, and must start with a '/' character.
@@ -58,7 +60,10 @@
         return Engine._scene.findEntity(path);
     };
 
+    ////////////////////////////////////////////////////////////////////
     // properties
+    ////////////////////////////////////////////////////////////////////
+    
     Object.defineProperty(Entity.prototype, 'active', {
         get: function () {
             return this._active;

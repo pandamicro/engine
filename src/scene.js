@@ -27,14 +27,6 @@
     // static
     ////////////////////////////////////////////////////////////////////
 
-    /**
-     * the temp property that indicates the current creating entity should 
-     * binded with supplied object flags.
-     * 
-     * @property {number} Scene._createWithFlags
-     * @private
-     */
-    Scene._createWithFlags = 0;
 
     ////////////////////////////////////////////////////////////////////
     // traversal operations
