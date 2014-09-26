@@ -1,18 +1,7 @@
 ﻿
-module('Camera');
-
-function resize (w, h) {
-    if (!Engine.inited) {
-        Engine.init(w, h);
-    }
-    else {
-        Engine.screenSize = new V2(w, h);
-    }
-}
+module('Camera', TestEnv);
 
 test('viewportToScreen', function () {
-    resize(256, 512);
-
     var cam = new Camera();
 
     ok(cam.viewportToScreen(V2.zero).equals(V2.zero));
@@ -21,8 +10,6 @@ test('viewportToScreen', function () {
 });
 
 test('screenToViewport', function () {
-    resize(256, 512);
-
     var cam = new Camera();
 
     ok(cam.screenToViewport(V2.zero).equals(V2.zero));
@@ -31,8 +18,6 @@ test('screenToViewport', function () {
 });
 
 test('screenToWorld', function () {
-    resize(256, 512);
-
     var ent = new Entity();
     var cam = ent.addComponent(Camera);
 
@@ -49,8 +34,6 @@ test('screenToWorld', function () {
 });
 
 test('world to screen', function () {
-    resize(256, 512);
-
     var ent = new Entity();
     var cam = ent.addComponent(Camera);
 

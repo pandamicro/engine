@@ -1,20 +1,5 @@
 ﻿
-module('Engine.loadScene', {
-    setup: function () {
-        if (!Engine.inited) {
-            Engine.init();
-        }
-        TestOnly.update = null;
-        // force clear scene
-        Engine._setCurrentScene(new Fire._Scene());
-        //console.log('setup');
-        Engine.stop();
-    },
-    teardown: function () {
-        //console.log('teardown');
-        Engine.stop();
-    }
-});
+module('Engine.loadScene', TestEnv);
 
 var assetDir = '../assets';
 var projPath = assetDir;

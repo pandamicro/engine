@@ -1,12 +1,6 @@
 ﻿// jshint ignore: start
 
-largeModule('Transform', {
-    setup: function () {
-        if (!Engine.inited) {
-            Engine.init();
-        }
-    }
-});
+largeModule('Transform', TestEnv);
 
 test('test', function () {
     var parentEntity = new Fire.Entity();

@@ -1,6 +1,5 @@
 ﻿module('time');
 
-var Time = Fire.Time;
 var tolerance = 0.000001;
 
 test('test restart', function() {

@@ -13,9 +13,10 @@
 
     /**
      * A debug method whick checks whether the render context matches the current scene.
+     * @param {boolean} [fastCheck=false]
      * @returns {boolean}
      */
-    RenderContext.prototype.checkMatchCurrentScene = function () {
+    RenderContext.prototype.checkMatchCurrentScene = function (fastCheck) {
         var entities = Engine._scene.entities;
         var pixiGameNodes = this.stage.children;
         var pixiSceneNodes;
@@ -25,6 +26,13 @@
         if (pixiSceneNodes && pixiSceneNodes.length !== entities.length) {
             console.error('root elements count not matched in scene view');
             return false;
+        }
+        if (fastCheck) {
+            if (pixiGameNodes.length > entities.length) {
+                console.error('root elements count not matched in game view');
+                return false;
+            }
+            return true;
         }
         var g = 0;
         for (var i = 0; i < entities.length; i++) {

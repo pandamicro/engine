@@ -1,20 +1,5 @@
 ﻿// jshint ignore: start
-largeModule('Engine', {
-    setup: function () {
-        if (!Engine.inited) {
-            Engine.init();
-        }
-        // force clear scene
-        Engine._setCurrentScene(new Fire._Scene());
-        //console.log('setup');
-        Engine.stop();
-    },
-    teardown: function () {
-        //console.log('teardown');
-        Engine.stop();
-        TestOnly.update = null;
-    }
-});
+largeModule('Engine', TestEnv);
 
 var asyncEnd = function () {
     // force stop to ensure start will only called once

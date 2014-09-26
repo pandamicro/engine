@@ -2,8 +2,6 @@
 
 module('ticker');
 
-var Ticker = TestOnly.Ticker;
-
 asyncTest('test now', function() {
     ok(typeof Ticker.now() === 'number');
     ok(Ticker.now() >= 0);

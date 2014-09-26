@@ -1,16 +1,6 @@
 ﻿// jshint ignore: start
 
-largeModule('Entity', {
-    setup: function () {
-        if (!Engine.inited) {
-            Engine.init();
-        }
-        // force clear scene
-        Engine._setCurrentScene(new Fire._Scene());
-    }
-});
-
-var Entity = Fire.Entity;
+largeModule('Entity', TestEnv);
 
 test('basic test', function () {
     var entity = new Entity();

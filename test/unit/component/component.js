@@ -1,12 +1,7 @@
 ﻿// jshint ignore: start
 
-largeModule('Component', {
-    setup: function () {
-        if (!Engine.inited) {
-            Engine.init();
-        }
-    }
-});
+largeModule('Component', TestEnv);
+
 /*
 test('onHierarchyChanged invoked by setting parent', function () {
     var MyComp = Fire.define('', Component);
