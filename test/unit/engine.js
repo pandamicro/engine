@@ -163,7 +163,7 @@ asyncTest('stop -> step -> step', function () {
         var lastTime = Time.time;
         var lastRealTime = Time.realTime;
         var lastFrame = Time.frameCount;
-        //console.log('Ticker.now() ' + Ticker.now());
+        //Fire.log('Ticker.now() ' + Ticker.now());
 
         TestOnly.update = function (updateLogic) {
             // render frame 2, step frame 1
@@ -176,7 +176,7 @@ asyncTest('stop -> step -> step', function () {
                 // render frame 3, step frame 2
                 strictEqual(updateLogic, true, 'should update logic if stepping');
                 ok(Time.time > lastTime, 'time elapsed');
-                //console.log('Ticker.now() ' + Ticker.now());
+                //Fire.log('Ticker.now() ' + Ticker.now());
                 ok(Time.realTime > lastRealTime, 'real time should elpased between at least 2 frame');
                 strictEqual(Time.frameCount, lastFrame + 1, 'frame increased');
 

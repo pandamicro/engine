@@ -37,15 +37,15 @@
         set: function (value) {
             if (this._parent !== value) {
                 if (value === this) {
-                    console.warn("A transform can't be set as the parent of itself.");
+                    Fire.warn("A transform can't be set as the parent of itself.");
                     return;
                 }
                 if (value && !(value instanceof Transform)) {
                     if (value instanceof Entity) {
-                        console.error('transform.parent can not be an Entity, use entity.transform instead.');
+                        Fire.error('transform.parent can not be an Entity, use entity.transform instead.');
                     }
                     else {
-                        console.error('transform.parent must be instance of Transform (or must be null)');
+                        Fire.error('transform.parent must be instance of Transform (or must be null)');
                     }
                     return;
                 }
@@ -149,7 +149,7 @@
     };
 
     Transform.prototype.destroy = function () {
-        console.error("Not allowed to destroy the transform. Please destroy the entity instead.");
+        Fire.error("Not allowed to destroy the transform. Please destroy the entity instead.");
         return;
     };
     
@@ -375,7 +375,7 @@
     //        }
     //    //}
     //    //else {
-    //    //    console.error("Can not listen other entity's onHierarchyChanged event");
+    //    //    Fire.error("Can not listen other entity's onHierarchyChanged event");
     //    //}
     //};
 

@@ -18,7 +18,7 @@ asyncTest('load asset with host', function () {
     //var texture = new Fire.Texture();
     //texture.height = 123;
     //texture.width = 321;
-    //console.log(Fire.serialize(texture));
+    //Fire.log(Fire.serialize(texture));
     
     AssetLibrary.loadAssetByUuid(grossini_uuid, function (asset) {
         clearTimeout(timerId);
@@ -38,7 +38,7 @@ asyncTest('load asset with depends asset', function () {
     //var sprite = new Fire.Sprite();
     //sprite.texture = new Fire.Texture();
     //sprite.texture._uuid = grossini_uuid;
-    //console.log(Fire.serialize(sprite));
+    //Fire.log(Fire.serialize(sprite));
 
     AssetLibrary.loadAssetByUuid(grossiniSprite_uuid, function (asset) {
         clearTimeout(timerId);

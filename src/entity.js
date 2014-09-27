@@ -50,11 +50,11 @@
      */
     Entity.find = function (path) {
         if (!path && path !== '') {
-            console.error('Argument must be non-nil');
+            Fire.error('Argument must be non-nil');
             return;
         }
         if (path[0] !== '/') {
-            console.error("Path must start with a '/' character");
+            Fire.error("Path must start with a '/' character");
             return;
         }
         return Engine._scene.findEntity(path);
@@ -111,15 +111,15 @@
 
     Entity.prototype.addComponent = function (constructor) {
         if (this._objFlags & Destroying) {
-            console.error('isDestroying');
+            Fire.error('isDestroying');
             return;
         }
         if (!constructor) {
-            console.error('Argument must be non-nil');
+            Fire.error('Argument must be non-nil');
             return;
         }
         if (typeof constructor !== 'function') {
-            console.error("The component to add must be a constructor");
+            Fire.error("The component to add must be a constructor");
             return;
         }
         var component = new constructor();
@@ -135,7 +135,7 @@
 
     Entity.prototype.getComponent = function (constructor) {
         if (!constructor) {
-            console.error('Argument must be non-nil');
+            Fire.error('Argument must be non-nil');
             return;
         }
         for (var c = 0; c < this._components.length; ++c) {
@@ -149,7 +149,7 @@
 
     Entity.prototype._removeComponent = function (component) {
         /*if (!component) {
-            console.error('Argument must be non-nil');
+            Fire.error('Argument must be non-nil');
             return;
         }*/
         if (!(this._objFlags & Destroying)) {
@@ -162,7 +162,7 @@
                 component.entity = null;
             }
             else if (component.entity !== this) {
-                console.error("Component not owned by this entity");
+                Fire.error("Component not owned by this entity");
             }
         }
     };

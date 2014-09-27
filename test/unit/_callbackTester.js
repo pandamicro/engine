@@ -87,7 +87,7 @@ CallbackTester.prototype._assert = function (actual) {
     }
     strictEqual(actual, expect, error || message || '' + expect + ' called');
     this._unexpect = {};
-    //console.log('CallbackTester: ' + actual);
+    //Fire.log('CallbackTester: ' + actual);
 };
 
 CallbackTester.prototype.onLoad = function () {

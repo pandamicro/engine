@@ -115,7 +115,7 @@ var AssetLibrary = (function () {
                             var hostUrl = url + '.host';
                             LoadManager.load(ImageLoader, hostUrl, function (img, error) {
                                 if (error) {
-                                    console.error('[AssetLibrary] Failed to load image of "' + dependsUuid + '", ' + error);
+                                    Fire.error('[AssetLibrary] Failed to load image of "' + dependsUuid + '", ' + error);
                                 }
                                 asset[info.hostProp] = img;
                                 hostLoaded = true;
@@ -139,7 +139,7 @@ var AssetLibrary = (function () {
                         var prop = info.uuidPropList[i];
                         AssetLibrary.loadAssetByUuid(dependsUuid, function (dependsAsset, error) {
                             if (error) {
-                                console.error('[AssetLibrary] Failed to load "' + dependsUuid + '", ' + error);
+                                Fire.error('[AssetLibrary] Failed to load "' + dependsUuid + '", ' + error);
                             }
                             // update reference
                             obj[prop] = dependsAsset;
@@ -176,7 +176,7 @@ var AssetLibrary = (function () {
          */
         unloadAsset: function (asset, destroyAsset) {
             if (!asset) {
-                console.error('[AssetLibrary] unloadAsset: asset must be non-nil');
+                Fire.error('[AssetLibrary] unloadAsset: asset must be non-nil');
                 return;
             }
             if (destroyAsset && asset.isValid) {
@@ -193,7 +193,7 @@ var AssetLibrary = (function () {
          */
         init: function (libraryPath, uuidToUrl) {
             _libraryBase = Fire.Path.setEndWithSep(libraryPath);
-            //console.log('[AssetLibrary] library: ' + _libraryBase);
+            //Fire.log('[AssetLibrary] library: ' + _libraryBase);
 
             _uuidToUrl = uuidToUrl;
         },

@@ -66,7 +66,7 @@ var Engine = (function () {
             else {
                 // lock
                 if (this._scene && lockingScene) {
-                    console.error('another scene still locked: ' + lockingScene.debugName);
+                    Fire.error('another scene still locked: ' + lockingScene.debugName);
                 }
                 lockingScene = this._scene;
                 this._scene = null;
@@ -106,7 +106,7 @@ var Engine = (function () {
      */
     Engine.init = function ( w, h, canvas, scene ) {
         if (inited) {
-            console.error('Engine already inited');
+            Fire.error('Engine already inited');
             return;
         }
         inited = true;
@@ -118,7 +118,7 @@ var Engine = (function () {
     
     Engine.play = function () {
         if (isPlaying && !isPaused) {
-            console.warn('Fireball is already playing');
+            Fire.warn('Fireball is already playing');
             return;
         }
         if (isPlaying && isPaused) {
@@ -165,7 +165,7 @@ var Engine = (function () {
     };
 
     var doUpdate = function (updateLogic) {
-        //console.log('canUpdateLogic: ' + updateLogic + ' Time: ' + Time);
+        //Fire.log('canUpdateLogic: ' + updateLogic + ' Time: ' + Time);
         // TODO: scheduler
         if (updateLogic) {
             Engine._scene.update();
@@ -210,7 +210,7 @@ var Engine = (function () {
      */
     Engine._setCurrentScene = function (scene) {
         if (!scene) {
-            console.error('Argument must be non-nil');
+            Fire.error('Argument must be non-nil');
             return;
         }
         // unload scene
@@ -236,7 +236,7 @@ var Engine = (function () {
         isLoadingScene = true;
         AssetLibrary.loadAssetByUuid(uuid, function (scene, error) {
             if (error) {
-                console.error('Failed to load scene: ' + error);
+                Fire.error('Failed to load scene: ' + error);
                 isLoadingScene = false;
                 callback(scene, error);
                 return;

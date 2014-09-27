@@ -307,7 +307,7 @@ var RenderContext = (function () {
             }
         }
         else {
-            console.error('' + target + ' must be added to render context first!');
+            Fire.error('' + target + ' must be added to render context first!');
         }
     };
 
@@ -324,7 +324,7 @@ var RenderContext = (function () {
             }
         }
         else {
-            console.error('' + target + ' must be added to render context first!');
+            Fire.error('' + target + ' must be added to render context first!');
         }
     };
 
@@ -350,7 +350,7 @@ var RenderContext = (function () {
     //        }
     //    }
     //    else {
-    //        console.error('' + target + ' must be added to render context first!');
+    //        Fire.error('' + target + ' must be added to render context first!');
     //    }
     //    return false;
     //};

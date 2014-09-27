@@ -24,12 +24,12 @@
             pixiSceneNodes = this.sceneView.stage.children;
         }
         if (pixiSceneNodes && pixiSceneNodes.length !== entities.length) {
-            console.error('root elements count not matched in scene view');
+            Fire.error('root elements count not matched in scene view');
             return false;
         }
         if (fastCheck) {
             if (pixiGameNodes.length > entities.length) {
-                console.error('root elements count not matched in game view');
+                Fire.error('root elements count not matched in game view');
                 return false;
             }
             return true;
@@ -40,20 +40,20 @@
             if (pixiSceneNodes) {
                 var sceneNode = pixiSceneNodes[i];
                 if (ent.transform._pixiObjInScene !== sceneNode) {
-                    console.error('root transform does not match pixi scene node: ' + ent.name);
+                    Fire.error('root transform does not match pixi scene node: ' + ent.name);
                     return false;
                 }
             }
             if (!(ent._objFlags & SceneGizmo)) {
                 var gameNode = pixiGameNodes[g++];
                 if (ent.transform._pixiObj !== gameNode) {
-                    console.error('root transform does not match pixi game node: ' + ent.name);
+                    Fire.error('root transform does not match pixi game node: ' + ent.name);
                     return false;
                 }
             }
         }
         if (g !== pixiGameNodes.length) {
-            console.error('pixi has extra game node, pixi count: ' + pixiGameNodes.length + ' expected count: ' + g);
+            Fire.error('pixi has extra game node, pixi count: ' + pixiGameNodes.length + ' expected count: ' + g);
             return false;
         }
         // 目前不测试renderer

@@ -129,7 +129,7 @@
             entities.splice(index, 1);
         }
         else {
-            console.error('entity ' + _entity + ' not contains in roots of hierarchy');
+            Fire.error('entity ' + _entity + ' not contains in roots of hierarchy');
         }
     };
 
