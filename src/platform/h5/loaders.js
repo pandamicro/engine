@@ -82,7 +82,7 @@ function _LoadFromXHR(url, callback, onProgress, responseType) {
 }
 
 function TextLoader(url, callback, onProgress) {
-    _LoadFromXHR(url, function(xhr, error) {
+    var cb = callback && function(xhr, error) {
         if (xhr && xhr.responseText) {
             callback(xhr.responseText);
         }
@@ -90,5 +90,6 @@ function TextLoader(url, callback, onProgress) {
             callback(null, 'LoadText: "' + url + 
                 '" seems to be unreachable or the file is empty. InnerMessage: ' + error);
         }
-    }, onProgress);
+    };
+    _LoadFromXHR(url, cb, onProgress);
 }

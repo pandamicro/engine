@@ -80,7 +80,7 @@ var AssetLibrary = (function () {
 
             // step 5
             LoadManager.load(TextLoader, url, 
-                function (json, error) {
+                function onFileLoaded(json, error) {
                     if (error) {
                         _uuidToCallbacks.invokeAndRemove(uuid, null, error);
                         return;
@@ -113,7 +113,7 @@ var AssetLibrary = (function () {
                         if (hostType === 'Image') {
                             hostLoaded = false;
                             var hostUrl = url + '.host';
-                            LoadManager.load(ImageLoader, hostUrl, function (img, error) {
+                            LoadManager.load(ImageLoader, hostUrl, function onHostObjLoaded (img, error) {
                                 if (error) {
                                     Fire.error('[AssetLibrary] Failed to load image of "' + dependsUuid + '", ' + error);
                                 }
@@ -137,7 +137,7 @@ var AssetLibrary = (function () {
                         var dependsUuid = info.uuidList[i];
                         var obj = info.uuidObjList[i];
                         var prop = info.uuidPropList[i];
-                        AssetLibrary.loadAssetByUuid(dependsUuid, function (dependsAsset, error) {
+                        AssetLibrary.loadAssetByUuid(dependsUuid, function onDependsAssetLoaded (dependsAsset, error) {
                             if (error) {
                                 Fire.error('[AssetLibrary] Failed to load "' + dependsUuid + '", ' + error);
                             }

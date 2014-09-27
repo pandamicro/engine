@@ -12,7 +12,6 @@ largeModule('AssetLibrary', {
         AssetLibrary.init(libPath);
     }
 });
-AssetLibrary = Fire.AssetLibrary;
 
 asyncTest('load asset with host', function () {
     //var texture = new Fire.Texture();

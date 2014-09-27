@@ -16,6 +16,8 @@ var Entity = Fire.Entity;
 var Engine = Fire.Engine;
 var Camera = Fire.Camera;
 var Component = Fire.Component;
+var LoadManager = TestOnly.LoadManager;
+var AssetLibrary = Fire.AssetLibrary;
 
 var FO = Fire.FObject;
 var V2 = Fire.Vec2;
