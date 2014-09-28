@@ -90,7 +90,7 @@ var RenderContext = (function () {
     /**
      * @param {Fire.Transform} transform
      */
-    RenderContext.prototype.createNode = function (transform) {
+    RenderContext.prototype.onTransformCreated = function (transform) {
         if (!(transform.entity._objFlags & SceneGizmo)) {
             // TODO: what if parent is gizmo but children not?
             transform._pixiObj = new PIXI.DisplayObjectContainer();
@@ -109,13 +109,10 @@ var RenderContext = (function () {
     };
 
     /**
+     * removes a transform and all its children from scene
      * @param {Fire.Transform} transform
      */
-    RenderContext.prototype.removeNode = function (transform) {
-        if (transform.parent && (transform.parent.entity._objFlags & Destroying)) {
-            // parent already removed
-            return;
-        }
+    RenderContext.prototype.onTransformRemoved = function (transform) {
         if (!(transform.entity._objFlags & SceneGizmo)) {
             transform._pixiObj.parent.removeChild(transform._pixiObj);
             transform._pixiObj = null;
@@ -130,7 +127,7 @@ var RenderContext = (function () {
      * @param {Fire.Transform} transform
      * @param {Fire.Transform} oldParent
      */
-    RenderContext.prototype.updateNodeParent = function (transform, oldParent) {
+    RenderContext.prototype.onTransformParentChanged = function (transform, oldParent) {
         if (transform._pixiObj) {
             if (transform.parent) {
                 transform.parent._pixiObj.addChild(transform._pixiObj);
@@ -154,7 +151,7 @@ var RenderContext = (function () {
      * @param {number} newIndex
      * @param {number} oldIndex
      */
-    RenderContext.prototype.updateNodeSiblingIndex = function (transform, newIndex, oldIndex) {
+    RenderContext.prototype.onTransformIndexChanged = function (transform, newIndex, oldIndex) {
         var item = transform._pixiObj;
         var array = null;
         if (item) {
@@ -181,7 +178,7 @@ var RenderContext = (function () {
         }
     };
 
-    RenderContext.prototype.onLaunchScene = function (scene) {
+    RenderContext.prototype.onSceneLaunched = function (scene) {
         // attach root nodes
         var entities = scene.entities;
         var i = 0, len = entities.length;

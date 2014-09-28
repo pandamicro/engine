@@ -1,6 +1,9 @@
+
 var Engine = (function () {
 
-    var Engine = {};
+    var Engine = {
+        _editorCallback: editorCallback,
+    };
 
     var isPlaying = false;
     var isPaused = false;
@@ -222,8 +225,12 @@ var Engine = (function () {
 
         // launch scene
         Engine._scene = scene;
-        Engine._renderContext.onLaunchScene(scene);
         scene.onLaunch();
+
+        Engine._renderContext.onSceneLaunched(scene);
+        if (editorCallback.onSceneLaunched) {
+            editorCallback.onSceneLaunched(scene);
+        }
     };
 
     /**
@@ -238,16 +245,26 @@ var Engine = (function () {
             if (error) {
                 Fire.error('Failed to load scene: ' + error);
                 isLoadingScene = false;
-                callback(scene, error);
+                callback(null, error);
+                return;
+            }
+            if (!(scene instanceof Fire._Scene)) {
+                error = 'The asset ' + uuid + ' is not a scene';
+                Fire.error(error);
+                isLoadingScene = false;
+                callback(null, error);
                 return;
             }
             //scene.onReady();
             Engine._renderContext.onSceneLoaded(scene);
+            if (editorCallback.onSceneLoaded) {
+                editorCallback.onSceneLoaded(scene);
+            }
 
             Engine._setCurrentScene(scene);
 
             isLoadingScene = false;
-            callback(scene, error);
+            callback(scene);
         });
     };
 
