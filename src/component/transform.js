@@ -340,9 +340,9 @@
                 array.push(item);
             }
             // callback
-            Engine._renderContext.onTransformIndexChanged(this, index, oldIndex);
+            Engine._renderContext.onTransformIndexChanged(this, oldIndex, index);
             if (editorCallback.onTransformIndexChanged) {
-                editorCallback.onTransformIndexChanged(this, index, oldIndex);
+                editorCallback.onTransformIndexChanged(this, oldIndex, index);
             }
             //this._onHierarchyChanged(this, this.parent);
         }

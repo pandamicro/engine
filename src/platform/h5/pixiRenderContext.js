@@ -148,10 +148,10 @@ var RenderContext = (function () {
 
     /**
      * @param {Fire.Transform} transform
-     * @param {number} newIndex
      * @param {number} oldIndex
+     * @param {number} newIndex
      */
-    RenderContext.prototype.onTransformIndexChanged = function (transform, newIndex, oldIndex) {
+    RenderContext.prototype.onTransformIndexChanged = function (transform, oldIndex, newIndex) {
         var item = transform._pixiObj;
         var array = null;
         if (item) {

@@ -22,55 +22,59 @@ Fire._ObjectFlags.Destroying = Destroying;
  */
 var editorCallback = {
     /**
+     * @callback Fire.Engine._editorCallback~onTransformCreated
+     * @param {Fire.Transform} transform
+     */
+    /**
      * @property {Fire.Engine._editorCallback~onTransformCreated} Fire.Engine._editorCallback.onTransformCreated
      */
     onTransformCreated: null,
+
+    /**
+     * removes a transform and all its children from scene
+     * @callback Fire.Engine._editorCallback~onTransformRemoved
+     * @param {Fire.Transform} transform
+     */
     /**
      * @property {Fire.Engine._editorCallback~onTransformRemoved} Fire.Engine._editorCallback.onTransformRemoved
      */
     onTransformRemoved: null,
+
+    /**
+     * @callback Fire.Engine._editorCallback~onTransformParentChanged
+     * @param {Fire.Transform} transform
+     * @param {Fire.Transform} oldParent
+     */
     /**
      * @property {Fire.Engine._editorCallback~onTransformParentChanged} Fire.Engine._editorCallback.onTransformParentChanged
      */
     onTransformParentChanged: null,
     /**
+     * @callback Fire.Engine._editorCallback~onTransformIndexChanged
+     * @param {Fire.Transform} transform
+     * @param {number} oldIndex
+     * @param {number} newIndex
+     */
+    /**
      * @property {Fire.Engine._editorCallback~onTransformIndexChanged} Fire.Engine._editorCallback.onTransformIndexChanged
      */
     onTransformIndexChanged: null,
+
+    /**
+     * @callback Fire.Engine._editorCallback~onSceneLaunched
+     * @param {Scene} scene
+     */
     /**
      * @property {Fire.Engine._editorCallback~onSceneLaunched} Fire.Engine._editorCallback.onSceneLaunched
      */
     onSceneLaunched: null,
+
+    /**
+     * @callback Fire.Engine._editorCallback~onSceneLoaded
+     * @param {Scene} scene
+     */
     /**
      * @property {Fire.Engine._editorCallback~onSceneLoaded} Fire.Engine._editorCallback.onSceneLoaded
      */
     onSceneLoaded: null,
 };
-/**
- * @callback Fire.Engine._editorCallback~onTransformCreated
- * @param {Fire.Transform} transform
- */
-/**
- * removes a transform and all its children from scene
- * @callback Fire.Engine._editorCallback~onTransformRemoved
- * @param {Fire.Transform} transform
- */
-/**
- * @callback Fire.Engine._editorCallback~onTransformParentChanged
- * @param {Fire.Transform} transform
- * @param {Fire.Transform} oldParent
- */
-/**
- * @callback Fire.Engine._editorCallback~onTransformIndexChanged
- * @param {Fire.Transform} transform
- * @param {number} newIndex
- * @param {number} oldIndex
- */
-/**
- * @callback Fire.Engine._editorCallback~onSceneLaunched
- * @param {Scene} scene
- */
-/**
- * @callback Fire.Engine._editorCallback~onSceneLoaded
- * @param {Scene} scene
- */
