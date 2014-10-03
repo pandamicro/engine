@@ -6,7 +6,7 @@ var SceneGizmo = (1 << _objFlagIndex++)/* | Fire._ObjectFlags.DontSave*/;
 var Destroying = (1 << _objFlagIndex++);
 
 /**
- * This flag is readonly, it can only be used as the argument of scene.createEntity().
+ * This flag is readonly, it can only be used as the argument of scene.createEntity() or Entity.createWithFlags()
  * @property {number} Fire._ObjectFlags.SceneGizmo
  */
 Fire._ObjectFlags.SceneGizmo = SceneGizmo;
@@ -22,43 +22,42 @@ Fire._ObjectFlags.Destroying = Destroying;
  */
 var editorCallback = {
     /**
-     * @callback Fire.Engine._editorCallback~onTransformCreated
+     * @callback Fire.Engine._editorCallback~onEntityCreated
      * @param {Fire.Transform} transform
      */
     /**
-     * @property {Fire.Engine._editorCallback~onTransformCreated} Fire.Engine._editorCallback.onTransformCreated
+     * @property {Fire.Engine._editorCallback~onEntityCreated} Fire.Engine._editorCallback.onEntityCreated
      */
-    onTransformCreated: null,
+    onEntityCreated: null,
 
     /**
      * removes a transform and all its children from scene
-     * @callback Fire.Engine._editorCallback~onTransformRemoved
+     * @callback Fire.Engine._editorCallback~onEntityRemoved
      * @param {Fire.Transform} transform
      */
     /**
-     * @property {Fire.Engine._editorCallback~onTransformRemoved} Fire.Engine._editorCallback.onTransformRemoved
+     * @property {Fire.Engine._editorCallback~onEntityRemoved} Fire.Engine._editorCallback.onEntityRemoved
      */
-    onTransformRemoved: null,
+    onEntityRemoved: null,
 
     /**
-     * @callback Fire.Engine._editorCallback~onTransformParentChanged
+     * @callback Fire.Engine._editorCallback~onEntityParentChanged
      * @param {Fire.Transform} transform
-     * @param {Fire.Transform} oldParent
      */
     /**
-     * @property {Fire.Engine._editorCallback~onTransformParentChanged} Fire.Engine._editorCallback.onTransformParentChanged
+     * @property {Fire.Engine._editorCallback~onEntityParentChanged} Fire.Engine._editorCallback.onEntityParentChanged
      */
-    onTransformParentChanged: null,
+    onEntityParentChanged: null,
     /**
-     * @callback Fire.Engine._editorCallback~onTransformIndexChanged
+     * @callback Fire.Engine._editorCallback~onEntityIndexChanged
      * @param {Fire.Transform} transform
      * @param {number} oldIndex
      * @param {number} newIndex
      */
     /**
-     * @property {Fire.Engine._editorCallback~onTransformIndexChanged} Fire.Engine._editorCallback.onTransformIndexChanged
+     * @property {Fire.Engine._editorCallback~onEntityIndexChanged} Fire.Engine._editorCallback.onEntityIndexChanged
      */
-    onTransformIndexChanged: null,
+    onEntityIndexChanged: null,
 
     /**
      * @callback Fire.Engine._editorCallback~onSceneLaunched

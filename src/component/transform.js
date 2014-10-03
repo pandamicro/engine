@@ -49,8 +49,11 @@
                     return;
                 }
                 var oldParent = this._parent;
-                this._parent = value;
                 if (value) {
+                    if ((value.entity._objFlags & SceneGizmo) && !(this.entity._objFlags & SceneGizmo)) {
+                        Fire.error('child of SceneGizmo must be SceneGizmo');
+                        return;
+                    }
                     if (!oldParent) {
                         Engine._scene.removeRoot(this.entity);
                     }
@@ -59,13 +62,14 @@
                 else {
                     Engine._scene.appendRoot(this.entity);
                 }
+                this._parent = value;
                 if (oldParent && !(oldParent.entity._objFlags & Destroying)) {
                     oldParent._children.splice(oldParent._children.indexOf(this), 1);
-                    this.entity._onHierarchyChanged(oldParent);
+                    this.entity._onHierarchyChanged(oldParent); // TODO 这里需要有oldParent?
                 }
                 Engine._renderContext.onTransformParentChanged(this, oldParent);
-                if (editorCallback.onTransformParentChanged) {
-                    editorCallback.onTransformParentChanged(this, oldParent);
+                if (editorCallback.onEntityParentChanged) {
+                    editorCallback.onEntityParentChanged(this.entity);
                 }
                 //this._onHierarchyChanged(this, oldParent);
             }
@@ -143,9 +147,6 @@
         if (!alsoDestroyParent) {
             // callbacks
             Engine._renderContext.onTransformRemoved(this);
-            if (editorCallback.onTransformRemoved) {
-                editorCallback.onTransformRemoved(this);
-            }
         }
 
         // destroy child entitys
@@ -164,14 +165,8 @@
     // other functions
 
     Transform.prototype.create = function () {
-        if (Engine._scene) {
-            Engine._scene.appendRoot(this.entity);
-        }
         // invoke callbacks
         Engine._renderContext.onTransformCreated(this);
-        if (editorCallback.onTransformCreated) {
-            editorCallback.onTransformCreated(this);
-        }
     };
 
     Transform.prototype.getChild = function (index) {
@@ -318,7 +313,8 @@
             return this._parent._children[index];
         }
         else {
-            return Engine._scene.entities[index];
+            var ent = Engine._scene.entities[index];
+            return ent && ent.transform;
         }
     };
 
@@ -341,8 +337,8 @@
             }
             // callback
             Engine._renderContext.onTransformIndexChanged(this, oldIndex, index);
-            if (editorCallback.onTransformIndexChanged) {
-                editorCallback.onTransformIndexChanged(this, oldIndex, index);
+            if (editorCallback.onEntityIndexChanged) {
+                editorCallback.onEntityIndexChanged(this.entity, oldIndex, index);
             }
             //this._onHierarchyChanged(this, this.parent);
         }
@@ -362,10 +358,10 @@
      */
     Transform.prototype.setAsLastSibling = function () {
         if (this._parent) {
-            this.setSiblingIndex(this._parent._children.length);
+            this.setSiblingIndex(this._parent._children.length - 1);
         }
         else {
-            this.setSiblingIndex(Engine._scene.entities.length);
+            this.setSiblingIndex(Engine._scene.entities.length - 1);
         }
     };
 

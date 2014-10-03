@@ -8,7 +8,7 @@
             Engine._scene = this;
         }
 
-        var ent = Entity._createWithFlags(name, flags);
+        var ent = Entity.createWithFlags(name, flags);
         
         if (isCurrentScene === false) {
             Engine._canModifyCurrentScene = true;

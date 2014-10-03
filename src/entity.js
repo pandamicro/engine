@@ -9,7 +9,7 @@
 
         this.name = typeof name !== 'undefined' ? name : "New Entity";
 
-        this._objFlags |= Entity._createWithFlags;
+        this._objFlags |= Entity._defaultFlags;
 
         if (Fire._isDeserializing) {
             // create by deserializer
@@ -31,6 +31,15 @@
             // 这里不把entity做为构造参数主要是为了和其它Component统一。
             // create和onLoad不同，onLoad只有添加到场景后并且entity第一次激活才会调用。
             transform.create();
+
+            if (Engine._scene) {
+                Engine._scene.appendRoot(this);
+            }
+            
+            // invoke callbacks
+            if (editorCallback.onEntityCreated) {
+                editorCallback.onEntityCreated(this);
+            }
         }
     }
     Fire.extend(Entity, _super);
@@ -39,6 +48,16 @@
     ////////////////////////////////////////////////////////////////////
     // static
     ////////////////////////////////////////////////////////////////////
+    
+    /**
+     * the temp property that indicates the current creating entity should 
+     * binded with supplied object flags.
+     * only used in editor
+     * 
+     * @property {number} Entity._defaultFlags
+     * @private
+     */
+    Entity._defaultFlags = 0;
 
     /**
      * Finds an entity by hierarchy path, the path is case-sensitive, and must start with a '/' character.
@@ -100,6 +119,10 @@
 
     Entity.prototype._onPreDestroy = function () {
         this._objFlags |= Destroying;
+        var destroyByParent = (this.transform.parent && (this.transform.parent.entity._objFlags & Destroying));
+        if (!destroyByParent && editorCallback.onEntityRemoved) {
+            editorCallback.onEntityRemoved(this);
+        }
         // destroy components
         for (var c = 0; c < this._components.length; ++c) {
             var component = this._components[c];
