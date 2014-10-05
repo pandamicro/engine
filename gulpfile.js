@@ -5,7 +5,6 @@ var fs = require('fs');
 var through = require('through');
 
 var gulp = require('gulp');
-var clean = require('gulp-clean');
 var concat = require('gulp-concat');
 var gutil = require('gulp-util');
 var jshint = require('gulp-jshint');
@@ -14,6 +13,7 @@ var rename = require('gulp-rename');
 var uglify = require('gulp-uglify');
 
 var fb = require('gulp-fb');
+var del = require('del');
 
 var paths = {
     // source
@@ -208,8 +208,7 @@ gulp.task('test', ['js', 'unit-runner'], function() {
 
 // clean
 gulp.task('clean', function() {
-    return gulp.src(paths.output, { read: false })
-               .pipe(clean());
+    del('bin/');
 });
 
 // ref

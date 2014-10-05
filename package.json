@@ -12,7 +12,6 @@
     "event-stream": "",
     "express": "",
     "gulp": "",
-    "gulp-clean": "",
     "gulp-concat": "",
     "gulp-fb": "",
     "gulp-jshint": "",
@@ -21,7 +20,8 @@
     "gulp-uglify": "",
     "gulp-util": "",
     "jshint-stylish": "",
-    "through": ""
+    "through": "",
+    "del": ""
   },
   "scripts": {
     "postinstall": "bower install && cd ext/fire-core && npm install && gulp",
