@@ -11,7 +11,7 @@
     //};
 
     Engine.createSceneView = function (width, height, canvas) {
-        var sceneCtx = new RenderContext (width, height, canvas);
+        var sceneCtx = new RenderContext (width, height, canvas, true);
         Engine._renderContext.sceneView = sceneCtx;
         return sceneCtx;
     };

@@ -18,12 +18,14 @@ var RenderContext = (function () {
      * @param {number} height
      * @param {Canvas} [canvas]
      */
-    function RenderContext (width, height, canvas/*, showGizmos*/) {
+    function RenderContext (width, height, canvas, transparent) {
         width = width || 800;
         height = height || 600;
         //showGizmos = typeof showGizmos !== 'undefined' ? showGizmos : false;
 
-        var transparent = false;
+        if ( !transparent )
+            transparent = false;
+
         var antialias = false;
         this.stage = new PIXI.Stage(0x000000);
         this.renderer = PIXI.autoDetectRenderer(width, height, canvas, transparent, antialias);
