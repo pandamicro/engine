@@ -18,7 +18,7 @@
                 "__id__": 3
             }
         ],
-        "name": "Entity",
+        "_name": "Entity",
         "transform": {
             "__id__": 2
         }

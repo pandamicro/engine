@@ -7,7 +7,7 @@
 
         this._active = true;
 
-        this.name = typeof name !== 'undefined' ? name : "New Entity";
+        this._name = typeof name !== 'undefined' ? name : "New Entity";
 
         this._objFlags |= Entity._defaultFlags;
 
@@ -83,6 +83,18 @@
     // properties
     ////////////////////////////////////////////////////////////////////
     
+    Object.defineProperty(Entity.prototype, 'name', {
+        get: function () {
+            return this._name;
+        },
+        set: function (value) {
+            this._name = value;
+            if (editorCallback.onEntityRenamed) {
+                editorCallback.onEntityRenamed(this);
+            }
+        }
+    });
+
     Object.defineProperty(Entity.prototype, 'active', {
         get: function () {
             return this._active;
@@ -92,7 +104,7 @@
             if (this._active != value) {
                 // jshint eqeqeq: true
                 this._active = value;
-                var canActiveInHierarchy = (!this.transform.parent || this.transform.parent.entity.activeInHierarchy);
+                var canActiveInHierarchy = (!this.transform._parent || this.transform._parent.entity.activeInHierarchy);
                 if (canActiveInHierarchy) {
                     this._onActivatedInHierarchy(value);
                 }
@@ -102,7 +114,7 @@
 
     Object.defineProperty(Entity.prototype, 'activeInHierarchy', {
         get: function () {
-            return this._active && (!this.transform.parent || this.transform.parent.entity.activeInHierarchy);
+            return this._active && (!this.transform._parent || this.transform._parent.entity.activeInHierarchy);
         },
     });
 
@@ -119,7 +131,7 @@
 
     Entity.prototype._onPreDestroy = function () {
         this._objFlags |= Destroying;
-        var destroyByParent = (this.transform.parent && (this.transform.parent.entity._objFlags & Destroying));
+        var destroyByParent = (this.transform._parent && (this.transform._parent.entity._objFlags & Destroying));
         if (!destroyByParent && editorCallback.onEntityRemoved) {
             editorCallback.onEntityRemoved(this);
         }

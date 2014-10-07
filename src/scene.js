@@ -141,7 +141,7 @@
         var name = nameList[1];     // skip first '/'
         var entities = this.entities;
         for (var i = 0; i < entities.length; i++) {
-            if (entities[i].isValid && entities[i].name === name) {
+            if (entities[i].isValid && entities[i]._name === name) {
                 match = entities[i];
                 break;
             }

@@ -39,6 +39,7 @@ var paths = {
         'src/platform/editor/scene.js',
         'src/platform/editor/engine.js',
         'src/platform/editor/renderContext.js',
+        'src/platform/editor/ipcListener.js',
     ],
     index: 'src/index.js',
 

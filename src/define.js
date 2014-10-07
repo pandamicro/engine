@@ -21,9 +21,10 @@ Fire._ObjectFlags.Destroying = Destroying;
  * @private
  */
 var editorCallback = {
+    
     /**
      * @callback Fire.Engine._editorCallback~onEntityCreated
-     * @param {Fire.Transform} transform
+     * @param {Fire.Entity} entity
      */
     /**
      * @property {Fire.Engine._editorCallback~onEntityCreated} Fire.Engine._editorCallback.onEntityCreated
@@ -33,7 +34,7 @@ var editorCallback = {
     /**
      * removes a transform and all its children from scene
      * @callback Fire.Engine._editorCallback~onEntityRemoved
-     * @param {Fire.Transform} transform
+     * @param {Fire.Entity} entity
      */
     /**
      * @property {Fire.Engine._editorCallback~onEntityRemoved} Fire.Engine._editorCallback.onEntityRemoved
@@ -42,15 +43,16 @@ var editorCallback = {
 
     /**
      * @callback Fire.Engine._editorCallback~onEntityParentChanged
-     * @param {Fire.Transform} transform
+     * @param {Fire.Entity} entity
      */
     /**
      * @property {Fire.Engine._editorCallback~onEntityParentChanged} Fire.Engine._editorCallback.onEntityParentChanged
      */
     onEntityParentChanged: null,
+    
     /**
      * @callback Fire.Engine._editorCallback~onEntityIndexChanged
-     * @param {Fire.Transform} transform
+     * @param {Fire.Entity} entity
      * @param {number} oldIndex
      * @param {number} newIndex
      */
@@ -58,6 +60,15 @@ var editorCallback = {
      * @property {Fire.Engine._editorCallback~onEntityIndexChanged} Fire.Engine._editorCallback.onEntityIndexChanged
      */
     onEntityIndexChanged: null,
+
+    /**
+     * @callback Fire.Engine._editorCallback~onEntityRenamed
+     * @param {Fire.Entity} entity
+     */
+    /**
+     * @property {Fire.Engine._editorCallback~onEntityRenamed} Fire.Engine._editorCallback.onEntityRenamed
+     */
+    onEntityRenamed: null,
 
     /**
      * @callback Fire.Engine._editorCallback~onSceneLaunched
