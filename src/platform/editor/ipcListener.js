@@ -25,4 +25,14 @@
         }
     });
 
+    Ipc.on('engine:createEntity', function (parentId) {
+        var ent = new Entity();
+        if (parentId) {
+            var parent = Entity._getInstanceById(parentId);
+            if (parent && parent.isValid) {
+                ent.transform.parent = parent.transform;
+            }
+        }
+    });
+
 })();

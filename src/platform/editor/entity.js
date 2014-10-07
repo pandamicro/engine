@@ -20,7 +20,7 @@
                 return retval;
             }
             //retval = Object.getOwnPropertyDescriptor(HashObject.prototype, 'hashKey').get.call(this);
-            retval = (this._hashKey = '' + this.hashID);
+            retval = (this._hashKey = '' + this.hashId);
             idToEntity[retval] = this;
             return retval;
         }
