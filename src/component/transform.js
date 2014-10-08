@@ -62,7 +62,7 @@
                 else {
                     Engine._scene.appendRoot(this.entity);
                 }
-                this._parent = value;
+                this._parent = value || null;
                 if (oldParent && !(oldParent.entity._objFlags & Destroying)) {
                     oldParent._children.splice(oldParent._children.indexOf(this), 1);
                     this.entity._onHierarchyChanged(oldParent); // TODO 这里需要有oldParent?
@@ -85,8 +85,6 @@
             return this._children.length;
         },
     });
-
-    
 
     /**
      * The local position in its parent's coordinate system
@@ -290,6 +288,9 @@
 
     /**
      * Get the sibling index.
+     * NOTE: If this transform does not have parent and not belongs to the current scene, 
+     *       The return value will be -1
+     * 
      * @method Fire.Transform#getSiblingIndex
      * @returns {number}
      */
@@ -326,6 +327,7 @@
     Transform.prototype.setSiblingIndex = function (index) {
         var array = this._parent ? this._parent._children : Engine._scene.entities;
         var item = this._parent ? this : this.entity;
+        index = index !== -1 ? index : array.length - 1;
         var oldIndex = array.indexOf(item);
         if (index !== oldIndex) {
             array.splice(oldIndex, 1);
@@ -357,12 +359,7 @@
      * @method Fire.Transform#setAsFirstSibling
      */
     Transform.prototype.setAsLastSibling = function () {
-        if (this._parent) {
-            this.setSiblingIndex(this._parent._children.length - 1);
-        }
-        else {
-            this.setSiblingIndex(Engine._scene.entities.length - 1);
-        }
+        this.setSiblingIndex(-1);
     };
 
     ///**

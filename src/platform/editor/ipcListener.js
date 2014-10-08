@@ -7,7 +7,7 @@
 
     Ipc.on('engine:renameEntity', function (id, name) {
         var entity = Entity._getInstanceById(id);
-        if (entity && entity.isValid) {
+        if (entity) {
             entity.name = name;
         }
     });
@@ -16,7 +16,7 @@
         for (var i = 0; i < idList.length; i++) {
             var id = idList[i];
             var entity = Entity._getInstanceById(id);
-            if (entity && entity.isValid) {
+            if (entity) {
                 entity.destroy();
             }
         }
@@ -29,8 +29,35 @@
         var ent = new Entity();
         if (parentId) {
             var parent = Entity._getInstanceById(parentId);
-            if (parent && parent.isValid) {
+            if (parent) {
                 ent.transform.parent = parent.transform;
+            }
+        }
+    });
+
+    Ipc.on('engine:moveEntity', function (idList, parentId, nextSiblingId) {
+        var parentT = null;
+        if (parentId) {
+            var parentE = Entity._getInstanceById(parentId);
+            parentT = parentE && parentE.transform;
+        }
+        var index = -1;
+        if (nextSiblingId) {
+            var next = Entity._getInstanceById(nextSiblingId);
+            if (next) {
+                index = next.transform.getSiblingIndex();
+            }
+        }
+        for (var i = 0; i < idList.length; i++) {
+            var id = idList[i];
+            var entity = Entity._getInstanceById(id);
+            if (entity) {
+                if (parentT.isChildOf(entity.transform) === false) {
+                    entity.transform.parent = parentT;
+                }
+                if (index !== -1) {
+                    entity.transform.setSiblingIndex(index + i);
+                }
             }
         }
     });
