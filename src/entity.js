@@ -1,20 +1,57 @@
 ﻿var Entity = (function () {
-    var _super = HashObject;
+    //var _super = HashObject;
 
-    // constructor
-    function Entity (name) {
-        _super.call(this);
+    //// constructor
+    //function Entity (name) {
+    //    _super.call(this);
 
-        this._active = true;
+    //    this._active = true;
 
-        this._name = typeof name !== 'undefined' ? name : "New Entity";
+    //    this._name = typeof name !== 'undefined' ? name : "New Entity";
 
+    //    this._objFlags |= Entity._defaultFlags;
+
+    //    if (Fire._isDeserializing) {
+    //        // create by deserializer
+    //        this._components = null;
+    //        this.transform = null;
+    //    }
+    //    else {
+    //        // create dynamically
+            
+    //        // 绕开AddComponent直接添加Transfrom，因此transform的onLoad不会被调用，
+    //        var transform = new Transform();
+    //        transform.entity = this;
+            
+    //        this._components = [transform];
+    //        this.transform = transform;
+
+    //        // Transform比较特殊，需要二次构造
+    //        // 因为它构造的时候依赖于entity，所以要在entity赋值后再初始化一次，
+    //        // 这里不把entity做为构造参数主要是为了和其它Component统一。
+    //        // create和onLoad不同，onLoad只有添加到场景后并且entity第一次激活才会调用。
+    //        transform.create();
+
+    //        if (Engine._scene) {
+    //            Engine._scene.appendRoot(this);
+    //        }
+            
+    //        // invoke callbacks
+    //        if (editorCallback.onEntityCreated) {
+    //            editorCallback.onEntityCreated(this);
+    //        }
+    //    }
+    //}
+    //Fire.extend(Entity, _super);
+    //Fire.registerClass("Fire.Entity", Entity);
+
+    var Entity = Fire.define('Fire.Entity', HashObject, function (name) {
+        HashObject.call(this);
+        this._name = typeof name !== 'undefined' ? name : this._name;
         this._objFlags |= Entity._defaultFlags;
 
         if (Fire._isDeserializing) {
             // create by deserializer
-            this._components = null;
-            this.transform = null;
         }
         else {
             // create dynamically
@@ -41,9 +78,40 @@
                 editorCallback.onEntityCreated(this);
             }
         }
-    }
-    Fire.extend(Entity, _super);
-    Fire.registerClass("Fire.Entity", Entity);
+    });
+    Entity.prop('_active', true, Fire.HideInInspector);
+    Entity.prop('_name', 'New Entity', Fire.HideInInspector);
+    Entity.prop('_objFlags', 0, Fire.HideInInspector);
+    Entity.prop('_components', null, Fire.HideInInspector);
+    Entity.prop('transform', null, Fire.HideInInspector);
+    
+    Entity.getset('name',
+        function () {
+            return this._name;
+        },
+        function (value) {
+            this._name = value;
+            if (editorCallback.onEntityRenamed) {
+                editorCallback.onEntityRenamed(this);
+            }
+        }
+    );
+    Entity.getset('active',
+        function () {
+            return this._active;
+        },
+        function (value) {
+            // jshint eqeqeq: false
+            if (this._active != value) {
+                // jshint eqeqeq: true
+                this._active = value;
+                var canActiveInHierarchy = (!this.transform._parent || this.transform._parent.entity.activeInHierarchy);
+                if (canActiveInHierarchy) {
+                    this._onActivatedInHierarchy(value);
+                }
+            }
+        }
+    );
 
     ////////////////////////////////////////////////////////////////////
     // static
@@ -83,34 +151,34 @@
     // properties
     ////////////////////////////////////////////////////////////////////
     
-    Object.defineProperty(Entity.prototype, 'name', {
-        get: function () {
-            return this._name;
-        },
-        set: function (value) {
-            this._name = value;
-            if (editorCallback.onEntityRenamed) {
-                editorCallback.onEntityRenamed(this);
-            }
-        }
-    });
+    //Object.defineProperty(Entity.prototype, 'name', {
+    //    get: function () {
+    //        return this._name;
+    //    },
+    //    set: function (value) {
+    //        this._name = value;
+    //        if (editorCallback.onEntityRenamed) {
+    //            editorCallback.onEntityRenamed(this);
+    //        }
+    //    }
+    //});
 
-    Object.defineProperty(Entity.prototype, 'active', {
-        get: function () {
-            return this._active;
-        },
-        set: function (value) {
-            // jshint eqeqeq: false
-            if (this._active != value) {
-                // jshint eqeqeq: true
-                this._active = value;
-                var canActiveInHierarchy = (!this.transform._parent || this.transform._parent.entity.activeInHierarchy);
-                if (canActiveInHierarchy) {
-                    this._onActivatedInHierarchy(value);
-                }
-            }
-        }
-    });
+    //Object.defineProperty(Entity.prototype, 'active', {
+    //    get: function () {
+    //        return this._active;
+    //    },
+    //    set: function (value) {
+    //        // jshint eqeqeq: false
+    //        if (this._active != value) {
+    //            // jshint eqeqeq: true
+    //            this._active = value;
+    //            var canActiveInHierarchy = (!this.transform._parent || this.transform._parent.entity.activeInHierarchy);
+    //            if (canActiveInHierarchy) {
+    //                this._onActivatedInHierarchy(value);
+    //            }
+    //        }
+    //    }
+    //});
 
     Object.defineProperty(Entity.prototype, 'activeInHierarchy', {
         get: function () {
@@ -121,7 +189,7 @@
     // overrides
     
     Entity.prototype.destroy = function () {
-        if (_super.prototype.destroy.call(this)) {
+        if (FObject.prototype.destroy.call(this)) {
             // disable hierarchy
             if (this.activeInHierarchy) {
                 this._onActivatedInHierarchy(false);
