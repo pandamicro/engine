@@ -28,13 +28,13 @@
             return false;
         }
         if (fastCheck) {
-            if (pixiGameNodes.length > entities.length) {
+            if (pixiGameNodes.length !== entities.length) {
                 Fire.error('root elements count not matched in game view');
                 return false;
             }
             return true;
         }
-        var g = 0;
+        //var g = 0;
         for (var i = 0; i < entities.length; i++) {
             var ent = entities[i];
             if (pixiSceneNodes) {
@@ -44,18 +44,19 @@
                     return false;
                 }
             }
-            if (!(ent._objFlags & SceneGizmo)) {
-                var gameNode = pixiGameNodes[g++];
-                if (ent.transform._pixiObj !== gameNode) {
-                    Fire.error('root transform does not match pixi game node: ' + ent.name);
-                    return false;
-                }
+            //if (!(ent._objFlags & SceneGizmo)) {
+            //    var gameNode = pixiGameNodes[g++];
+            //}
+            var gameNode = pixiGameNodes[i];
+            if (ent.transform._pixiObj !== gameNode) {
+                Fire.error('root transform does not match pixi game node: ' + ent.name);
+                return false;
             }
         }
-        if (g !== pixiGameNodes.length) {
-            Fire.error('pixi has extra game node, pixi count: ' + pixiGameNodes.length + ' expected count: ' + g);
-            return false;
-        }
+        //if (g !== pixiGameNodes.length) {
+        //    Fire.error('pixi has extra game node, pixi count: ' + pixiGameNodes.length + ' expected count: ' + g);
+        //    return false;
+        //}
         // 目前不测试renderer
         return true;
     };

@@ -93,13 +93,11 @@ var RenderContext = (function () {
      * @param {Fire.Transform} transform
      */
     RenderContext.prototype.onTransformCreated = function (transform) {
-        if (!(transform.entity._objFlags & SceneGizmo)) {
-            // TODO: what if parent is gizmo but children not?
-            transform._pixiObj = new PIXI.DisplayObjectContainer();
-            if (Engine._canModifyCurrentScene) {
-                // attach node if created dynamically
-                this.stage.addChild(transform._pixiObj);
-            }
+        // always create pixi node even if is scene gizmo, to keep all their indice sync with transforms' sibling indice.
+        transform._pixiObj = new PIXI.DisplayObjectContainer();
+        if (Engine._canModifyCurrentScene) {
+            // attach node if created dynamically
+            this.stage.addChild(transform._pixiObj);
         }
         if (this.sceneView) {
             transform._pixiObjInScene = new PIXI.DisplayObjectContainer();
@@ -115,12 +113,16 @@ var RenderContext = (function () {
      * @param {Fire.Transform} transform
      */
     RenderContext.prototype.onTransformRemoved = function (transform) {
-        if (!(transform.entity._objFlags & SceneGizmo)) {
-            transform._pixiObj.parent.removeChild(transform._pixiObj);
+        if (transform._pixiObj) {
+            if (transform._pixiObj.parent) {
+                transform._pixiObj.parent.removeChild(transform._pixiObj);
+            }
             transform._pixiObj = null;
         }
-        if (this.sceneView) {
-            transform._pixiObjInScene.parent.removeChild(transform._pixiObjInScene);
+        if (transform._pixiObjInScene) {
+            if (transform._pixiObjInScene.parent) {
+                transform._pixiObjInScene.parent.removeChild(transform._pixiObjInScene);
+            }
             transform._pixiObjInScene = null;
         }
     };
