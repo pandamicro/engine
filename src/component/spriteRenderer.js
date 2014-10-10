@@ -28,7 +28,7 @@
         Engine._renderContext.show(this, false);
     };
     SpriteRenderer.prototype.onPreRender = function () {
-        Engine._renderContext.updateTransform(this);
+        Engine._curRenderContext.updateTransform(this);
     };
     SpriteRenderer.prototype.onDestroy = function () {
         Engine._renderContext.remove(this);

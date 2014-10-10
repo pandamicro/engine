@@ -66,6 +66,8 @@
     };
 
     Scene.prototype.render = function (renderContext) {
+        Engine._curRenderContext = renderContext;
+
         // updateTransform
         this.updateTransform(renderContext.camera || this.camera);
 
@@ -78,6 +80,8 @@
 
         // render
         renderContext.render();
+
+        Engine._curRenderContext = null;
     };
 
     ////////////////////////////////////////////////////////////////////

@@ -61,7 +61,7 @@
     //Camera.prototype.onLoad = function () {
     //};
     Camera.prototype.onEnable = function () {
-        if (!(this.entity._objFlags & Fire._ObjectFlags.SceneGizmo)) {
+        if (!(this.entity._objFlags & SceneGizmo)) {
             Engine._scene.camera = this;
         }
     };
@@ -121,6 +121,7 @@
     Camera.prototype.screenToWorld = function (position, out) {
         var halfScreenSize = (this._renderContext || Engine._renderContext).size.mulSelf(0.5);
         var pivotToScreen = position.sub(halfScreenSize, halfScreenSize);
+        pivotToScreen.y = -pivotToScreen.y; // 屏幕坐标的Y和世界坐标的Y朝向是相反的
         var mat = new Matrix23();
         var camPos = new Vec2();
         this._calculateTransform(mat, camPos);
@@ -142,7 +143,10 @@
         var camPos = new Vec2();
         this._calculateTransform(mat, camPos);
         var toCamera = position.sub(camPos, camPos);
-        return mat.transformPoint(toCamera, out);
+        out = mat.transformPoint(toCamera, out);
+        var height = (this._renderContext || Engine._renderContext).size.y;
+        out.y = height - out.y;
+        return out;
     };
 
     /**
