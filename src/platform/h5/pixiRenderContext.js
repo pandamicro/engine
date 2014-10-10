@@ -315,11 +315,16 @@ var RenderContext = (function () {
      */
     RenderContext.prototype.updateTransform = function (target) {
         if (target._renderObj || target._renderObjInScene) {
-            if (target._renderObj) {
-                target._renderObj.worldTransform = target.transform._worldTransform;
+            var isGameView = this === Engine._renderContext;
+            var mat = target.transform._worldTransform.clone();
+            mat.ty = this.renderer.height - mat.ty;     // revert Y axis for pixi
+            if (isGameView) {
+                if (target._renderObj) {
+                    target._renderObj.worldTransform = mat;
+                }
             }
-            if (target._renderObjInScene) {
-                target._renderObjInScene.worldTransform = target.transform._worldTransform;
+            else if (target._renderObjInScene) {
+                target._renderObjInScene.worldTransform = mat;
             }
         }
         else {

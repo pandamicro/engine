@@ -26,7 +26,7 @@
     <script>
         // game view
         var canvas = Fire.Engine.init(1366, 768).canvas;
-//        document.body.appendChild(canvas);
+        document.body.appendChild(canvas);
 
         // scene view
         var sceneView = Fire.Engine.createSceneView(512, 512);
@@ -36,8 +36,7 @@
         
         var s = new Fire.Entity();
         var spriteRenderer = s.addComponent(Fire.SpriteRenderer);
-        //entity.transform.position = new Fire.Vec2(-44.5, -22);
-        s.transform.position = new Fire.Vec2(100, 100);
+        s.transform.position = new Fire.Vec2(0, 10);
 
         var img = new Image();
         img.onload = function () {
@@ -54,30 +53,28 @@
             sprite.height = 40;
             spriteRenderer.sprite = sprite;
 
+            s.getComponent(Fire.SpriteRenderer).sprite = sprite;
             bigSprite.getComponent(Fire.SpriteRenderer).sprite = sprite;
         };
         img.src = '../test/assets/atlas (1).png';
 
-        var c = Fire.Entity._createWithFlags(Fire._ObjectFlags.SceneGizmo);
-        var cam = sceneView.camera = c.addComponent(Fire.Camera);
-        cam.transform.update = function () {
-            this.rotation += 0.03;
+        var sc = Fire.Entity.createWithFlags('scene camera', Fire._ObjectFlags.SceneGizmo);
+        sceneView.camera = sc.addComponent(Fire.Camera);
+
+        var gc = new Fire.Entity('game camera');
+        gc.addComponent(Fire.Camera);
+        gc.transform.update = function () {
+            //this.rotation += 0.03;
         };
-        c.transform.position = new Fire.Vec2(100, 100);
+
+        sc.transform.position = new Fire.Vec2(0, 0);
 
         Fire.Engine._renderContext.checkMatchCurrentScene();
 
-        var bigSprite = new Fire.Entity();
+        var bigSprite = new Fire.Entity('Big Sprite');
         bigSprite.addComponent(Fire.SpriteRenderer);
-        bigSprite.transform.scale = new Fire.Vec2(10, 10);
+        bigSprite.transform.scale = new Fire.Vec2(5, 5);
         bigSprite.transform.setAsFirstSibling();
-
-
-
-
-
-
-
 
 
 

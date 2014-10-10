@@ -26,8 +26,11 @@ var Engine = (function () {
      */
     Engine._scene = null;
 
-    // main renderer
+    // main render context
     Engine._renderContext = null;
+
+    // the render context currently rendering
+    Engine._curRenderContext = null;
 
     // is rendering and allow update logic
     Object.defineProperty(Engine, 'isPlaying', {
