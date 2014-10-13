@@ -61,4 +61,12 @@
         return true;
     };
 
+    var doAddSprite = RenderContext.prototype.addSprite;
+    RenderContext.prototype.addSprite = function (target) {
+        doAddSprite.call(this, target);
+        if (target._renderObjInScene) {
+            target._renderObjInScene.entityId = target.entity.hashKey;
+        }
+    };
+
 })();
