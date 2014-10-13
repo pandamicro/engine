@@ -1,5 +1,5 @@
 ﻿
-// definitions for editor
+// This adapter converts editor callbacks to ipc events
 
 (function () {
 

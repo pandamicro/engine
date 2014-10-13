@@ -4,6 +4,7 @@
         Renderer.call(this);
         RenderContext.initRenderer(this);
     });
+    Fire.addComponentMenu(SpriteRenderer, 'SpriteRenderer');
 
     SpriteRenderer.prop('_sprite', null, Fire.HideInInspector);
     SpriteRenderer.getset('sprite',

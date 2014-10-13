@@ -18,7 +18,11 @@ var del = require('del');
 var paths = {
     // source
     src: [
+        // pre-defines
+        'src/platform/editor/preDefine.js',
+        // engine
         'src/define.js',
+        'src/misc.js',
         'src/time.js',
         'src/platform/h5/ticker.js',
         'src/platform/h5/pixiRenderContext.js',
@@ -34,11 +38,11 @@ var paths = {
         'src/assetLibrary.js',
         'src/platform/h5/engine.js',
         // editor only
-        'src/platform/editor/define.js',
         'src/platform/editor/entity.js',
         'src/platform/editor/scene.js',
         'src/platform/editor/engine.js',
         'src/platform/editor/renderContext.js',
+        'src/platform/editor/ipcSender.js',
         'src/platform/editor/ipcListener.js',
     ],
     index: 'src/index.js',
