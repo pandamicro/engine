@@ -6,6 +6,7 @@
         this._renderContext = null;
         this.renderContext = Engine._renderContext;
     });
+    Fire.addComponentMenu(Camera, 'Camera');
 
     Camera.prop('_background', new Fire.Color(0, 0, 0), Fire.HideInInspector);
     Camera.getset('background',

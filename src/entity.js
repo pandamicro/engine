@@ -47,7 +47,7 @@
 
     var Entity = Fire.define('Fire.Entity', HashObject, function (name) {
         HashObject.call(this);
-        this._name = typeof name !== 'undefined' ? name : this._name;
+        this._name = typeof name !== 'undefined' ? name : 'New Entity';
         this._objFlags |= Entity._defaultFlags;
 
         if (Fire._isDeserializing) {
@@ -80,7 +80,7 @@
         }
     });
     Entity.prop('_active', true, Fire.HideInInspector);
-    Entity.prop('_name', 'New Entity', Fire.HideInInspector);
+    Entity.prop('_name', '', Fire.HideInInspector);     // TODO: 已经在FObject定义过，不要重复定义
     Entity.prop('_objFlags', 0, Fire.HideInInspector);
     Entity.prop('_components', null, Fire.HideInInspector);
     Entity.prop('transform', null, Fire.HideInInspector);
