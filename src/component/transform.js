@@ -97,11 +97,12 @@
         function (value) {
             this._position.x = value.x;
             this._position.y = value.y;
-        }
+        },
+        Fire.Tooltip("The local position in its parent's coordinate system")
     );
 
     /**
-     * The local rotation in radians relative to the parent
+     * The counterclockwise degrees of rotation relative to the parent
      * @member {number} Fire.Transform#rotation
      */
     Transform.getset('rotation', 
@@ -110,7 +111,8 @@
         },
         function (value) {
             this._rotation = value;
-        }
+        },
+        Fire.Tooltip('The counterclockwise degrees of rotation relative to the parent')
     );
 
     /**
@@ -125,7 +127,8 @@
         function (value) {
             this._scale.x = value.x;
             this._scale.y = value.y;
-        }
+        },
+        Fire.Tooltip('The local scale factor relative to the parent')
     );
 
     // override functions
@@ -172,30 +175,46 @@
     };
 
     Transform.prototype._updateTransform = function (parentMatrix) {
-        var _sr = this._rotation === 0 ? 0 : Math.sin(this._rotation);
-        var _cr = this._rotation === 0 ? 1 : Math.cos(this._rotation);
-
-        var mat = this._worldTransform;
+        //var mat = this._worldTransform;
 
         //var px = this._pivot.x;
         //var py = this._pivot.y;
 
-        var a00 = _cr * this._scale.x,
-            a01 = -_sr * this._scale.y,
-            a10 = _sr * this._scale.x,
-            a11 = _cr * this._scale.y,
-            a02 = this._position.x/* - a00 * px - py * a01*/,
-            a12 = this._position.y/* - a11 * py - px * a10*/,
-            b00 = parentMatrix.a, b01 = parentMatrix.b,
-            b10 = parentMatrix.c, b11 = parentMatrix.d;
+        //var radians = this._rotation * 0.017453292519943295;
+        //var sin = this._rotation === 0 ? 0 : Math.sin(radians);
+        //var cos = this._rotation === 0 ? 1 : Math.cos(radians);
 
-        mat.a = b00 * a00 + b01 * a10;
-        mat.b = b00 * a01 + b01 * a11;
-        mat.tx = b00 * a02 + b01 * a12 + parentMatrix.tx;
+        //// get local
+        //mat.a = this._scale.x * cos;
+        //mat.b = this._scale.x * sin;   // 这里如果是pixi，b和c是反过来的
+        //mat.c = this._scale.y * - sin;
+        //mat.d = this._scale.y * cos;
+        //mat.tx = this._position.x;
+        //mat.ty = this._position.y;
 
-        mat.c = b10 * a00 + b11 * a10;
-        mat.d = b10 * a01 + b11 * a11;
-        mat.ty = b10 * a02 + b11 * a12 + parentMatrix.ty;
+        //// parent
+        //var pa = parentMatrix.a;
+        //var pb = parentMatrix.b;
+        //var pc = parentMatrix.c;
+        //var pd = parentMatrix.d;
+
+        //// local x parent
+        //if (pa !== 1 || pb !== 0 || pc !== 0 || pd !== 1) {
+        //    mat.a = mat.a * pa + mat.b * pc;
+        //    mat.b = mat.a * pb + mat.b * pd;
+        //    mat.c = mat.c * pa + mat.d * pc;
+        //    mat.d = mat.c * pb + mat.d * pd;
+        //    mat.tx = mat.tx * pa + mat.ty * pc + parentMatrix.tx;
+        //    mat.ty = mat.tx * pb + mat.ty * pd + parentMatrix.ty;
+        //}
+        //else {
+        //    mat.tx += parentMatrix.tx;
+        //    mat.ty += parentMatrix.ty;
+        //}
+
+        var mat = this._worldTransform;
+        this.getLocalMatrix(mat);
+        mat.prepend(parentMatrix);
 
         //this._worldAlpha = this._alpha * this._parent._worldAlpha;
 
@@ -226,20 +245,34 @@
      */
     Transform.prototype.getLocalMatrix = function (out) {
         out = out || new Matrix23();
-
-        var _sr = this._rotation === 0 ? 0 : Math.sin(this._rotation);
-        var _cr = this._rotation === 0 ? 1 : Math.cos(this._rotation);
-
+        
         //var px = this._pivot.x;
         //var py = this._pivot.y;
         
-        out.a = _cr * this._scale.x;    // 00
-        out.b = -_sr * this._scale.y;   // 01
-        out.tx = this._position.x/* - out.a * px - py * out.b*/;    // 02
+        var radians = this._rotation * 0.017453292519943295;
+        var sin = this._rotation === 0 ? 0 : Math.sin(radians);
+        var cos = this._rotation === 0 ? 1 : Math.cos(radians);
 
-        out.c = _sr * this._scale.x;    // 10
-        out.d = _cr * this._scale.y;    // 11
-        out.ty = this._position.y/* - out.d * py - px * out.c*/;    // 12
+        out.a = this._scale.x * cos;   // scaleMat.a * rotateMat.a(cos) 00
+        // 这里如果是pixi，b和c是反过来的
+        out.b = this._scale.x * sin;   // scaleMat.a * rotateMat.b(sin)
+        out.c = this._scale.y * - sin; // scaleMat.d * rotateMat.c(-sin)
+        //
+        out.d = this._scale.y * cos;   // scaleMat.d * rotateMat.d(cos) 11
+        out.tx = this._position.x;/* * ra + this._position.y * rc*/
+        out.ty = this._position.y;/* * rb + this._position.y * rd*/
+        //out.tx = this._position.x/* - out.a * px - py * out.b*/;    // 02
+        //out.ty = this._position.y/* - out.d * py - px * out.c*/;    // 12
+
+        //above should equivalent to:
+        //  var t = new Matrix23();
+        //  t.tx = this._position.x;
+        //  t.ty = this._position.y;
+        //  var r = new Matrix23();
+        //  r.rotate(radians);
+        //  var s = new Matrix23();
+        //  s.setScale(this._scale);
+        //  out.set(s.prepend(r).prepend(t));
 
         return out;
     };

@@ -45,4 +45,30 @@ test('isChildOf', function () {
     strictEqual(ent3.transform.isChildOf(ent1.transform), true, 'is child of its ancestor');
 });
 
+test('getLocalMatrix', function () {
+    var parent = new Fire.Entity();
+    parent.transform.position = new V2(432, 54354);
+    parent.transform.scale = new V2(21, 32);
+    parent.transform.rotation = 3241;
+    var ent = new Fire.Entity();
+    var transform = ent.transform;
+    transform.parent = parent.transform;
+
+    transform.scale = new V2(1, 2);
+    transform.rotation = -90;
+    transform.position = new V2(0, 4);
+
+    var mat = transform.getLocalMatrix();
+
+    close(mat.getRotation(), transform.rotation * 0.017453292519943295, 0.0001, 'rotate');
+    deepClose(mat.getScale(), transform.scale, 0.0001, 'scale');
+    deepClose(new V2(mat.tx, mat.ty), transform.position, 0.0001, 'translate');
+
+    //var rotateMat = new M3();
+    //rotateMat.rotate();
+    //var scaleMat = new M3();
+    //scaleMat.setScale(transform.scale);
+    //var sr = rotateMat.prepend(scaleMat);
+});
+
 // jshint ignore: end

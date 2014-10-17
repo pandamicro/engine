@@ -319,7 +319,13 @@ var RenderContext = (function () {
         if (target._renderObj || target._renderObjInScene) {
             var isGameView = this === Engine._renderContext;
             var mat = target.transform._worldTransform.clone();
-            mat.ty = this.renderer.height - mat.ty;     // revert Y axis for pixi
+            // revert Y axis for pixi
+            mat.ty = this.renderer.height - mat.ty;
+            // adjust bc for pixi, see "pixi.js\src\pixi\renderers\webgl\utils\WebGLSpriteBatch.js:199"
+            var c = mat.c;
+            mat.c = - mat.b;    // negate the rotation because our rotation transform not the same with pixi
+            mat.b = - c;
+            //
             if (isGameView) {
                 if (target._renderObj) {
                     target._renderObj.worldTransform = mat;
