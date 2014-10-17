@@ -40,17 +40,23 @@
     //};
 
     // override
-
-    function _doGetBounds(mat, out) {
+    function _doGetOrientedBounds(mat, tl, tr, bl, br) {
         var width = this._sprite ? this._sprite.width : 0;
         var height = this._sprite ? this._sprite.height : 0;
 
         // transform rect(0, 0, width, height) by matrix
-        
-        var tl = mat.transformPoint(new Vec2(0, 0));
-        var tr = mat.transformPoint(new Vec2(width, 0));
-        var bl = mat.transformPoint(new Vec2(0, -height));
-        var br = mat.transformPoint(new Vec2(width, -height));
+        tl.set(mat.transformPoint(new Vec2(0, 0)));
+        tr.set(mat.transformPoint(new Vec2(width, 0)));
+        bl.set(mat.transformPoint(new Vec2(0, -height)));
+        br.set(mat.transformPoint(new Vec2(width, -height)));
+    }
+
+    function _doGetBounds(mat, out) {
+        var tl = new Vec2(0, 0);
+        var tr = new Vec2(0, 0);
+        var bl = new Vec2(0, 0);
+        var br = new Vec2(0, 0);
+        _doGetOrientedBounds.call(this, mat, tl, tr, bl, br);
 
         var topLeftX = tl.x;
         var topLeftY = tl.y;
@@ -92,14 +98,19 @@
         return out;
     }
 
-    SpriteRenderer.prototype.getLocalBounds = function (out) {
-        var localMatrix = this.entity.transform.getLocalMatrix();
-        return _doGetBounds.call(this, localMatrix, out);
-    };
-
     SpriteRenderer.prototype.getWorldBounds = function (out) {
         var worldMatrix = this.entity.transform.getLocalToWorldMatrix();
         return _doGetBounds.call(this, worldMatrix, out);
+    };
+
+    SpriteRenderer.prototype.getWorldOrientedBounds = function (out1, out2, out3, out4) {
+        out1 = out1 || new Vec2(0, 0);
+        out2 = out2 || new Vec2(0, 0);
+        out3 = out3 || new Vec2(0, 0);
+        out4 = out4 || new Vec2(0, 0);
+        var worldMatrix = this.entity.transform.getLocalToWorldMatrix();
+        _doGetOrientedBounds.call(this, worldMatrix, out1, out2, out3, out4);
+        return [out1, out2, out3, out4];
     };
 
     // other functions

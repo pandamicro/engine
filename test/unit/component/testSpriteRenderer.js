@@ -2,33 +2,33 @@
 
 var epsilon = 0.0001;
 
-test('getLocalBounds', function () {
-    var ent = new Entity();
-    var renderer = ent.addComponent(SpriteRenderer);
-    var sprite = new Fire.Sprite();
-    sprite.x = 20;
-    sprite.y = 60;
-    sprite.width = 40;
-    sprite.height = 10;
-    renderer.sprite = sprite;
+//test('getLocalBounds', function () {
+//    var ent = new Entity();
+//    var renderer = ent.addComponent(SpriteRenderer);
+//    var sprite = new Fire.Sprite();
+//    sprite.x = 20;
+//    sprite.y = 60;
+//    sprite.width = 40;
+//    sprite.height = 10;
+//    renderer.sprite = sprite;
     
-    deepEqual(renderer.getLocalBounds(), new Rect(0, -10, 40, 10), 'identity transform');
+//    deepEqual(renderer.getLocalBounds(), new Rect(0, -10, 40, 10), 'identity transform');
 
-    ent.transform.rotation = -90;
-    var actual = renderer.getLocalBounds();
-    var expect = new Rect(-10, -40, 10, 40);
-    deepClose(actual, expect, epsilon, 'rotated transform');
+//    ent.transform.rotation = -90;
+//    var actual = renderer.getLocalBounds();
+//    var expect = new Rect(-10, -40, 10, 40);
+//    deepClose(actual, expect, epsilon, 'rotated transform');
 
-    ent.transform.rotation = 0;
-    ent.transform.scale = new V2(1, 2);
-    deepEqual(renderer.getLocalBounds(), new Rect(0, -20, 40, 20), 'scaled transform');
+//    ent.transform.rotation = 0;
+//    ent.transform.scale = new V2(1, 2);
+//    deepEqual(renderer.getLocalBounds(), new Rect(0, -20, 40, 20), 'scaled transform');
 
-    ent.transform.rotation = -90;
-    deepClose(renderer.getLocalBounds(), new Rect(-20, -40, 20, 40), epsilon, 'rotated scaled transform');
+//    ent.transform.rotation = -90;
+//    deepClose(renderer.getLocalBounds(), new Rect(-20, -40, 20, 40), epsilon, 'rotated scaled transform');
 
-    ent.transform.position = new V2(12, 31);
-    deepClose(renderer.getLocalBounds(), new Rect(-8/*-20 + 12*/, -9/*-40 + 31*/, 20, 40), epsilon, 'translated rotated scaled transform');
-});
+//    ent.transform.position = new V2(12, 31);
+//    deepClose(renderer.getLocalBounds(), new Rect(-8/*-20 + 12*/, -9/*-40 + 31*/, 20, 40), epsilon, 'translated rotated scaled transform');
+//});
 
 test('getWorldBounds', function () {
     var ent = new Entity();
