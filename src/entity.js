@@ -80,8 +80,6 @@
         }
     });
     Entity.prop('_active', true, Fire.HideInInspector);
-    Entity.prop('_name', '', Fire.HideInInspector);     // TODO: 已经在FObject定义过，不要重复定义
-    Entity.prop('_objFlags', 0, Fire.HideInInspector);
     Entity.prop('_components', null, Fire.HideInInspector);
     Entity.prop('transform', null, Fire.HideInInspector);
     
