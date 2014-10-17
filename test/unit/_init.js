@@ -18,11 +18,15 @@ var Camera = Fire.Camera;
 var Component = Fire.Component;
 var LoadManager = TestOnly.LoadManager;
 var AssetLibrary = Fire.AssetLibrary;
+var SpriteRenderer = Fire.SpriteRenderer;
 
 var FO = Fire.FObject;
 var V2 = Fire.Vec2;
 var M3 = Fire.Matrix23;
 
+function v2 (x, y) {
+    return new Fire.Vec2(x, y);
+}
 
 /**
  * force reset the engine

@@ -8,6 +8,7 @@
 
     editorCallback.onSceneLaunched = function (scene) {
         Fire.broadcast('scene:launched');
+        Fire.broadcast('scene:dirty');
     };
     //editorCallback.onSceneLoaded = function (scene) {
     //    Fire.broadcast('scene:loaded', scene.entities);
@@ -26,6 +27,7 @@
     var onEntityRemoved = 'entity:removed';
     editorCallback.onEntityRemoved = function (entity) {
         Fire.broadcast( onEntityRemoved, entity.hashKey );
+        Fire.broadcast('scene:dirty');
     };
 
     var onEntityParentChanged = 'entity:parentChanged';
@@ -34,6 +36,7 @@
                         entity.hashKey,
                         entity.transform.parent && entity.transform.parent.entity.hashKey
                       );
+        Fire.broadcast('scene:dirty');
     };
 
     var onEntityIndexChanged = 'entity:indexChanged';
@@ -51,6 +54,7 @@
                         entity.hashKey,
                         next && next.hashKey
                       );
+        Fire.broadcast('scene:dirty');
     };
 
     editorCallback.onEntityRenamed = function (entity) {
