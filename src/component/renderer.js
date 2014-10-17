@@ -34,15 +34,11 @@
      * Returns a "world" oriented bounding box(OBB) of the renderer.
      * 
      * @function Fire.Renderer#getWorldOrientedBounds
-     * @param {Fire.Vec2} [out1] - optional, the vector to receive the 1st world position 
-     * @param {Fire.Vec2} [out2] - optional, the vector to receive the 2nd world position
-     * @param {Fire.Vec2} [out3] - optional, the vector to receive the 3rd world position
-     * @param {Fire.Vec2} [out4] - optional, the vector to receive the 4th world position
-     * @returns {Fire.Vec2[]} - the array contains four vectors represented in world position
+     * @param {...Fire.Vec2} [out] - optional, the vector to receive the world position
+     * @returns {Fire.Vec2[]} - the array contains vectors represented in world position
      */
-    Renderer.prototype.getWorldOrientedBounds = function (out1, out2, out3, out4) {
-        Fire.warn('interface not yet implemented');
-        return [out1, out2, out3, out4];
+    Renderer.prototype.getWorldOrientedBounds = function (out) {
+        Fire.error('interface not yet implemented');
     };
 
     return Renderer;
