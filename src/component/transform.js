@@ -111,10 +111,14 @@
             return new Vec2(l2w.tx, l2w.ty);
         },
         set: function (value) {
-            var w2l = this.getWorldToLocalMatrix();
-            value = w2l.transformPoint(value);
-            this._position.addSelf(value);
-            //value.sub(this._position, this._position);
+            if ( this.parent ) {
+                var w2l = this.parent.getWorldToLocalMatrix();
+                value = w2l.transformPoint(value);
+                this.position = value;
+            }
+            else {
+                this.position = value;
+            }
         }
     });
 
@@ -142,9 +146,13 @@
             return l2w.getRotation() * 180 / Math.PI;
         },
         set: function (value) {
-            var l2w = this.getLocalToWorldMatrix();
-            var curWorldRotation = l2w.getRotation() * 180 / Math.PI;
-            this._rotation += (value - curWorldRotation);
+            if ( this.parent ) {
+                var l2w = this.parent.getLocalToWorldMatrix();
+                this.rotation = value - l2w.getRotation() * 180 / Math.PI;
+            }
+            else {
+                this.rotation = value;
+            }
         }
     });
 
