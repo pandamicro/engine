@@ -1,4 +1,4 @@
-var Fire;
+;var Fire;
 (function (Fire) {
     var __TESTONLY__ = {};
     Fire.__TESTONLY__ = __TESTONLY__;

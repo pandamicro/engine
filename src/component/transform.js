@@ -143,8 +143,8 @@
         },
         set: function (value) {
             var l2w = this.getLocalToWorldMatrix();
-            var worldRotation = l2w.getRotation() * 180 / Math.PI;
-            this._rotation = worldRotation - this._rotation;
+            var curWorldRotation = l2w.getRotation() * 180 / Math.PI;
+            this._rotation += (value - curWorldRotation);
         }
     });
 
@@ -165,7 +165,7 @@
     );
 
     /**
-     * The scale of the transform in world space (Read Only)
+     * The lossy scale of the transform in world space (Read Only)
      * @property {Fire.Vec2} Fire.Transform#worldScale
      */
     Object.defineProperty(Transform.prototype, 'worldScale', {
