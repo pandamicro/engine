@@ -71,4 +71,41 @@ test('getLocalMatrix', function () {
     //var sr = rotateMat.prepend(scaleMat);
 });
 
+test('worldPosition/Rotation', function () {
+    var parent = new Fire.Entity();
+    var child = new Fire.Entity();
+    child.transform.parent = parent.transform;
+
+    parent.transform.position = new V2(432, 54354);
+    parent.transform.scale = new V2(21, 32);
+    parent.transform.rotation = 3241;
+
+    deepClose(parent.transform.worldPosition, parent.transform.position, 0.0001, 'worldPosition equals localPosition if no parent');
+    deepClose(parent.transform.worldRotation, parent.transform.rotation % 360, 0.0001, 'worldRotation equals localRotation if no parent');
+    deepClose(parent.transform.worldScale, parent.transform.scale, 0.0001, 'worldScale equals localScale if no parent');
+
+    child.transform.position = new V2(-21, 4);
+    child.transform.scale = new V2(1, 2);
+    child.transform.rotation = -212;
+
+    //console.log(child.transform.getLocalToWorldMatrix());
+
+    var worldPosition = new V2(-11.16675, 54474.28);
+    deepClose(child.transform.worldPosition, worldPosition, 0.01, 'get world position');
+
+    var localPosition = child.transform.position.clone();
+    child.transform.worldPosition = worldPosition;
+    deepClose(child.transform.position, localPosition, 0.1, 'set local position');
+
+    //var expectedWorldRotation = child.transform.rotation + parent.transform.rotation;
+    //deepClose(child.transform.worldRotation, expectedWorldRotation % 360, 0.0001, 'get world rotation');
+
+    //var localRotation = child.transform.rotation;
+    //child.transform.worldRotation = expectedWorldRotation;
+    //deepClose(child.transform.rotation, localRotation, 0.0001, 'set world rotation');
+
+    var expectedWorldScale = new V2(24.08897, 57.82209);
+    deepClose(child.transform.worldScale, expectedWorldScale, 1, 'get world scale');
+});
+
 // jshint ignore: end

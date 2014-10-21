@@ -27,7 +27,7 @@
     /**
      * The parent of the transform.
      * Changing the parent will keep the local space position, rotation and scale the same but modify the world space position, scale and rotation.
-     * @member {Fire.Transform} Fire.Transform#parent
+     * @property {Fire.Transform} Fire.Transform#parent
      */
     Object.defineProperty(Transform.prototype, 'parent', {
         get: function () {
@@ -78,7 +78,7 @@
 
     /**
      * Get the amount of children
-     * @member {number} Fire.Transform#childCount
+     * @property {number} Fire.Transform#childCount
      */
     Object.defineProperty(Transform.prototype, 'childCount', {
         get: function () {
@@ -88,7 +88,7 @@
 
     /**
      * The local position in its parent's coordinate system
-     * @member {Fire.Vec2} Fire.Transform#position
+     * @property {Fire.Vec2} Fire.Transform#position
      */
     Transform.getset('position', 
         function () {
@@ -102,8 +102,25 @@
     );
 
     /**
+     * The position of the transform in world space
+     * @property {Fire.Vec2} Fire.Transform#worldPosition
+     */
+    Object.defineProperty(Transform.prototype, 'worldPosition', {
+        get: function () {
+            var l2w = this.getLocalToWorldMatrix();
+            return new Vec2(l2w.tx, l2w.ty);
+        },
+        set: function (value) {
+            var w2l = this.getWorldToLocalMatrix();
+            value = w2l.transformPoint(value);
+            this._position.addSelf(value);
+            //value.sub(this._position, this._position);
+        }
+    });
+
+    /**
      * The counterclockwise degrees of rotation relative to the parent
-     * @member {number} Fire.Transform#rotation
+     * @property {number} Fire.Transform#rotation
      */
     Transform.getset('rotation', 
         function () {
@@ -116,8 +133,24 @@
     );
 
     /**
+     * The counterclockwise degrees of rotation in world space
+     * @property {number} Fire.Transform#worldRotation
+     */
+    Object.defineProperty(Transform.prototype, 'worldRotation', {
+        get: function () {
+            var l2w = this.getLocalToWorldMatrix();
+            return l2w.getRotation() * 180 / Math.PI;
+        },
+        set: function (value) {
+            var l2w = this.getLocalToWorldMatrix();
+            var worldRotation = l2w.getRotation() * 180 / Math.PI;
+            this._rotation = worldRotation - this._rotation;
+        }
+    });
+
+    /**
      * The local scale factor relative to the parent
-     * @member {Fire.Vec2} Fire.Transform#scale
+     * @property {Fire.Vec2} Fire.Transform#scale
      * @default new Vec2(1, 1)
      */
     Transform.getset('scale',
@@ -130,6 +163,17 @@
         },
         Fire.Tooltip('The local scale factor relative to the parent')
     );
+
+    /**
+     * The scale of the transform in world space (Read Only)
+     * @property {Fire.Vec2} Fire.Transform#worldScale
+     */
+    Object.defineProperty(Transform.prototype, 'worldScale', {
+        get: function () {
+            var l2w = this.getLocalToWorldMatrix();
+            return l2w.getScale();
+        }
+    });
 
     // override functions
 
