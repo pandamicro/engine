@@ -27,6 +27,7 @@ var RenderContext = (function () {
 
         var antialias = false;
         this.stage = new PIXI.Stage(0x000000);
+        this.root = this.stage;
         this.renderer = PIXI.autoDetectRenderer(width, height, canvas, transparent, antialias);
 
         //this.showGizmos = showGizmos;
@@ -97,13 +98,13 @@ var RenderContext = (function () {
         transform._pixiObj = new PIXI.DisplayObjectContainer();
         if (Engine._canModifyCurrentScene) {
             // attach node if created dynamically
-            this.stage.addChild(transform._pixiObj);
+            this.root.addChild(transform._pixiObj);
         }
         if (this.sceneView) {
             transform._pixiObjInScene = new PIXI.DisplayObjectContainer();
             if (Engine._canModifyCurrentScene) {
                 // attach node if created dynamically
-                this.sceneView.stage.addChild(transform._pixiObjInScene);
+                this.sceneView.root.addChild(transform._pixiObjInScene);
             }
         }
     };
@@ -137,7 +138,7 @@ var RenderContext = (function () {
                 transform.parent._pixiObj.addChild(transform._pixiObj);
             }
             else {
-                this.stage.addChild(transform._pixiObj);
+                this.root.addChild(transform._pixiObj);
             }
         }
         if (this.sceneView) {
@@ -145,7 +146,7 @@ var RenderContext = (function () {
                 transform.parent._pixiObjInScene.addChild(transform._pixiObjInScene);
             }
             else {
-                this.sceneView.stage.addChild(transform._pixiObjInScene);
+                this.sceneView.root.addChild(transform._pixiObjInScene);
             }
         }
     };
@@ -189,12 +190,12 @@ var RenderContext = (function () {
         for (; i < len; i++) {
             var objInGame = entities[i].transform._pixiObj;
             if (objInGame) {
-                this.stage.addChild(objInGame);
+                this.root.addChild(objInGame);
             }
         }
         if (this.sceneView) {
             for (i = 0; i < len; i++) {
-                this.sceneView.stage.addChild(entities[i].transform._pixiObjInScene);
+                this.sceneView.root.addChild(entities[i].transform._pixiObjInScene);
             }
         }
     };
@@ -259,7 +260,7 @@ var RenderContext = (function () {
         }
 
         if (this.sceneView) {
-            // pixi can not share display object between stages at the same time, 
+            // pixi may not share display object between stages at the same time, 
             // so another sprite is needed.
             target._renderObjInScene = new PIXI.Sprite(tex);
             transform._pixiObjInScene.addChildAt(target._renderObjInScene, 0);
