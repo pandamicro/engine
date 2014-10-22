@@ -101,7 +101,7 @@ test('worldPosition/Rotation', function () {
     child.transform.rotation = -212;
 
     deepClose(parent.transform.worldPosition, parent.transform.position, 0.0001, 'worldPosition equals localPosition if no parent');
-    deepClose(parent.transform.worldRotation, parent.transform.rotation % 360, 0.0001, 'worldRotation equals localRotation if no parent');
+    deepClose(parent.transform.worldRotation % 360, parent.transform.rotation % 360, 0.0001, 'worldRotation equals localRotation if no parent');
     deepClose(parent.transform.worldScale, parent.transform.scale, 0.0001, 'worldScale equals localScale if no parent');
 
     //console.log(child.transform.getLocalToWorldMatrix());
@@ -118,11 +118,11 @@ test('worldPosition/Rotation', function () {
     // rotation
 
     var expectedWorldRotation = child.transform.rotation + parent.transform.rotation;
-    deepClose(child.transform.worldRotation, expectedWorldRotation % 360, 1, 'get world rotation');
+    deepClose(child.transform.worldRotation % 360, expectedWorldRotation % 360, 1, 'get world rotation');
 
     var localRotation = child.transform.rotation;
     child.transform.worldRotation = expectedWorldRotation;
-    deepClose(child.transform.rotation % 360, localRotation + 360, 1, 'set world rotation');
+    deepClose((child.transform.rotation + 360) % 360, localRotation + 360, 1, 'set world rotation');
 
     // scale
 

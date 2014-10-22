@@ -142,13 +142,16 @@
      */
     Object.defineProperty(Transform.prototype, 'worldRotation', {
         get: function () {
-            var l2w = this.getLocalToWorldMatrix();
-            return l2w.getRotation() * 180 / Math.PI;
+            if ( this.parent ) {
+                return this.rotation + this.parent.worldRotation;
+            }
+            else {
+                return this.rotation;
+            }
         },
         set: function (value) {
             if ( this.parent ) {
-                var l2w = this.parent.getLocalToWorldMatrix();
-                this.rotation = value - l2w.getRotation() * 180 / Math.PI;
+                this.rotation = value - this.parent.worldRotation;
             }
             else {
                 this.rotation = value;
