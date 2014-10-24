@@ -28,7 +28,11 @@ var RenderContext = (function () {
         var antialias = false;
         this.stage = new PIXI.Stage(0x000000);
         this.root = this.stage;
-        this.renderer = PIXI.autoDetectRenderer(width, height, canvas, transparent, antialias);
+        this.renderer = PIXI.autoDetectRenderer(width, height, {
+            view: canvas, 
+            transparent: transparent, 
+            antialias: antialias
+        } );
 
         //this.showGizmos = showGizmos;
 
@@ -323,9 +327,8 @@ var RenderContext = (function () {
             // revert Y axis for pixi
             mat.ty = this.renderer.height - mat.ty;
             // adjust bc for pixi, see "pixi.js\src\pixi\renderers\webgl\utils\WebGLSpriteBatch.js:199"
-            var c = mat.c;
-            mat.c = - mat.b;    // negate the rotation because our rotation transform not the same with pixi
-            mat.b = - c;
+            mat.c = -mat.c;    // negate the rotation because our rotation transform not the same with pixi
+            mat.b = -mat.b;
             //
             if (isGameView) {
                 if (target._renderObj) {
