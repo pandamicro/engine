@@ -111,10 +111,9 @@
             return new Vec2(l2w.tx, l2w.ty);
         },
         set: function (value) {
-            if ( this.parent ) {
-                var w2l = this.parent.getWorldToLocalMatrix();
-                value = w2l.transformPoint(value);
-                this.position = value;
+            if ( this._parent ) {
+                var w2l = this._parent.getWorldToLocalMatrix();
+                this.position = w2l.transformPoint(value);
             }
             else {
                 this.position = value;

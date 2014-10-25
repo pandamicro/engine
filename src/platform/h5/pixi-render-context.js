@@ -326,8 +326,8 @@ var RenderContext = (function () {
             var mat = target.transform._worldTransform.clone();
             // revert Y axis for pixi
             mat.ty = this.renderer.height - mat.ty;
-            // adjust bc for pixi, see "pixi.js\src\pixi\renderers\webgl\utils\WebGLSpriteBatch.js:199"
-            mat.c = -mat.c;    // negate the rotation because our rotation transform not the same with pixi
+            // negate the rotation because our rotation transform not the same with pixi
+            mat.c = -mat.c;    
             mat.b = -mat.b;
             //
             if (isGameView) {

@@ -113,7 +113,7 @@ test('worldPosition/Rotation', function () {
 
     var localPosition = child.transform.position.clone();
     child.transform.worldPosition = worldPosition;
-    deepClose(child.transform.position, localPosition, 0.1, 'set local position');
+    deepClose(child.transform.position, localPosition, 0.001, 'set world position');
 
     // rotation
 
@@ -122,7 +122,7 @@ test('worldPosition/Rotation', function () {
 
     var localRotation = child.transform.rotation;
     child.transform.worldRotation = expectedWorldRotation;
-    deepClose((child.transform.rotation + 360) % 360, localRotation + 360, 1, 'set world rotation');
+    deepClose((child.transform.rotation + 360) % 360, localRotation + 360, 0.001, 'set world rotation');
 
     // scale
 
