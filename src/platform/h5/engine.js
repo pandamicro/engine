@@ -29,6 +29,9 @@ var Engine = (function () {
     // main render context
     Engine._renderContext = null;
 
+    // main interaction context
+    Engine._interactionContext = null;
+
     // the render context currently rendering
     Engine._curRenderContext = null;
 
@@ -118,7 +121,10 @@ var Engine = (function () {
         inited = true;
 
         Engine._renderContext = new RenderContext( w, h, canvas );
+        Engine._interactionContext = new InteractionContext();
+
         Engine._setCurrentScene(scene || new Scene());
+
         return Engine._renderContext;
     };
     
@@ -164,6 +170,10 @@ var Engine = (function () {
     var render = function () {
         // render
         Engine._scene.render(Engine._renderContext);
+
+        // update interaction context
+        Engine._scene.updateInteractionContext(Engine._interactionContext);
+
         // test scene view
         if (Fire.isPureWeb && Engine._renderContext.sceneView) {
             Engine._scene.render(Engine._renderContext.sceneView);

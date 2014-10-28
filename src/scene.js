@@ -84,6 +84,31 @@
         Engine._curRenderContext = null;
     };
 
+    function _updateInteractionContextRecursilvey ( entity, interactionContext ) {
+        var renderer = entity.getComponent(Fire.Renderer);
+        if ( renderer ) {
+            var boundingBox = renderer.getWorldBounds();
+            interactionContext.add( entity, boundingBox );
+        }
+
+        for ( var i = 0; i < entity.transform.childCount; ++i ) {
+            var childEnt = entity.transform.getChild(i).entity;
+            _updateInteractionContextRecursilvey(childEnt, interactionContext);
+        }
+    }
+
+    Scene.prototype.updateInteractionContext = function (interactionContext) {
+        // clear intersection data
+        interactionContext.clear();
+
+        // recursively process each entity
+        var entities = this.entities;
+        var i, len;
+        for (i = 0, len = entities.length; i < len; ++i) {
+            _updateInteractionContextRecursilvey( entities[i], interactionContext );
+        }
+    };
+
     ////////////////////////////////////////////////////////////////////
     // other functions
     ////////////////////////////////////////////////////////////////////

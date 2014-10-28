@@ -4,4 +4,7 @@
         return RenderContext.createSceneRenderCtx (width, height, canvas, true);
     };
 
+    Engine.createInteractionContext = function () {
+        return new InteractionContext();
+    };
 })();
