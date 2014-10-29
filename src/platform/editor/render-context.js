@@ -76,14 +76,15 @@
         return true;
     };
 
-    var doAddSprite = RenderContext.prototype.addSprite;
-    RenderContext.prototype.addSprite = function (target) {
-        doAddSprite.call(this, target);
-        if (target._renderObjInScene) {
-            // allow get entity from pixi object
-            target._renderObjInScene.entityId = target.entity.hashKey;
-        }
-    };
+    // save entity id in pixi obj
+    //var doAddSprite = RenderContext.prototype.addSprite;
+    //RenderContext.prototype.addSprite = function (target) {
+    //    doAddSprite.call(this, target);
+    //    if (target._renderObjInScene) {
+    //        // allow get entity from pixi object
+    //        target._renderObjInScene.entityId = target.entity.hashKey;
+    //    }
+    //};
 
     RenderContext.prototype.getForegroundNode = function () {
         return this.stage.children[this.stage.children.length - 1];

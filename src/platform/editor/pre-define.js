@@ -8,13 +8,13 @@ Fire._componentMenuItems = [];
  * 
  * @method Fire.addComponentMenu
  * @param {function} constructor - the class you want to register, must inherit from Component
- * @param {string} menuPath
- * @param {number} [order]
+ * @param {string} menuPath - the menu path name. Eg. "Rendering/Camera"
+ * @param {number} [priority] - the order which the menu item are displayed
  */
-Fire.addComponentMenu = function (constructor, menuPath, order) {
+Fire.addComponentMenu = function (constructor, menuPath, priority) {
     Fire._componentMenuItems.push({
         component: constructor,
         menuPath: menuPath,
-        order: order
+        order: priority
     });
 };
