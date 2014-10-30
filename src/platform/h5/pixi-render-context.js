@@ -407,3 +407,5 @@ var RenderContext = (function () {
 
     return RenderContext;
 })();
+
+Fire._RenderContext = RenderContext;

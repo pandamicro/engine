@@ -40,13 +40,6 @@ var paths = {
         'src/platform/h5/engine.js',
         // debug
         'src/platform/debug/render-context.js',
-        // editor only
-        'src/platform/editor/entity.js',
-        'src/platform/editor/scene.js',
-        'src/platform/editor/engine.js',
-        'src/platform/editor/render-context.js',
-        'src/platform/editor/ipc-sender.js',
-        'src/platform/editor/ipc-listener.js',
     ],
     index: 'src/index.js',
 

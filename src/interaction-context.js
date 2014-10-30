@@ -17,3 +17,5 @@ var InteractionContext = (function () {
 
     return InteractionContext;
 })();
+
+Fire._InteractionContext = InteractionContext;
