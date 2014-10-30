@@ -11,12 +11,12 @@
         else {
             // create dynamically
             
-            // 绕开AddComponent直接添加Transfrom，因此transform的onLoad不会被调用，
+            // init transform
             var transform = new Transform();
             transform.entity = this;
-            
             this._components = [transform];
             this.transform = transform;
+            transform._onEntityActivated(true);     // 因为是刚刚创建，所以 activeInHierarchy 肯定为 true
 
             if (Engine._scene) {
                 Engine._scene.appendRoot(this);

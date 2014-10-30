@@ -84,16 +84,26 @@
 
     // Should not call onEnable/onDisable in other place
     var _callOnEnable = function (self, enable) {
-        if (enable) {
-            if (!self._isOnEnableCalled && self.onEnable) {
-                self.onEnable();
+        if ( enable ) {
+            if ( !self._isOnEnableCalled ) {
                 self._isOnEnableCalled = true;
+                if ( self.onEnable ) {
+                    self.onEnable();
+                }
+                if ( editorCallback.onComponentEnabled ) {
+                    editorCallback.onComponentEnabled(self);
+                }
             }
         }
         else {
-            if (self._isOnEnableCalled && self.onDisable) {
-                self.onDisable();
+            if ( self._isOnEnableCalled ) {
                 self._isOnEnableCalled = false;
+                if ( self.onDisable ) {
+                    self.onDisable();
+                }
+                if ( editorCallback.onComponentDisabled ) {
+                    editorCallback.onComponentDisabled(self);
+                }
             }
         }
     };
