@@ -18,9 +18,9 @@ var del = require('del');
 var paths = {
     // source
     src: [
-        // pre-defines
+        // runtime pre-defines
         'src/platform/editor/pre-define.js',
-        // engine
+        // runtime engine
         'src/define.js',
         'src/misc.js',
         'src/time.js',
@@ -38,6 +38,8 @@ var paths = {
         'src/load-manager.js',
         'src/asset-library.js',
         'src/platform/h5/engine.js',
+        // debug
+        'src/platform/debug/render-context.js',
         // editor only
         'src/platform/editor/entity.js',
         'src/platform/editor/scene.js',
