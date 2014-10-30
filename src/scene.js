@@ -42,9 +42,9 @@
             component._FUNC_NAME_();\n\
         }\n\
     }\n\
-    var transform = entity.transform;\n\
-    for (var i = 0, len = transform.childCount; i < len; ++i) {\n\
-        var subEntity = transform._children[i].entity;\n\
+    var children = entity._children;\n\
+    for (var i = 0, len = children.length; i < len; ++i) {\n\
+        var subEntity = children[i];\n\
         if (subEntity._active) {\n\
             _FUNC_NAME_Recursively(subEntity);\n\
         }\n\
@@ -92,7 +92,7 @@
         }
 
         for ( var i = 0; i < entity.transform.childCount; ++i ) {
-            var childEnt = entity.transform.getChild(i).entity;
+            var childEnt = entity.getChild(i);
             _updateInteractionContextRecursilvey(childEnt, interactionContext);
         }
     }
@@ -184,11 +184,10 @@
         for (n; n < nameList.length; n++) {
             name = nameList[n];
             // visit sub entities
-            var transform = match.transform;
+            var children = match._children;
             match = null;
-            var children = transform._children;
             for (var t = 0, len = children.length; t < len; ++t) {
-                var subEntity = children[t].entity;
+                var subEntity = children[t];
                 if (subEntity.name === name) {
                     match = subEntity;
                     break;

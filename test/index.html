@@ -72,7 +72,7 @@
         Fire.Engine._renderContext.checkMatchCurrentScene();
 
         var bigSprite = new Fire.Entity('Big Sprite');
-        bigSprite.transform.parent = s.transform;
+        bigSprite.parent = s;
         bigSprite.addComponent(Fire.SpriteRenderer);
         bigSprite.transform.scale = new Fire.Vec2(5, 5);
         bigSprite.transform.setAsFirstSibling();

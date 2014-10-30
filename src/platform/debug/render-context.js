@@ -28,7 +28,7 @@
             var ent = entities[i];
             if (pixiSceneNodes) {
                 var sceneNode = pixiSceneNodes[i];
-                if (ent.transform._pixiObjInScene !== sceneNode) {
+                if (ent._pixiObjInScene !== sceneNode) {
                     Fire.error('root transform does not match pixi scene node: ' + ent.name);
                     return false;
                 }
@@ -37,7 +37,7 @@
             //    var gameNode = pixiGameNodes[g++];
             //}
             var gameNode = pixiGameNodes[i];
-            if (ent.transform._pixiObj !== gameNode) {
+            if (ent._pixiObj !== gameNode) {
                 Fire.error('root transform does not match pixi game node: ' + ent.name);
                 return false;
             }

@@ -19,6 +19,12 @@
             }
         ],
         "_name": "Entity",
+        "_parent": null,
+        "_children": [
+            {
+                "__id__": 4
+            }
+        ],
         "transform": {
             "__id__": 2
         }
@@ -29,8 +35,6 @@
             "__id__": 1
         },
         "_enabled": true,
-        "_parent": null,
-        "_children": [],
         "_position": {
             "__type__": "Fire.Vec2",
             "x": 0,
@@ -51,6 +55,41 @@
         "_enabled": true,
         "_sprite": {
             "__uuid__": "65341123490"
+        }
+    },
+    {
+        "__type__": "Fire.Entity",
+        "_active": true,
+        "_components": [
+            {
+                "__id__": 5
+            }
+        ],
+        "_name": "Child Entity",
+        "_parent": {
+            "__id__": 1
+        },
+        "_children": [ ],
+        "transform": {
+            "__id__": 5
+        }
+    },
+    {
+        "__type__": "Fire.Transform",
+        "entity": {
+            "__id__": 4
+        },
+        "_enabled": true,
+        "_position": {
+            "__type__": "Fire.Vec2",
+            "x": 0,
+            "y": 0
+        },
+        "_rotation": 0,
+        "_scale": {
+            "__type__": "Fire.Vec2",
+            "x": 1,
+            "y": 1
         }
     }
 ] 

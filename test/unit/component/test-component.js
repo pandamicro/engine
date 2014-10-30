@@ -9,28 +9,28 @@ test('onHierarchyChanged invoked by setting parent', function () {
 
     var parent1 = new Entity();
     var parent2 = new Entity();
-    parent2.transform.parent = parent1.transform;
+    parent2.parent = parent1;
 
     var ent = new Entity();
     ent.active = false;
     var comp = ent.addComponent(MyComp);
-    ent.transform.parent = parent1.transform;
+    ent.parent = parent1;
     onHierarchyChanged.setDisabledMessage('should not invoked before onLoad');
 
-    ent.transform.parent = null;
+    ent.parent = null;
     ent.active = true;
 
     onHierarchyChanged.enable();
-    ent.transform.parent = parent1.transform;
+    ent.parent = parent1;
     onHierarchyChanged.once('should invoke if set parent');
 
-    ent.transform.parent = null;
+    ent.parent = null;
     onHierarchyChanged.once('should invoke if no parent');
 
-    ent.transform.parent = parent2.transform;
+    ent.parent = parent2;
     onHierarchyChanged.calledCount = 0;
 
-    parent2.transform.parent = null;
+    parent2.parent = null;
     onHierarchyChanged.once('should invoke if parent\'s hierarchy changed');
 
     onHierarchyChanged.disable();

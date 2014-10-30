@@ -16,11 +16,11 @@ test('findEntity', function () {
     ok(Entity.find('/.去') === ent2, 'should found, Chinese name');
 
     var entent = new Entity('');
-    entent.transform.parent = ent.transform;
+    entent.parent = ent;
     ok(Entity.find('//') === entent, 'should found, empty name * 2');
 
     var ent2ent2 = new Entity('Jare Guo');
-    ent2ent2.transform.parent = ent2.transform;
+    ent2ent2.parent = ent2;
     ok(Entity.find('/.去/Jare Guo') === ent2ent2, 'should found, name contains space');
 });
 

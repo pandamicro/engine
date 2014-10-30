@@ -7,6 +7,7 @@ var libPath = projPath + '/library';
 Fire.AssetLibrary.init(libPath);
 
 asyncTest('load', function () {
+    
     Engine.loadScene('74325665', function (scene) {
         clearTimeout(timerId);
         ok(scene, 'can load scene');
@@ -24,6 +25,11 @@ asyncTest('load', function () {
         
         ok(Engine._renderContext.checkMatchCurrentScene(), 'check render context');
 
+        var child = Entity.find('/Entity/Child Entity');
+        ok(child, 'can load child entity');
+        strictEqual(child.parent, ent, 'can load child entity\'s parent');
+        strictEqual(child.transform._parent, ent.transform, 'can load cached reference to parent transform');
+        
         start();
     });
     var timerId = setTimeout(function () {

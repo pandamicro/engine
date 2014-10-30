@@ -19,11 +19,37 @@ test('basic test', function () {
     strictEqual(entity.isValid, false, 'entity can be destoryed');
 });
 
+test('test hierarchy', function () {
+    var parent = new Fire.Entity();
+    var child1 = new Fire.Entity();
+    var child2 = new Fire.Entity();
+
+    strictEqual(parent.parent, null, 'entity\'s default parent is null');
+    strictEqual(parent.childCount, 0, 'entity\'s default child count is 0');
+
+    child1.parent = parent;
+    strictEqual(child1.parent, parent, 'can get/set parent');
+    strictEqual(parent.childCount, 1, 'child count increased to 1');
+    strictEqual(parent.getChild(0), child1, 'can get child1');
+
+    child2.parent = parent;
+    strictEqual(parent.childCount, 2, 'child count increased to 2');
+    strictEqual(parent.getChild(1), child2, 'can get child2');
+
+    child1.destroy();
+
+    FO._deferredDestroy();
+
+    strictEqual(parent.childCount, 1, 'child count should return to 1');
+    strictEqual(parent.getChild(0), child2, 'only child2 left');
+
+    // TODO: what if parent.parent = child2 ?
+});
+
 test('activeInHierarchy', function () {
     var parent = new Entity();
     var child = new Entity();
-
-    child.transform.parent = parent.transform;
+    child.parent = parent;
 
     strictEqual(parent.activeInHierarchy, true, 'parent activeInHierarchy');
     strictEqual(child.activeInHierarchy, true, 'child activeInHierarchy');
@@ -96,7 +122,7 @@ test('component in hierarchy', 4, function () {
     // 这里主要测试entity，不是测试component
     var parent = new Entity();
     var child = new Entity();
-    child.transform.parent = parent.transform;
+    child.parent = parent;
     parent.active = false;
 
     var MyComponent = Fire.define('', CallbackTester, function () {
@@ -113,7 +139,7 @@ test('component in hierarchy', 4, function () {
     parent.active = false;   // onDisable
 
     comp.expect(CallbackTester.OnEnable, 'should enable when entity detached from its parent');
-    child.transform.parent = null;
+    child.parent = null;
 
     comp.stopTest();
 });
@@ -133,7 +159,7 @@ test('destroy', function () {
     childComp.expect(CallbackTester.OnDisable, 'should disable while destroy parent');
     childComp.notExpect(CallbackTester.OnDestroy, 'can not destroyed before the end of this frame');
 
-    child.transform.parent = parent.transform;
+    child.parent = parent;
     // call destroy
     parent.destroy();
     
@@ -171,7 +197,7 @@ test('destroy', function () {
                      CallbackTester.OnDestroy]);
     });
     var newChildEntity = new Entity();
-    newChildEntity.transform.parent = parent.transform;
+    newChildEntity.parent = parent;
     var newChildEntityComp = newChildEntity.addComponent(NewChildEntityComp);
 
     // do destory
@@ -187,6 +213,20 @@ test('destroy', function () {
     childComp_new.stopTest();
     newParentComp.stopTest();
     newChildEntityComp.stopTest();
+});
+
+test('isChildOf', function () {
+    var ent1 = new Fire.Entity();
+    var ent2 = new Fire.Entity();
+    var ent3 = new Fire.Entity();
+
+    ent2.parent = ent1;
+    ent3.parent = ent2;
+
+    strictEqual(ent1.isChildOf(ent2), false, 'not a child of its children');
+    strictEqual(ent1.isChildOf(ent1), true, 'is child of itself');
+    strictEqual(ent2.isChildOf(ent1), true, 'is child of its parent');
+    strictEqual(ent3.isChildOf(ent1), true, 'is child of its ancestor');
 });
 
 // jshint ignore: end

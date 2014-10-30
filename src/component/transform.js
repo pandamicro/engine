@@ -13,78 +13,19 @@
 
         this._worldTransform = new Matrix23();
 
+        /**
+         * @property {Transform} _parent - the cached reference to parent transform
+         */
+        this._parent = null;
+
         //this._hierarchyChangedListeners = null;
     });
 
-    Transform.prop('_parent', null, Fire.HideInInspector);
-    Transform.prop('_children', [], Fire.HideInInspector);
     Transform.prop('_position', null, Fire.HideInInspector);
     Transform.prop('_rotation', 0, Fire.HideInInspector);
     Transform.prop('_scale', null, Fire.HideInInspector);
 
     // properties
-
-    /**
-     * The parent of the transform.
-     * Changing the parent will keep the local space position, rotation and scale the same but modify the world space position, scale and rotation.
-     * @property {Fire.Transform} Fire.Transform#parent
-     */
-    Object.defineProperty(Transform.prototype, 'parent', {
-        get: function () {
-            return this._parent;
-        },
-        set: function (value) {
-            if (this._parent !== value) {
-                if (value === this) {
-                    Fire.warn("A transform can't be set as the parent of itself.");
-                    return;
-                }
-                if (value && !(value instanceof Transform)) {
-                    if (value instanceof Entity) {
-                        Fire.error('transform.parent can not be an Entity, use entity.transform instead.');
-                    }
-                    else {
-                        Fire.error('transform.parent must be instance of Transform (or must be null)');
-                    }
-                    return;
-                }
-                var oldParent = this._parent;
-                if (value) {
-                    if ((value.entity._objFlags & SceneGizmo) && !(this.entity._objFlags & SceneGizmo)) {
-                        Fire.error('child of SceneGizmo must be SceneGizmo');
-                        return;
-                    }
-                    if (!oldParent) {
-                        Engine._scene.removeRoot(this.entity);
-                    }
-                    value._children.push(this);
-                }
-                else {
-                    Engine._scene.appendRoot(this.entity);
-                }
-                this._parent = value || null;
-                if (oldParent && !(oldParent.entity._objFlags & Destroying)) {
-                    oldParent._children.splice(oldParent._children.indexOf(this), 1);
-                    this.entity._onHierarchyChanged(oldParent); // TODO 这里需要有oldParent?
-                }
-                Engine._renderContext.onTransformParentChanged(this, oldParent);
-                if (editorCallback.onEntityParentChanged) {
-                    editorCallback.onEntityParentChanged(this.entity);
-                }
-                //this._onHierarchyChanged(this, oldParent);
-            }
-        }
-    });
-
-    /**
-     * Get the amount of children
-     * @property {number} Fire.Transform#childCount
-     */
-    Object.defineProperty(Transform.prototype, 'childCount', {
-        get: function () {
-            return this._children.length;
-        },
-    });
 
     /**
      * The local position in its parent's coordinate system
@@ -141,16 +82,16 @@
      */
     Object.defineProperty(Transform.prototype, 'worldRotation', {
         get: function () {
-            if ( this.parent ) {
-                return this.rotation + this.parent.worldRotation;
+            if ( this._parent ) {
+                return this.rotation + this._parent.worldRotation;
             }
             else {
                 return this.rotation;
             }
         },
         set: function (value) {
-            if ( this.parent ) {
-                this.rotation = value - this.parent.worldRotation;
+            if ( this._parent ) {
+                this.rotation = value - this._parent.worldRotation;
             }
             else {
                 this.rotation = value;
@@ -185,31 +126,23 @@
         }
     });
 
+    /**
+     * @private
+     */
+    Object.defineProperty(Transform.prototype, 'parent', {
+        get: function () {
+            Fire.error('Transform.parent is obsolete. Use Entity.parent instead.');
+            return null;
+        },
+        set: function (value) {
+            Fire.error('Transform.parent is obsolete. Use Entity.parent instead.');
+        }
+    });
+
     // override functions
 
-    Transform.prototype.onDestroy = function () {
-        var parent = this._parent;
-        var alsoDestroyParent = (parent && (parent.entity._objFlags & Destroying));
-        if (parent) {
-            if (!alsoDestroyParent) {
-                parent._children.splice(parent._children.indexOf(this), 1);
-            }
-        }
-        else {
-            Engine._scene.removeRoot(this.entity);
-        }
-
-        if (!alsoDestroyParent) {
-            // callbacks
-            Engine._renderContext.onTransformRemoved(this);
-        }
-
-        // destroy child entitys
-        var children = this._children;
-        for (var i = 0, len = children.length; i < len; ++i) {
-            var entity = children[i].entity;
-            entity._destroyImmediate();
-        }
+    Transform.prototype.onLoad = function () {
+        this._parent = this.entity._parent && this.entity._parent.transform;
     };
 
     Transform.prototype.destroy = function () {
@@ -218,15 +151,6 @@
     };
     
     // other functions
-
-    Transform.prototype.create = function () {
-        // invoke callbacks
-        Engine._renderContext.onTransformCreated(this);
-    };
-
-    Transform.prototype.getChild = function (index) {
-        return this._children[index];
-    };
 
     Transform.prototype._updateTransform = function (parentMatrix) {
         //var mat = this._worldTransform;
@@ -273,9 +197,9 @@
         //this._worldAlpha = this._alpha * this._parent._worldAlpha;
 
         // update children
-        var children = this._children;
+        var children = this.entity._children;
         for (var i = 0, len = children.length; i < len; i++) {
-            children[i]._updateTransform(mat);
+            children[i].transform._updateTransform(mat);
         }
     };
 
@@ -285,9 +209,9 @@
         //this._worldAlpha = this._alpha;
 
         // update children
-        var children = this._children;
+        var children = this.entity._children;
         for (var i = 0, len = children.length; i < len; i++) {
-            children[i]._updateTransform(mat);
+            children[i].transform._updateTransform(mat);
         }
     };
 
@@ -356,97 +280,6 @@
      */
     Transform.prototype.getWorldToLocalMatrix = function (out) {
         return this.getLocalToWorldMatrix(out).invert();
-    };
-
-    /**
-     * is or is child of
-     */
-    Transform.prototype.isChildOf = function (parent) {
-        var child = this;
-        do {
-            if (child === parent) {
-                return true;
-            }
-            child = child._parent;
-        }
-        while (child);
-        return false;
-    };
-
-    /**
-     * Get the sibling index.
-     * NOTE: If this transform does not have parent and not belongs to the current scene, 
-     *       The return value will be -1
-     * 
-     * @method Fire.Transform#getSiblingIndex
-     * @returns {number}
-     */
-    Transform.prototype.getSiblingIndex = function () {
-        if (this._parent) {
-            return this._parent._children.indexOf(this);
-        }
-        else {
-            return Engine._scene.entities.indexOf(this.entity);
-        }
-    };
-
-    /**
-     * Get the indexed sibling.
-     * @method Fire.Transform#getSibling
-     * @param {number} index
-     * @returns {Fire.Transform}
-     */
-    Transform.prototype.getSibling = function (index) {
-        if (this._parent) {
-            return this._parent._children[index];
-        }
-        else {
-            var ent = Engine._scene.entities[index];
-            return ent && ent.transform;
-        }
-    };
-
-    /**
-     * Set the sibling index.
-     * @method Fire.Transform#setSiblingIndex
-     * @param {number} index
-     */
-    Transform.prototype.setSiblingIndex = function (index) {
-        var array = this._parent ? this._parent._children : Engine._scene.entities;
-        var item = this._parent ? this : this.entity;
-        index = index !== -1 ? index : array.length - 1;
-        var oldIndex = array.indexOf(item);
-        if (index !== oldIndex) {
-            array.splice(oldIndex, 1);
-            if (index < array.length) {
-                array.splice(index, 0, item);
-            }
-            else {
-                array.push(item);
-            }
-            // callback
-            Engine._renderContext.onTransformIndexChanged(this, oldIndex, index);
-            if (editorCallback.onEntityIndexChanged) {
-                editorCallback.onEntityIndexChanged(this.entity, oldIndex, index);
-            }
-            //this._onHierarchyChanged(this, this.parent);
-        }
-    };
-    
-    /**
-     * Move the transform to the top.
-     * @method Fire.Transform#setAsFirstSibling
-     */
-    Transform.prototype.setAsFirstSibling = function () {
-        this.setSiblingIndex(0);
-    };
-
-    /**
-     * Move the transform to the bottom.
-     * @method Fire.Transform#setAsFirstSibling
-     */
-    Transform.prototype.setAsLastSibling = function () {
-        this.setSiblingIndex(-1);
     };
 
     ///**

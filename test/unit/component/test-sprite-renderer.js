@@ -44,7 +44,7 @@ test('getWorldBounds', function () {
     // local bounds: (-8, -9, 20, 40)
 
     var parentEnt = new Entity();
-    ent.transform.parent = parentEnt.transform;
+    ent.parent = parentEnt;
     parentEnt.transform.position = new V2(-100, -30);
     parentEnt.transform.scale = new V2(3, 1);
     parentEnt.transform.rotation = -90;

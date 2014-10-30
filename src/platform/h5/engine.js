@@ -239,7 +239,7 @@ var Engine = (function () {
         // launch scene
         Engine._scene = scene;
         scene.onLaunch();
-
+        
         Engine._renderContext.onSceneLaunched(scene);
         if (editorCallback.onSceneLaunched) {
             editorCallback.onSceneLaunched(scene);

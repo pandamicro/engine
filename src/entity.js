@@ -1,49 +1,4 @@
 ﻿var Entity = (function () {
-    //var _super = HashObject;
-
-    //// constructor
-    //function Entity (name) {
-    //    _super.call(this);
-
-    //    this._active = true;
-
-    //    this._name = typeof name !== 'undefined' ? name : "New Entity";
-
-    //    this._objFlags |= Entity._defaultFlags;
-
-    //    if (Fire._isDeserializing) {
-    //        // create by deserializer
-    //        this._components = null;
-    //        this.transform = null;
-    //    }
-    //    else {
-    //        // create dynamically
-            
-    //        // 绕开AddComponent直接添加Transfrom，因此transform的onLoad不会被调用，
-    //        var transform = new Transform();
-    //        transform.entity = this;
-            
-    //        this._components = [transform];
-    //        this.transform = transform;
-
-    //        // Transform比较特殊，需要二次构造
-    //        // 因为它构造的时候依赖于entity，所以要在entity赋值后再初始化一次，
-    //        // 这里不把entity做为构造参数主要是为了和其它Component统一。
-    //        // create和onLoad不同，onLoad只有添加到场景后并且entity第一次激活才会调用。
-    //        transform.create();
-
-    //        if (Engine._scene) {
-    //            Engine._scene.appendRoot(this);
-    //        }
-            
-    //        // invoke callbacks
-    //        if (editorCallback.onEntityCreated) {
-    //            editorCallback.onEntityCreated(this);
-    //        }
-    //    }
-    //}
-    //Fire.extend(Entity, _super);
-    //Fire.registerClass("Fire.Entity", Entity);
 
     var Entity = Fire.define('Fire.Entity', HashObject, function (name) {
         HashObject.call(this);
@@ -63,23 +18,20 @@
             this._components = [transform];
             this.transform = transform;
 
-            // Transform比较特殊，需要二次构造
-            // 因为它构造的时候依赖于entity，所以要在entity赋值后再初始化一次，
-            // 这里不把entity做为构造参数主要是为了和其它Component统一。
-            // create和onLoad不同，onLoad只有添加到场景后并且entity第一次激活才会调用。
-            transform.create();
-
             if (Engine._scene) {
                 Engine._scene.appendRoot(this);
             }
             
             // invoke callbacks
+            Engine._renderContext.onEntityCreated(this);
             if (editorCallback.onEntityCreated) {
                 editorCallback.onEntityCreated(this);
             }
         }
     });
     Entity.prop('_active', true, Fire.HideInInspector);
+    Entity.prop('_parent', null, Fire.HideInInspector);
+    Entity.prop('_children', [], Fire.HideInInspector);
     Entity.prop('_components', null, Fire.HideInInspector);
     Entity.prop('transform', null, Fire.HideInInspector);
     
@@ -103,13 +55,77 @@
             if (this._active != value) {
                 // jshint eqeqeq: true
                 this._active = value;
-                var canActiveInHierarchy = (!this.transform._parent || this.transform._parent.entity.activeInHierarchy);
+                var canActiveInHierarchy = (!this._parent || this._parent.activeInHierarchy);
                 if (canActiveInHierarchy) {
                     this._onActivatedInHierarchy(value);
                 }
             }
         }
     );
+    
+    /**
+     * The parent of the entity.
+     * Changing the parent will keep the transform's local space position, rotation and scale the same but modify the world space position, scale and rotation.
+     * @property {Fire.Entity} Fire.Entity#parent
+     */
+    Object.defineProperty(Entity.prototype, 'parent', {
+        get: function () {
+            return this._parent;
+        },
+        set: function (value) {
+            if (this._parent !== value) {
+                if (value === this) {
+                    Fire.warn("A entity can't be set as the parent of itself.");
+                    return;
+                }
+                if (value && !(value instanceof Entity)) {
+                    if (value instanceof Transform) {
+                        Fire.error('Entity.parent can not be a Transform, use transform.entity instead.');
+                    }
+                    else {
+                        Fire.error('Entity.parent must be instance of Entity (or must be null)');
+                    }
+                    return;
+                }
+                var oldParent = this._parent;
+                if (value) {
+                    if ((value._objFlags & SceneGizmo) && !(this._objFlags & SceneGizmo)) {
+                        Fire.error('child of SceneGizmo must also be SceneGizmo');
+                        return;
+                    }
+                    if (!oldParent) {
+                        Engine._scene.removeRoot(this);
+                    }
+                    value._children.push(this);
+                }
+                else {
+                    Engine._scene.appendRoot(this);
+                }
+                this._parent = value || null;
+                this.transform._parent = this._parent && this._parent.transform;
+
+                if (oldParent && !(oldParent._objFlags & Destroying)) {
+                    oldParent._children.splice(oldParent._children.indexOf(this), 1);
+                    this._onHierarchyChanged(oldParent); // TODO 这里需要有oldParent?
+                }
+                Engine._renderContext.onEntityParentChanged(this, oldParent);
+                if (editorCallback.onEntityParentChanged) {
+                    editorCallback.onEntityParentChanged(this);
+                }
+                //this._onHierarchyChanged(this, oldParent);
+            }
+        }
+    });
+
+    /**
+     * Get the amount of children
+     * @property {number} Fire.Entity#childCount
+     */
+    Object.defineProperty(Entity.prototype, 'childCount', {
+        get: function () {
+            return this._children.length;
+        },
+    });
 
     ////////////////////////////////////////////////////////////////////
     // static
@@ -149,42 +165,15 @@
     // properties
     ////////////////////////////////////////////////////////////////////
     
-    //Object.defineProperty(Entity.prototype, 'name', {
-    //    get: function () {
-    //        return this._name;
-    //    },
-    //    set: function (value) {
-    //        this._name = value;
-    //        if (editorCallback.onEntityRenamed) {
-    //            editorCallback.onEntityRenamed(this);
-    //        }
-    //    }
-    //});
-
-    //Object.defineProperty(Entity.prototype, 'active', {
-    //    get: function () {
-    //        return this._active;
-    //    },
-    //    set: function (value) {
-    //        // jshint eqeqeq: false
-    //        if (this._active != value) {
-    //            // jshint eqeqeq: true
-    //            this._active = value;
-    //            var canActiveInHierarchy = (!this.transform._parent || this.transform._parent.entity.activeInHierarchy);
-    //            if (canActiveInHierarchy) {
-    //                this._onActivatedInHierarchy(value);
-    //            }
-    //        }
-    //    }
-    //});
-
     Object.defineProperty(Entity.prototype, 'activeInHierarchy', {
         get: function () {
-            return this._active && (!this.transform._parent || this.transform._parent.entity.activeInHierarchy);
+            return this._active && (!this._parent || this._parent.activeInHierarchy);
         },
     });
 
+    ////////////////////////////////////////////////////////////////////
     // overrides
+    ////////////////////////////////////////////////////////////////////
     
     Entity.prototype.destroy = function () {
         if (FObject.prototype.destroy.call(this)) {
@@ -196,20 +185,40 @@
     };
 
     Entity.prototype._onPreDestroy = function () {
+        var parent = this._parent;
         this._objFlags |= Destroying;
-        var destroyByParent = (this.transform._parent && (this.transform._parent.entity._objFlags & Destroying));
-        if (!destroyByParent && editorCallback.onEntityRemoved) {
-            editorCallback.onEntityRemoved(this);
+        var destroyByParent = (parent && (parent._objFlags & Destroying));
+        if (!destroyByParent) {
+            Engine._renderContext.onEntityRemoved(this);
+            if (editorCallback.onEntityRemoved) {
+                editorCallback.onEntityRemoved(this);
+            }
         }
         // destroy components
         for (var c = 0; c < this._components.length; ++c) {
             var component = this._components[c];
             component._destroyImmediate();
         }
+        // remove self
+        if (parent) {
+            if (!destroyByParent) {
+                parent._children.splice(parent._children.indexOf(this), 1);
+            }
+        }
+        else {
+            Engine._scene.removeRoot(this);
+        }
+        // destroy children
+        var children = this._children;
+        for (var i = 0, len = children.length; i < len; ++i) {
+            children[i]._destroyImmediate();
+        }
     };
 
-    // other functions
-
+    ////////////////////////////////////////////////////////////////////
+    // component methods
+    ////////////////////////////////////////////////////////////////////
+    
     Entity.prototype.addComponent = function (constructor) {
         if (this._objFlags & Destroying) {
             Fire.error('isDestroying');
@@ -268,6 +277,104 @@
         }
     };
 
+    ////////////////////////////////////////////////////////////////////
+    // hierarchy methods
+    ////////////////////////////////////////////////////////////////////
+
+    Entity.prototype.getChild = function (index) {
+        return this._children[index];
+    };
+    
+    /**
+     * is or is child of
+     */
+    Entity.prototype.isChildOf = function (parent) {
+        var child = this;
+        do {
+            if (child === parent) {
+                return true;
+            }
+            child = child._parent;
+        }
+        while (child);
+        return false;
+    };
+
+    /**
+     * Get the sibling index.
+     * NOTE: If this entity does not have parent and not belongs to the current scene, 
+     *       The return value will be -1
+     * 
+     * @method Fire.Entity#getSiblingIndex
+     * @returns {number}
+     */
+    Entity.prototype.getSiblingIndex = function () {
+        if (this._parent) {
+            return this._parent._children.indexOf(this);
+        }
+        else {
+            return Engine._scene.entities.indexOf(this);
+        }
+    };
+
+    /**
+     * Get the indexed sibling.
+     * @method Fire.Entity#getSibling
+     * @param {number} index
+     * @returns {Fire.Entity}
+     */
+    Entity.prototype.getSibling = function (index) {
+        if (this._parent) {
+            return this._parent._children[index];
+        }
+        else {
+            return Engine._scene.entities[index];
+        }
+    };
+
+    /**
+     * Set the sibling index.
+     * @method Fire.Entity#setSiblingIndex
+     * @param {number} index
+     */
+    Entity.prototype.setSiblingIndex = function (index) {
+        var array = this._parent ? this._parent._children : Engine._scene.entities;
+        var item = this;
+        index = index !== -1 ? index : array.length - 1;
+        var oldIndex = array.indexOf(item);
+        if (index !== oldIndex) {
+            array.splice(oldIndex, 1);
+            if (index < array.length) {
+                array.splice(index, 0, item);
+            }
+            else {
+                array.push(item);
+            }
+            // callback
+            Engine._renderContext.onEntityIndexChanged(this, oldIndex, index);
+            if (editorCallback.onEntityIndexChanged) {
+                editorCallback.onEntityIndexChanged(this, oldIndex, index);
+            }
+            //this._onHierarchyChanged(this, this.parent);
+        }
+    };
+    
+    /**
+     * Move the entity to the top.
+     * @method Fire.Entity#setAsFirstSibling
+     */
+    Entity.prototype.setAsFirstSibling = function () {
+        this.setSiblingIndex(0);
+    };
+
+    /**
+     * Move the entity to the bottom.
+     * @method Fire.Entity#setAsFirstSibling
+     */
+    Entity.prototype.setAsLastSibling = function () {
+        this.setSiblingIndex(-1);
+    };
+
     Entity.prototype._onActivatedInHierarchy = function (value) {
         var self = this;
         // 当引入DestroyImmediate后，_components的元素有可能会在遍历过程中变少，需要复制一个新的数组，或者做一些标记
@@ -280,9 +387,8 @@
             component._onEntityActivated(value);
         }
         // activate children recursively
-        var transform = self.transform;
-        for (var i = 0, len = transform.childCount; i < len; ++i) {
-            var entity = transform._children[i].entity;
+        for (var i = 0, len = self.childCount; i < len; ++i) {
+            var entity = self._children[i];
             if (entity._active) {
                 entity._onActivatedInHierarchy(value);
             }
