@@ -91,7 +91,7 @@
             interactionContext.add( entity, boundingBox );
         }
 
-        for ( var i = 0; i < entity.transform.childCount; ++i ) {
+        for ( var i = 0; i < entity.childCount; ++i ) {
             var childEnt = entity.getChild(i);
             _updateInteractionContextRecursilvey(childEnt, interactionContext);
         }
