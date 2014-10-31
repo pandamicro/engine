@@ -36,7 +36,7 @@ var RenderContext = (function () {
 
         //this.showGizmos = showGizmos;
 
-        // the shared render context that allows display the object which marked as Fire._ObjectFlags.SceneGizmo
+        // the shared render context that allows display the object which marked as Fire._ObjectFlags.HideInGame
         this.sceneView = null;
 
         // binded camera, if supplied the scene will always rendered by this camera
@@ -258,7 +258,7 @@ var RenderContext = (function () {
     RenderContext.prototype.addSprite = function (target) {
         var tex = createTexture(target.sprite) || emptyTexture;
 
-        var inGame = !(target.entity._objFlags & SceneGizmo);
+        var inGame = !(target.entity._objFlags & HideInGame);
         if (inGame) {
             target._renderObj = new PIXI.Sprite(tex);
             target.entity._pixiObj.addChildAt(target._renderObj, 0);

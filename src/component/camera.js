@@ -62,7 +62,7 @@
     //Camera.prototype.onLoad = function () {
     //};
     Camera.prototype.onEnable = function () {
-        if (!(this.entity._objFlags & SceneGizmo)) {
+        if (!(this.entity._objFlags & HideInGame)) {
             Engine._scene.camera = this;
         }
     };

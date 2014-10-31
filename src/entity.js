@@ -89,8 +89,12 @@
                 }
                 var oldParent = this._parent;
                 if (value) {
-                    if ((value._objFlags & SceneGizmo) && !(this._objFlags & SceneGizmo)) {
-                        Fire.error('child of SceneGizmo must also be SceneGizmo');
+                    if ((value._objFlags & HideInGame) && !(this._objFlags & HideInGame)) {
+                        Fire.error('Failed to set parent, the child\'s HideInGame must equals to parent\'s.');
+                        return;
+                    }
+                    if ((value._objFlags & HideInEditor) && !(this._objFlags & HideInEditor)) {
+                        Fire.error('Failed to set parent, the child\'s HideInEditor must equals to parent\'s.');
                         return;
                     }
                     if (!oldParent) {
