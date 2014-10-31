@@ -33,7 +33,7 @@
                     return false;
                 }
             }
-            //if (!(ent._objFlags & SceneGizmo)) {
+            //if (!(ent._objFlags & HideInGame)) {
             //    var gameNode = pixiGameNodes[g++];
             //}
             var gameNode = pixiGameNodes[i];

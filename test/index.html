@@ -58,7 +58,7 @@
         };
         img.src = '../test/assets/atlas (1).png';
 
-        var sc = Fire.Entity.createWithFlags('scene camera', Fire._ObjectFlags.SceneGizmo);
+        var sc = Fire.Entity.createWithFlags('scene camera', Fire._ObjectFlags.Hide);
         sceneView.camera = sc.addComponent(Fire.Camera);
 
         var gc = new Fire.Entity('game camera');
