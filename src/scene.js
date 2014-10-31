@@ -85,10 +85,14 @@
     };
 
     function _updateInteractionContextRecursilvey ( entity, interactionContext ) {
-        var renderer = entity.getComponent(Fire.Renderer);
-        if ( renderer ) {
-            var boundingBox = renderer.getWorldBounds();
-            interactionContext.add( entity, boundingBox );
+        for ( c = 0; c < entity._components.length; ++c ) {
+            var component = entity._components[c];
+
+            if ( component instanceof Fire.Renderer ) { 
+                var boundingBox = component.getWorldBounds();
+                interactionContext.add( entity, boundingBox );
+                break;
+            }
         }
 
         for ( var i = 0; i < entity.childCount; ++i ) {
