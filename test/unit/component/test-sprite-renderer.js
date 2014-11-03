@@ -49,10 +49,12 @@ test('getWorldBounds', function () {
     parentEnt.transform.scale = new V2(3, 1);
     parentEnt.transform.rotation = -90;
     
+    // start: (-8, -9, 20, 40)
     // scale: (-24, -9, 60, 40)
     // rotate: (-9, 24-60, 40, 60)
     // translate: (-9-100, 24-30-60, 40, 60)
-    deepClose(renderer.getWorldBounds(), new Rect(-9-100, 24-30-60, 40, 60), epsilon, 'world transform');
+    // pivot: (-9-100+20, 24-30-60-30, 40, 60)
+    deepClose(renderer.getWorldBounds(), new Rect(-9-100+20, 24-30-60-30, 40, 60), epsilon, 'world bounds');
 });
 
 

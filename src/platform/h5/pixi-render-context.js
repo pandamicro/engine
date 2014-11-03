@@ -42,7 +42,7 @@ var RenderContext = (function () {
         // binded camera, if supplied the scene will always rendered by this camera
         this._camera = null;
 
-        //// table stores pixi objects in this stage, they looked up by the hashKey of corresponding scene objects.
+        //// table stores pixi objects in this stage, they looked up by the id of corresponding scene objects.
         //this._pixiObjects = {};
 
     }
@@ -54,6 +54,7 @@ var RenderContext = (function () {
     RenderContext.initRenderer = function (renderer) {
         renderer._renderObj = null;
         renderer._renderObjInScene = null;
+        renderer._tempMatrix = new Fire.Matrix23();
     };
 
     // properties
@@ -256,7 +257,7 @@ var RenderContext = (function () {
      * @param {Fire.SpriteRenderer} target
      */
     RenderContext.prototype.addSprite = function (target) {
-        var tex = createTexture(target.sprite) || emptyTexture;
+        var tex = createTexture(target._sprite) || emptyTexture;
 
         var inGame = !(target.entity._objFlags & HideInGame);
         if (inGame) {
@@ -305,7 +306,7 @@ var RenderContext = (function () {
      */
     RenderContext.prototype.updateMaterial = function (target) {
         if (target._renderObj || target._renderObjInScene) {
-            var tex = createTexture(target.sprite) || emptyTexture;
+            var tex = createTexture(target._sprite) || emptyTexture;
             if (target._renderObj) {
                 target._renderObj.setTexture(tex);
             }
@@ -319,18 +320,20 @@ var RenderContext = (function () {
     };
 
     /**
-     * @param target {Fire.SpriteRenderer}
+     * @param {Fire.SpriteRenderer} target
+     * @param {Fire.Matrix23} matrix - the final matrix to render (Read Only)
      */
-    RenderContext.prototype.updateTransform = function (target) {
+    RenderContext.prototype.updateTransform = function (target, matrix) {
         if (target._renderObj || target._renderObjInScene) {
-            var isGameView = this === Engine._renderContext;
-            var mat = target.transform._worldTransform.clone();
+            target._tempMatrix.set(matrix);
+            var mat = target._tempMatrix;
             // revert Y axis for pixi
             mat.ty = this.renderer.height - mat.ty;
             // negate the rotation because our rotation transform not the same with pixi
             mat.c = -mat.c;    
             mat.b = -mat.b;
             //
+            var isGameView = this === Engine._renderContext;
             if (isGameView) {
                 if (target._renderObj) {
                     target._renderObj.worldTransform = mat;
@@ -373,14 +376,14 @@ var RenderContext = (function () {
     //};
 
     //RenderContext.prototype._updateSiblingIndex = function (transform) {
-    //    var pixiNode = this._pixiObjects[transform.hashKey];
+    //    var pixiNode = this._pixiObjects[transform.id];
     //    var array = pixiNode.parent.children;
     //    var oldIndex = array.indexOf(pixiNode);
     //    var newIndex = transform.getSiblingIndex(); // TODO: 如果前面的节点包含空的entity，则这个new index会有问题
     //    // skip entities not exists in pixi
     //    while ((--newIndex) > 0) {
     //        var previous = transform.getSibling(newIndex);
-    //        if (previous.hashKey) {
+    //        if (previous.id) {
     //        }
     //    }
     //    array.splice(oldIndex, 1);

@@ -18,6 +18,48 @@
         Fire.ObjectType(Fire.Sprite)
     );
 
+    SpriteRenderer.prop('customSize_', false, Fire.HideInInspector);
+    SpriteRenderer.getset('customSize',
+        function () {
+            return this.customSize_;
+        },
+        function (value) {
+            this.customSize_ = value;
+        }
+    );
+
+    SpriteRenderer.prop('width_', 100, Fire.DisplayName('width'));
+    SpriteRenderer.getset('width',
+        function () {
+            if ( !this.customSize_ ) {
+                return FObject.isValid(this._sprite) ? this._sprite.width : 0;
+            }
+            else {
+                return this.width_;
+            }
+        },
+        function (value) {
+            this.width_ = value;
+        },
+        Fire.HideInInspector
+    );
+
+    SpriteRenderer.prop('height_', 100, Fire.DisplayName('height'));
+    SpriteRenderer.getset('height',
+        function () {
+            if ( !this.customSize_ ) {
+                return FObject.isValid(this._sprite) ? this._sprite.height : 0;
+            }
+            else {
+                return this.height_;
+            }
+        },
+        function (value) {
+            this.height_ = value;
+        },
+        Fire.HideInInspector
+    );
+
     // built-in functions
 
     SpriteRenderer.prototype.onLoad = function () {
@@ -29,8 +71,13 @@
     SpriteRenderer.prototype.onDisable = function () {
         Engine._renderContext.show(this, false);
     };
+
+    var tempMatrix = new Fire.Matrix23();
+
     SpriteRenderer.prototype.onPreRender = function () {
-        Engine._curRenderContext.updateTransform(this);
+        this.getSelfMatrix(tempMatrix);
+        tempMatrix.prepend(this.transform._worldTransform);
+        Engine._curRenderContext.updateTransform(this, tempMatrix);
     };
     SpriteRenderer.prototype.onDestroy = function () {
         Engine._renderContext.remove(this);
@@ -43,7 +90,10 @@
     function _doGetOrientedBounds(mat, bl, tl, tr, br) {
         var width = this._sprite ? this._sprite.width : 0;
         var height = this._sprite ? this._sprite.height : 0;
-
+        
+        this.getSelfMatrix(tempMatrix);
+        mat = tempMatrix.prepend(mat);
+        
         // transform rect(0, 0, width, height) by matrix
         var tx = mat.tx;
         var ty = mat.ty;
@@ -87,6 +137,31 @@
         out.height = maxY - minY;
         return out;
     }
+
+    // 返回表示 sprite 的 width/height/pivot/skew/shear 等变换的 matrix，
+    // 由于这些变换不影响子物体，所以不能放到 getLocalToWorldMatrix
+    SpriteRenderer.prototype.getSelfMatrix = function (out) {
+        var w = this.width;
+        var h = this.height;
+
+        var pivotX = 0.5;
+        var pivotY = 0.5;
+        var scaleX = 1;
+        var scaleY = 1;
+        if (FObject.isValid(this._sprite)) {
+            pivotX = this._sprite.pivot.x;
+            pivotY = this._sprite.pivot.y;
+            scaleX = w / this._sprite.width;
+            scaleY = h / this._sprite.height;
+        }
+        
+        out.tx = - pivotX * w;
+        out.ty = (1.0 - pivotY) * h;
+        out.a = scaleX;
+        out.b = 0;
+        out.c = 0;
+        out.d = scaleY;
+    };
 
     SpriteRenderer.prototype.getWorldBounds = function (out) {
         var worldMatrix = this.entity.transform.getLocalToWorldMatrix();
