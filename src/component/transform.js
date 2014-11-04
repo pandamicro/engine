@@ -282,6 +282,19 @@
         return this.getLocalToWorldMatrix(out).invert();
     };
 
+    /**
+     * @method Transform#rotateAround
+     * @param {Fire.Vec2} point - the point rotates through
+     * @param {number} angle - degrees
+     */
+    Transform.prototype.rotateAround = function (point, angle) {
+        var delta = this._position.subSelf(point);
+        var radians = angle * 0.017453292519943295;
+        delta.rotate(radians);
+        this.position = point.addSelf(delta);
+        this.rotation = this._rotation + angle;
+    };
+
     ///**
     // * Subscribe the `onHierarchyChanged` event.
     // * When this transform or one of its parents' hierarchy changed, the `onHierarchyChanged` 
