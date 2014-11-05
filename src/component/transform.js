@@ -284,14 +284,13 @@
 
     /**
      * @method Transform#rotateAround
-     * @param {Fire.Vec2} point - the point rotates through
+     * @param {Fire.Vec2} point - the world point rotates through
      * @param {number} angle - degrees
      */
     Transform.prototype.rotateAround = function (point, angle) {
-        var delta = this._position.subSelf(point);
-        var radians = angle * 0.017453292519943295;
-        delta.rotate(radians);
-        this.position = point.addSelf(delta);
+        var delta = this.worldPosition.subSelf(point);
+        delta.rotate(Math.deg2rad(angle));
+        this.worldPosition = point.addSelf(delta);
         this.rotation = this._rotation + angle;
     };
 
