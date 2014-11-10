@@ -97,4 +97,30 @@ test('worldPosition/Rotation', function () {
     deepClose(child.transform.worldScale, expectedWorldScale, 10, 'get world scale');
 });
 
+test('up, right', function () {
+    var parent = new Fire.Entity();
+    var child = new Fire.Entity();
+    child.parent = parent;
+
+    parent.transform.rotation = 90;     // 90
+    child.transform.rotation = -180;    // -90
+
+    deepClose(parent.transform.up, v2(-1, 0), 0.00001, 'get parent up');
+    deepClose(child.transform.up, v2(1, 0), 0.00001, 'get child up');
+    deepClose(parent.transform.right, v2(0, 1), 0.00001, 'get parent right');
+    deepClose(child.transform.right, v2(0, -1), 0.00001, 'get child right');
+
+    var deg30dir = v2(Math.cos(Math.deg2rad(30)) * 2, 1);
+
+    child.transform.up = deg30dir;
+    close(child.transform.worldRotation, -60, 0.00001, 'set child up');
+    child.transform.right = deg30dir;
+    close(child.transform.worldRotation, 30, 0.00001, 'set child right');
+
+    parent.transform.up = deg30dir;
+    close(parent.transform.worldRotation, -60, 0.00001, 'set parent up');
+    parent.transform.right = deg30dir;
+    close(parent.transform.worldRotation, 30, 0.00001, 'set parent right');
+});
+
 // jshint ignore: end
