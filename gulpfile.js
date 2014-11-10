@@ -133,7 +133,7 @@ var insertCoreShortcut = function (path, moduleName, filter) {
         return code;
     }
     function write(file) {
-        if (file.isStream()) return this.emit('error', new PluginError('insertCoreShortcut', 'Streaming not supported'));
+        if (file.isStream()) return this.emit('error', new gutil.PluginError('insertCoreShortcut', 'Streaming not supported'));
         if (!finished) {
             var shortcut = file.clone();
             shortcut.contents = new Buffer(createShortcut(path, moduleName, filter));
