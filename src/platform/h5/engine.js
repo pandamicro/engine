@@ -123,7 +123,7 @@ var Engine = (function () {
         Engine._renderContext = new RenderContext( w, h, canvas );
         Engine._interactionContext = new InteractionContext();
 
-        Engine._setCurrentScene(scene || new Scene());
+        // Engine._setCurrentScene(scene || new Scene());
 
         return Engine._renderContext;
     };
