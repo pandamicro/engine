@@ -77,7 +77,7 @@ var Engine = (function () {
             else {
                 // lock
                 if (this._scene && lockingScene) {
-                    Fire.error('another scene still locked: ' + lockingScene.debugName);
+                    Fire.error('another scene still locked: ' + lockingScene.name);
                 }
                 lockingScene = this._scene;
                 this._scene = null;

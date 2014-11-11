@@ -112,7 +112,7 @@ var AssetLibrary = (function () {
                         var hostType = attrs.hostType;
                         if (hostType === 'image') {
                             hostLoaded = false;
-                            var extname = asset._$hostExt ? ('.' + asset._$hostExt) : '.host';
+                            var extname = asset._hostext ? ('.' + asset._hostext) : '.host';
                             var hostUrl = url + extname;
                             LoadManager.load(ImageLoader, hostUrl, function onHostObjLoaded (img, error) {
                                 if (error) {
