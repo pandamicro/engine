@@ -60,7 +60,9 @@ var Engine = (function () {
 
     /**
      * You should check whether you can modify the scene in constructors which may called by the engine while deserializing.
+     * 这个属性和 Fire._isDeserializing 很类似。但这里关注的是场景是否能修改，而 Fire._isDeserializing 强调的是持有的对象是否需要重新创建。
      * @param {boolean} Engine._canModifyCurrentScene
+     * @see Fire._isDeserializing
      */
     Object.defineProperty(Engine, '_canModifyCurrentScene', {
         get: function () {
@@ -122,8 +124,7 @@ var Engine = (function () {
 
         Engine._renderContext = new RenderContext( w, h, canvas );
         Engine._interactionContext = new InteractionContext();
-
-        // Engine._setCurrentScene(scene || new Scene());
+        Engine._scene = new Scene();
 
         return Engine._renderContext;
     };
