@@ -110,9 +110,10 @@ var AssetLibrary = (function () {
                         // load depends host objects
                         var attrs = Fire.attr(asset.constructor, info.hostProp);
                         var hostType = attrs.hostType;
-                        if (hostType === 'Image') {
+                        if (hostType === 'image') {
                             hostLoaded = false;
-                            var hostUrl = url + '.host';
+                            var extname = asset._$hostExt ? ('.' + asset._$hostExt) : '.host';
+                            var hostUrl = url + extname;
                             LoadManager.load(ImageLoader, hostUrl, function onHostObjLoaded (img, error) {
                                 if (error) {
                                     Fire.error('[AssetLibrary] Failed to load image of "' + dependsUuid + '", ' + error);

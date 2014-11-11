@@ -289,10 +289,44 @@
      */
     Transform.prototype.rotateAround = function (point, angle) {
         var delta = this.worldPosition.subSelf(point);
-        delta.rotate(Math.deg2rad(angle));
+        delta.rotateSelf(Math.deg2rad(angle));
         this.worldPosition = point.addSelf(delta);
         this.rotation = this._rotation + angle;
     };
+
+    /**
+     * @property {Fire.Vec2} up - up direction, point to the y(green) axis
+     */
+    Object.defineProperty(Transform.prototype, 'up', {
+        get: function () {
+            return (new Vec2(0.0, 1.0)).rotateSelf(Math.deg2rad(this.worldRotation));
+        },
+        set: function (value) {
+            if (value.x === 0.0 && value.y === 0.0) {
+                Fire.warn("Can't get rotation from zero vector");
+                return;
+            }
+            var radians = Math.atan2(value.y, value.x) - Math.HALF_PI;
+            this.worldRotation = Math.rad2deg(radians);
+        }
+    });
+
+    /**
+     * @property {Fire.Vec2} right - right direction, point to the x(red) axis
+     */
+    Object.defineProperty(Transform.prototype, 'right', {
+        get: function () {
+            return (new Vec2(1.0, 0.0)).rotateSelf(Math.deg2rad(this.worldRotation));
+        },
+        set: function (value) {
+            if (value.x === 0.0 && value.y === 0.0) {
+                Fire.warn("Can't get rotation from zero vector");
+                return;
+            }
+            var radians = Math.atan2(value.y, value.x);
+            this.worldRotation = Math.rad2deg(radians);
+        }
+    });
 
     ///**
     // * Subscribe the `onHierarchyChanged` event.
