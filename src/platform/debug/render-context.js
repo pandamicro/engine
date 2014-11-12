@@ -13,12 +13,12 @@
             pixiSceneNodes = this.sceneView.stage.children;
         }
         if (pixiSceneNodes && pixiSceneNodes.length !== entities.length) {
-            Fire.error('root elements count not matched in scene view');
+            Fire.error('Mismatched list of root elements in scene view');
             return false;
         }
         if (fastCheck) {
             if (pixiGameNodes.length !== entities.length) {
-                Fire.error('root elements count not matched in game view');
+                Fire.error('Mismatched list of root elements in game view');
                 return false;
             }
             return true;

@@ -102,43 +102,39 @@ var AssetLibrary = (function () {
                     Engine._canModifyCurrentScene = true;
                     
                     // load depends
-
-                    var hostLoaded = !info.hostProp;
                     var pendingCount = info.uuidList.length;
-                    var dependsAssetsLoaded = pendingCount === 0;
 
+                    // load host
                     if (info.hostProp) {
                         // load depends host objects
                         var attrs = Fire.attr(asset.constructor, info.hostProp);
                         var hostType = attrs.hostType;
                         if (hostType === 'image') {
-                            hostLoaded = false;
+                            ++pendingCount;
                             var extname = asset._hostext ? ('.' + asset._hostext) : '.host';
                             var hostUrl = url + extname;
                             LoadManager.load(ImageLoader, hostUrl, function onHostObjLoaded (img, error) {
                                 if (error) {
-                                    Fire.error('[AssetLibrary] Failed to load image of "' + dependsUuid + '", ' + error);
+                                    Fire.error('[AssetLibrary] Failed to load image of "' + uuid + '", ' + error);
                                 }
                                 asset[info.hostProp] = img;
-                                hostLoaded = true;
-                                if (dependsAssetsLoaded) {
+                                --pendingCount;
+                                if (pendingCount === 0) {
                                     _uuidToCallbacks.invokeAndRemove(uuid, asset);
                                 }
                             });
                         }
                     }
-
-                    if (dependsAssetsLoaded) {
-                        if (hostLoaded) {
-                            _uuidToCallbacks.invokeAndRemove(uuid, asset);
-                        }
+                    if (pendingCount === 0) {
+                        _uuidToCallbacks.invokeAndRemove(uuid, asset);
                         return;
                     }
+
                     // load depends assets
                     for (var i = 0, len = info.uuidList.length; i < len; i++) {
                         var dependsUuid = info.uuidList[i];
                         var obj = info.uuidObjList[i];
-                        var prop = info.uuidPropList[i];
+                        var prop = info.uuidPropList[i];    // TODO: 这里可能需要改用bind或手工创建闭包
                         AssetLibrary.loadAssetByUuid(dependsUuid, function onDependsAssetLoaded (dependsAsset, error) {
                             if (error) {
                                 Fire.error('[AssetLibrary] Failed to load "' + dependsUuid + '", ' + error);
@@ -148,9 +144,7 @@ var AssetLibrary = (function () {
                             // check all finished
                             --pendingCount;
                             if (pendingCount === 0) {
-                                if (hostLoaded) {
-                                    _uuidToCallbacks.invokeAndRemove(uuid, asset);
-                                }
+                                _uuidToCallbacks.invokeAndRemove(uuid, asset);
                             }
                         }, info);
                     }

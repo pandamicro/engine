@@ -15,6 +15,6 @@ Fire.addComponentMenu = function (constructor, menuPath, priority) {
     Fire._componentMenuItems.push({
         component: constructor,
         menuPath: menuPath,
-        order: priority
+        priority: priority
     });
 };
