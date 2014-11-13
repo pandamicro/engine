@@ -15,7 +15,7 @@
     "gulp-concat": "",
     "gulp-fb": "",
     "gulp-jshint": "",
-    "gulp-qunit": "",
+    "gulp-qunit": "jareguo/gulp-qunit",
     "gulp-rename": "",
     "gulp-uglify": "",
     "gulp-util": "",
