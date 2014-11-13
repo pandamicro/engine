@@ -21,7 +21,7 @@ var paths = {
         // runtime pre-defines
         'src/platform/editor/pre-define.js',
         // runtime engine
-        'src/define.js',
+        'src/definition.js',
         'src/misc.js',
         'src/time.js',
         'src/platform/h5/ticker.js',

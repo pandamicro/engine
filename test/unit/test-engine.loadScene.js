@@ -6,7 +6,7 @@ var projPath = assetDir;
 var libPath = projPath + '/library';
 Fire.AssetLibrary.init(libPath);
 
-asyncTest('load', function () {
+asyncTest('load scene 1', function () {
     
     Engine.loadScene('74325665', function (scene) {
         clearTimeout(timerId);
@@ -30,6 +30,19 @@ asyncTest('load', function () {
         strictEqual(child.parent, ent, 'can load child entity\'s parent');
         strictEqual(child.transform._parent, ent.transform, 'can load cached reference to parent transform');
         
+        start();
+    });
+    var timerId = setTimeout(function () {
+        ok(false, 'time out!');
+        start();
+    }, 100);
+});
+
+asyncTest('load scene with camera', function () {
+    
+    Engine.loadScene('746548892', function (scene) {
+        clearTimeout(timerId);
+        ok(true, 'done');
         start();
     });
     var timerId = setTimeout(function () {

@@ -133,20 +133,22 @@ var AssetLibrary = (function () {
                     // load depends assets
                     for (var i = 0, len = info.uuidList.length; i < len; i++) {
                         var dependsUuid = info.uuidList[i];
-                        var obj = info.uuidObjList[i];
-                        var prop = info.uuidPropList[i];    // TODO: 这里可能需要改用bind或手工创建闭包
-                        AssetLibrary.loadAssetByUuid(dependsUuid, function onDependsAssetLoaded (dependsAsset, error) {
-                            if (error) {
-                                Fire.error('[AssetLibrary] Failed to load "' + dependsUuid + '", ' + error);
-                            }
-                            // update reference
-                            obj[prop] = dependsAsset;
-                            // check all finished
-                            --pendingCount;
-                            if (pendingCount === 0) {
-                                _uuidToCallbacks.invokeAndRemove(uuid, asset);
-                            }
-                        }, info);
+                        var onDependsAssetLoaded = (function (dependsUuid, obj, prop) {
+                            // create closure manually because its extremely faster than bind
+                            return function (dependsAsset, error) {
+                                if (error) {
+                                    Fire.error('[AssetLibrary] Failed to load "' + dependsUuid + '", ' + error);
+                                }
+                                // update reference
+                                obj[prop] = dependsAsset;
+                                // check all finished
+                                --pendingCount;
+                                if (pendingCount === 0) {
+                                    _uuidToCallbacks.invokeAndRemove(uuid, asset);
+                                }
+                            };
+                        })( dependsUuid, info.uuidObjList[i], info.uuidPropList[i] );
+                        AssetLibrary.loadAssetByUuid(dependsUuid, onDependsAssetLoaded, info);
                     }
                 });
             //loadAssetByUrl (url, callback, info);
