@@ -27,6 +27,8 @@ var paths = {
         'src/platform/h5/ticker.js',
         'src/platform/h5/pixi-render-context.js',
         'src/platform/h5/loaders.js',
+        'src/event/event.js',
+        'src/event/event-target.js',
         'src/component/component.js',
         'src/component/transform.js',
         'src/component/renderer.js',

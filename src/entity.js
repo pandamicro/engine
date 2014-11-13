@@ -1,7 +1,7 @@
 ﻿var Entity = (function () {
 
-    var Entity = Fire.define('Fire.Entity', HashObject, function (name) {
-        HashObject.call(this);
+    var Entity = Fire.define('Fire.Entity', EventTarget, function (name) {
+        EventTarget.call(this);
         this._name = typeof name !== 'undefined' ? name : 'New Entity';
         this._objFlags |= Entity._defaultFlags;
 
