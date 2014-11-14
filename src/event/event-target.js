@@ -14,6 +14,10 @@
      * - The target phase comprises only the event target node
      * - The bubbling phase comprises any subsequent nodes encountered on the return trip to the root of the hierarchy
 	 * See also: http://www.w3.org/TR/DOM-Level-3-Events/#event-flow
+     * 
+     * Event targets can implement the following methods:
+     *  - _getCapturingTargets
+     *  - _getBubblingTargets
      */
     function EventTarget() {
         HashObject.call(this);
@@ -42,11 +46,15 @@
         }
         if (useCapture) {
             this._capturingListeners = this._capturingListeners || new Fire.CallbacksInvoker();
-            this._capturingListeners.add(type, callback);
+            if ( ! this._capturingListeners.has(type, callback) ) {
+                this._capturingListeners.add(type, callback);
+            }
         }
         else {
             this._bubblingListeners = this._bubblingListeners || new Fire.CallbacksInvoker();
-            this._bubblingListeners.add(type, callback);
+            if ( ! this._bubblingListeners.has(type, callback) ) {
+                this._bubblingListeners.add(type, callback);
+            }
         }
     };
 
@@ -67,9 +75,20 @@
         }
         var listeners = useCapture ? this._capturingListeners : this._bubblingListeners;
         if (listeners) {
-            listeners.remove();
+            listeners.remove(type, callback);
         }
     };
+
+    ///**
+    // * Checks whether the EventTarget object has any callback registered for a specific type of event.
+    // * 
+    // * @param {string} type - The type of event.
+    // * @param {boolean} A value of true if a callback of the specified type is registered; false otherwise.
+    // */
+    //EventTarget.prototype.hasEventListener = function (type) {};
+
+    var cachedArray = new Array(16);
+    cachedArray.length = 0;
 
     /**
      * Dispatches an event into the event flow. The event target is the EventTarget object upon which the dispatchEvent() method is called.
@@ -82,33 +101,100 @@
         event._reset();
         event.target = this;
 
-        // Event.CAPTURING_PHASE;
+        // Event.CAPTURING_PHASE
+        this._getCapturingTargets(event.type, cachedArray);
+        // propagate
         event.eventPhase = 1;
-        // TODO: propagate event.currentTarget
-        this._capturingListeners.invoke(event.type, event);
-        if (event._propagationStopped) {
-            return ! event._defaultPrevented;
+        var target, i;
+        for (i = cachedArray.length - 1; i >= 0; --i) {
+            target = cachedArray[i];
+            if (target.isValid && target._capturingListeners) {
+                event.currentTarget = target;
+                // fire event
+                target._capturingListeners.invoke(event.type, event);
+                // check if propagation stopped
+                if (event._propagationStopped) {
+                    cachedArray.length = 0;
+                    return ! event._defaultPrevented;
+                }
+            }
         }
+        cachedArray.length = 0;
 
         // Event.AT_TARGET
-        event.eventPhase = 2;
-        event.currentTarget = this;
-        this._capturingListeners.invoke(event.type, event);
-        if (event._propagationStopped) {
-            return ! event._defaultPrevented;
-        }
-        this._bubblingListeners.invoke(event.type, event);
-        if (event._propagationStopped) {
-            return ! event._defaultPrevented;
+        if (this.isValid) {         // checks if destroyed in capturing callbacks
+            event.eventPhase = 2;
+            event.currentTarget = this;
+            if (this._capturingListeners) {
+                this._capturingListeners.invoke(event.type, event);
+                if (event._propagationStopped) {
+                    return ! event._defaultPrevented;
+                }
+            }
+            if (this._bubblingListeners) {
+                this._bubblingListeners.invoke(event.type, event);
+                if (event._propagationStopped) {
+                    return ! event._defaultPrevented;
+                }
+            }
         }
         
-        // Event.BUBBLING_PHASE
-        event.eventPhase = 3;
-        // TODO: propagate event.currentTarget
-        this._bubblingListeners.invoke(event.type, event);
-        if (event._propagationStopped) {
-            return ! event._defaultPrevented;
+        if (event.bubbles) {
+            // Event.BUBBLING_PHASE
+            this._getBubblingTargets(event.type, cachedArray);
+            // propagate
+            event.eventPhase = 3;
+            for (i = 0; i < cachedArray.length; ++i) {
+                target = cachedArray[i];
+                if (target.isValid && target._bubblingListeners) {
+                    event.currentTarget = target;
+                    // fire event
+                    target._bubblingListeners.invoke(event.type, event);
+                    // check if propagation stopped
+                    if (event._propagationStopped) {
+                        cachedArray.length = 0;
+                        return ! event._defaultPrevented;
+                    }
+                }
+            }
+            cachedArray.length = 0;
         }
+        return ! event._defaultPrevented;
+    };
+
+    /**
+     * Get all the targets listening to the supplied type of event in the target's capturing phase.
+     * The capturing phase comprises the journey from the root to the last node BEFORE the event target's node.
+     * The result should save in the array parameter, and MUST SORT from child nodes to parent nodes.
+     * Subclasses can override this method to make event propagable.
+     * 
+     * @param {string} type - the event type
+     * @param {array} array - the array to receive targets
+     */
+    EventTarget.prototype._getCapturingTargets = function (type, array) {
+        /**
+         * Subclasses can override this method to make event propagable, E.g.
+         * ```
+         * for (var target = this._parent; target; target = target._parent) { 
+         *     if (target._capturingListeners && target._capturingListeners.has(type)) {
+         *         array.push(target);
+         *     }
+         * }
+         * ```
+         */
+    };
+    
+    /**
+     * Get all the targets listening to the supplied type of event in the target's bubbling phase.
+	 * The bubbling phase comprises any SUBSEQUENT nodes encountered on the return trip to the root of the hierarchy.
+     * The result should save in the array parameter, and MUST SORT from child nodes to parent nodes.
+     * Subclasses can override this method to make event propagable.
+     * 
+     * @param {string} type - the event type
+     * @param {array} array - the array to receive targets
+     */
+    EventTarget.prototype._getBubblingTargets = function (type, array) {
+        // Subclasses can override this method to make event propagable.
     };
 
     return EventTarget;

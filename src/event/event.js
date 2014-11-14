@@ -2,9 +2,12 @@
 
     /**
      * An event allows for signaling that something has occurred. E.g. that an asset has completed downloading.
+     * @param {string} type - The name of the event (case-sensitive), e.g. "click", "fire", or "submit"
+     * @param {boolean} [bubbles=false] - A boolean indicating whether the event bubbles up through the hierarchy or not
      */
-    function Event (type) {
+    function Event (type, bubbles) {
         //HashObject.call(this);
+        if (typeof bubbles === 'undefined') { bubbles = false; }
         
         /**
          * The name of the event (case-sensitive), e.g. "click", "fire", or "submit"
@@ -39,6 +42,12 @@
         this.eventPhase = 0;
 
         /**
+         * A boolean indicating whether the event bubbles up through the hierarchy or not
+         * @property {boolean}
+         */
+        this.bubbles = bubbles;
+        
+        /**
          * Indicates whether or not event.preventDefault() has been called on the event
          * @property {boolean}
          */
@@ -50,9 +59,6 @@
          */
         this._propagationStopped = false;
 
-
-        //this.bubbles = false;
-        //this.cancelBubble = false;
         //this.cancelable = false;
         //this.clipboardData = undefined;
         //this.path = NodeList[0];
@@ -67,7 +73,7 @@
      */
     Event.NONE = 0;
     /**
-	 * The capture phase comprises the journey from the root to the last node before the event target's node
+	 * The capturing phase comprises the journey from the root to the last node before the event target's node
 	 * see http://www.w3.org/TR/DOM-Level-3-Events/#event-flow
 	 * @constant {number}
      */

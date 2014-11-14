@@ -219,6 +219,40 @@
         }
     };
 
+    /**
+     * Get all the targets listening to the supplied type of event in the target's capturing phase.
+     * The capturing phase comprises the journey from the root to the last node BEFORE the event target's node.
+     * The result should save in the array parameter, and MUST SORT from child nodes to parent nodes.
+     * Subclasses can override this method to make event propagable.
+     * 
+     * @param {string} type - the event type
+     * @param {array} array - the array to receive targets
+     */
+    Entity.prototype._getCapturingTargets = function (type, array) {
+        for (var target = this._parent; target; target = target._parent) {
+            if (target._capturingListeners && target._capturingListeners.has(type)) {
+                array.push(target);
+            }
+        }
+    };
+    
+    /**
+     * Get all the targets listening to the supplied type of event in the target's bubbling phase.
+	 * The bubbling phase comprises any SUBSEQUENT nodes encountered on the return trip to the root of the hierarchy.
+     * The result should save in the array parameter, and MUST SORT from child nodes to parent nodes.
+     * Subclasses can override this method to make event propagable.
+     * 
+     * @param {string} type - the event type
+     * @param {array} array - the array to receive targets
+     */
+    Entity.prototype._getBubblingTargets = function (type, array) {
+        for (var target = this._parent; target; target = target._parent) {
+            if (target._bubblingListeners && target._bubblingListeners.has(type)) {
+                array.push(target);
+            }
+        }
+    };
+
     ////////////////////////////////////////////////////////////////////
     // component methods
     ////////////////////////////////////////////////////////////////////
