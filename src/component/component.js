@@ -32,7 +32,7 @@
             if (this._enabled != value) {
                 // jshint eqeqeq: true
                 this._enabled = value;
-                if (this.entity.activeInHierarchy) {
+                if (this.entity._activeInHierarchy) {
                     _callOnEnable(this, value);
                 }
             }
@@ -41,7 +41,7 @@
 
     Object.defineProperty(Component.prototype, 'enabledInHierarchy', {
         get: function () {
-            return this._enabled && this.entity.activeInHierarchy;
+            return this._enabled && this.entity._activeInHierarchy;
         }
     });
 
@@ -76,7 +76,7 @@
 
     Component.prototype.destroy = function () {
         if (FObject.prototype.destroy.call(this)) {
-            if (this._enabled && this.entity.activeInHierarchy) {
+            if (this._enabled && this.entity._activeInHierarchy) {
                 _callOnEnable(this, false);
             }
         }
@@ -108,7 +108,7 @@
         }
     };
 
-    Component.prototype._onEntityActivated = function (activeInHierarchy) {
+    Component.prototype._onEntityActivated = function (active) {
         if (!this._isOnLoadCalled) {
             this._isOnLoadCalled = true;
             if (this.onLoad) {
@@ -119,7 +119,7 @@
             //}
         }
         if (this._enabled) {
-            _callOnEnable(this, activeInHierarchy);
+            _callOnEnable(this, active);
         }
     };
     

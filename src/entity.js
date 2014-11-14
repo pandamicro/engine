@@ -7,10 +7,14 @@
 
         if (Fire._isDeserializing) {
             // create by deserializer
+            
+            this._activeInHierarchy = false;
         }
         else {
             // create dynamically
-            
+
+            this._activeInHierarchy = true;
+
             // init transform
             var transform = new Transform();
             transform.entity = this;
@@ -55,7 +59,7 @@
             if (this._active != value) {
                 // jshint eqeqeq: true
                 this._active = value;
-                var canActiveInHierarchy = (!this._parent || this._parent.activeInHierarchy);
+                var canActiveInHierarchy = (!this._parent || this._parent._activeInHierarchy);
                 if (canActiveInHierarchy) {
                     this._onActivatedInHierarchy(value);
                 }
@@ -110,7 +114,7 @@
 
                 if (oldParent && !(oldParent._objFlags & Destroying)) {
                     oldParent._children.splice(oldParent._children.indexOf(this), 1);
-                    this._onHierarchyChanged(oldParent); // TODO 这里需要有oldParent?
+                    this._onHierarchyChanged(oldParent);
                 }
                 Engine._renderContext.onEntityParentChanged(this, oldParent);
                 if (editorCallback.onEntityParentChanged) {
@@ -171,7 +175,7 @@
     
     Object.defineProperty(Entity.prototype, 'activeInHierarchy', {
         get: function () {
-            return this._active && (!this._parent || this._parent.activeInHierarchy);
+            return this._activeInHierarchy;
         },
     });
 
@@ -182,8 +186,8 @@
     Entity.prototype.destroy = function () {
         if (FObject.prototype.destroy.call(this)) {
             // disable hierarchy
-            if (this.activeInHierarchy) {
-                this._onActivatedInHierarchy(false);
+            if (this._activeInHierarchy) {
+                this._deactivateChildComponents();
             }
         }
     };
@@ -230,7 +234,7 @@
      */
     Entity.prototype._getCapturingTargets = function (type, array) {
         for (var target = this._parent; target; target = target._parent) {
-            if (target.activeInHierarchy && target._capturingListeners && target._capturingListeners.has(type)) {
+            if (target._activeInHierarchy && target._capturingListeners && target._capturingListeners.has(type)) {
                 array.push(target);
             }
         }
@@ -247,7 +251,7 @@
      */
     Entity.prototype._getBubblingTargets = function (type, array) {
         for (var target = this._parent; target; target = target._parent) {
-            if (target.activeInHierarchy && target._bubblingListeners && target._bubblingListeners.has(type)) {
+            if (target._activeInHierarchy && target._bubblingListeners && target._bubblingListeners.has(type)) {
                 array.push(target);
             }
         }
@@ -259,7 +263,7 @@
      * @param {Fire.Event} event - The Event object that is sent to this event target.
      */
     Entity.prototype._doSendEvent = function (event) {
-        if (this.activeInHierarchy) {
+        if (this._activeInHierarchy) {
             Entity.$super.prototype._doSendEvent.call(this, event);
         }
     };
@@ -285,7 +289,7 @@
         component.entity = this;
         this._components.push(component);
         
-        if (this.activeInHierarchy) {
+        if (this._activeInHierarchy) {
             // call onLoad/onEnable
             component._onEntityActivated(true);
         }
@@ -425,31 +429,47 @@
     };
 
     Entity.prototype._onActivatedInHierarchy = function (value) {
-        var self = this;
+        this._activeInHierarchy = value;
+
         // 当引入DestroyImmediate后，_components的元素有可能会在遍历过程中变少，需要复制一个新的数组，或者做一些标记
-        // var components = self._components.slice();
+        // var components = this._components.slice();
         
         // component有可能在onEnable时增加，而新增的component已经onEnable了，所以这里事先记下长度，以免重复调用
-        var countBefore = self._components.length;
+        var countBefore = this._components.length;
         for (var c = 0; c < countBefore; ++c) {
-            var component = self._components[c];
+            var component = this._components[c];
             component._onEntityActivated(value);
         }
         // activate children recursively
-        for (var i = 0, len = self.childCount; i < len; ++i) {
-            var entity = self._children[i];
+        for (var i = 0, len = this.childCount; i < len; ++i) {
+            var entity = this._children[i];
             if (entity._active) {
                 entity._onActivatedInHierarchy(value);
             }
         }
     };
+
+    Entity.prototype._deactivateChildComponents = function () {
+        // 和 _onActivatedInHierarchy 类似但不修改 this._activeInHierarchy
+        var countBefore = this._components.length;
+        for (var c = 0; c < countBefore; ++c) {
+            var component = this._components[c];
+            component._onEntityActivated(false);
+        }
+        // deactivate children recursively
+        for (var i = 0, len = this.childCount; i < len; ++i) {
+            var entity = this._children[i];
+            if (entity._active) {
+                entity._deactivateChildComponents();
+            }
+        }
+    };
     
     Entity.prototype._onHierarchyChanged = function (oldParent) {
-        var self = this;
-        var activeInHierarchyBefore = self._active && (!oldParent || oldParent.activeInHierarchy);
-        var activeInHierarchyNow = self.activeInHierarchy;
-        if (activeInHierarchyBefore !== activeInHierarchyNow) {
-            self._onActivatedInHierarchy(activeInHierarchyNow);
+        var activeInHierarchyBefore = this._active && (!oldParent || oldParent._activeInHierarchy);
+        var shouldActiveNow = this._active && (!this._parent || this._parent._activeInHierarchy);
+        if (activeInHierarchyBefore !== shouldActiveNow) {
+            this._onActivatedInHierarchy(shouldActiveNow);
         }
     };
 
