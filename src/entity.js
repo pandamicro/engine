@@ -230,7 +230,7 @@
      */
     Entity.prototype._getCapturingTargets = function (type, array) {
         for (var target = this._parent; target; target = target._parent) {
-            if (target._capturingListeners && target._capturingListeners.has(type)) {
+            if (target.activeInHierarchy && target._capturingListeners && target._capturingListeners.has(type)) {
                 array.push(target);
             }
         }
@@ -247,9 +247,20 @@
      */
     Entity.prototype._getBubblingTargets = function (type, array) {
         for (var target = this._parent; target; target = target._parent) {
-            if (target._bubblingListeners && target._bubblingListeners.has(type)) {
+            if (target.activeInHierarchy && target._bubblingListeners && target._bubblingListeners.has(type)) {
                 array.push(target);
             }
+        }
+    };
+
+    /**
+     * Send an event to this object directly, this method will not propagate the event to any other objects.
+     * 
+     * @param {Fire.Event} event - The Event object that is sent to this event target.
+     */
+    Entity.prototype._doSendEvent = function (event) {
+        if (this.activeInHierarchy) {
+            Entity.$super.prototype._doSendEvent.call(this, event);
         }
     };
 

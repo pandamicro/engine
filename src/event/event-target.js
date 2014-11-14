@@ -94,8 +94,8 @@
      * Dispatches an event into the event flow. The event target is the EventTarget object upon which the dispatchEvent() method is called.
      * 
      * @param {Fire.Event} event - The Event object that is dispatched into the event flow
-     * @returns {boolean} - returns true if either it's preventDefault() method was not invoked,
-     *                      or event's cancelable attribute value is false, and false otherwise.
+     * @returns {boolean} - returns true if either the event's preventDefault() method was not invoked,
+     *                      or its cancelable attribute value is false, and false otherwise.
      */
     EventTarget.prototype.dispatchEvent = function (event) {
         event._reset();
@@ -122,20 +122,11 @@
         cachedArray.length = 0;
 
         // Event.AT_TARGET
-        if (this.isValid) {         // checks if destroyed in capturing callbacks
-            event.eventPhase = 2;
-            event.currentTarget = this;
-            if (this._capturingListeners) {
-                this._capturingListeners.invoke(event.type, event);
-                if (event._propagationStopped) {
-                    return ! event._defaultPrevented;
-                }
-            }
-            if (this._bubblingListeners) {
-                this._bubblingListeners.invoke(event.type, event);
-                if (event._propagationStopped) {
-                    return ! event._defaultPrevented;
-                }
+        // checks if destroyed in capturing callbacks
+        if (this.isValid) {
+            this._doSendEvent(event);
+            if (event._propagationStopped) {
+                return ! event._defaultPrevented;
             }
         }
         
@@ -161,6 +152,41 @@
         }
         return ! event._defaultPrevented;
     };
+
+    /**
+     * Send an event to this object directly, this method will not propagate the event to any other objects.
+     * 
+     * @param {Fire.Event} event - The Event object that is sent to this event target.
+     */
+    EventTarget.prototype._doSendEvent = function (event) {
+        // Event.AT_TARGET
+        event.eventPhase = 2;
+        event.currentTarget = this;
+        if (this._capturingListeners) {
+            this._capturingListeners.invoke(event.type, event);
+            if (event._propagationStopped) {
+                return;
+            }
+        }
+        if (this._bubblingListeners) {
+            this._bubblingListeners.invoke(event.type, event);
+        }
+    };
+
+    ///**
+    // * Send an event to this object directly, this method will not propagate the event to any other objects.
+    // * 
+    // * @param {Fire.Event} event - The Event object that is sent to this event target.
+    // * @returns {boolean} - returns true if either the event's preventDefault() method was not invoked,
+    // *                      or its cancelable attribute value is false, and false otherwise.
+    // */
+    //EventTarget.prototype.sendEvent = function (event) {
+    //    // Event.AT_TARGET
+    //    event.reset();
+    //    event.target = this;
+    //    this._doSendEvent(event);
+    //    return ! event._defaultPrevented;
+    //};
 
     /**
      * Get all the targets listening to the supplied type of event in the target's capturing phase.
