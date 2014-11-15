@@ -3,7 +3,7 @@
     /**
      * An event allows for signaling that something has occurred. E.g. that an asset has completed downloading.
      * @param {string} type - The name of the event (case-sensitive), e.g. "click", "fire", or "submit"
-     * @param {boolean} [bubbles=false] - A boolean indicating whether the event bubbles up through the hierarchy or not
+     * @param {boolean} [bubbles=false] - A boolean indicating whether the event bubbles up through the tree or not
      */
     function Event (type, bubbles) {
         //HashObject.call(this);
@@ -54,10 +54,16 @@
         this._defaultPrevented = false;
 
         /**
-         * Indicates whether or not event.preventDefault() has been called on the event
+         * Indicates whether or not event.stop() has been called on the event
          * @property {boolean}
          */
         this._propagationStopped = false;
+
+        /**
+         * Indicates whether or not event.stop(true) has been called on the event
+         * @property {boolean}
+         */
+        this._propagationImmediateStopped = false;
 
         //this.cancelable = false;
         //this.clipboardData = undefined;
@@ -92,10 +98,16 @@
     Event.BUBBLING_PHASE = 3;
 
     /**
-     * When dispatched in a tree, invoking this method prevents event from reaching any other objects than the current.
+     * Stop propagation. When dispatched in a tree, invoking this method prevents event from reaching any other objects than the current.
+     * @param {boolean} [immediate=false] - Indicates whether or not to immediate stop the propagation, default is false.
+     *                                      If true, for this particular event, no other callback will be called. Neither those attached on the same event target,
+     *                                      nor those attached on targets which will be traversed later.
      */
-    Event.prototype.stopPropagation = function () {
+    Event.prototype.stop = function (immediate) {
         this._propagationStopped = true;
+        if (immediate) {
+            this._propagationImmediateStopped = true;
+        }
     };
 
     /**
@@ -111,6 +123,7 @@
         this.eventPhase = 0;
         this._defaultPrevented = false;
         this._propagationStopped = false;
+        this._propagationImmediateStopped = false;
     };
 
     return Event;

@@ -12,7 +12,7 @@
      * the scene graph. This round-trip journey to the event target is conceptually divided into three phases:
      * - The capture phase comprises the journey from the root to the last node before the event target's node
      * - The target phase comprises only the event target node
-     * - The bubbling phase comprises any subsequent nodes encountered on the return trip to the root of the hierarchy
+     * - The bubbling phase comprises any subsequent nodes encountered on the return trip to the root of the tree
 	 * See also: http://www.w3.org/TR/DOM-Level-3-Events/#event-flow
      * 
      * Event targets can implement the following methods:
@@ -45,13 +45,13 @@
             return;
         }
         if (useCapture) {
-            this._capturingListeners = this._capturingListeners || new Fire.CallbacksInvoker();
+            this._capturingListeners = this._capturingListeners || new EventListeners();
             if ( ! this._capturingListeners.has(type, callback) ) {
                 this._capturingListeners.add(type, callback);
             }
         }
         else {
-            this._bubblingListeners = this._bubblingListeners || new Fire.CallbacksInvoker();
+            this._bubblingListeners = this._bubblingListeners || new EventListeners();
             if ( ! this._bubblingListeners.has(type, callback) ) {
                 this._bubblingListeners.add(type, callback);
             }
@@ -111,7 +111,7 @@
             if (target.isValid && target._capturingListeners) {
                 event.currentTarget = target;
                 // fire event
-                target._capturingListeners.invoke(event.type, event);
+                target._capturingListeners.invoke(event);
                 // check if propagation stopped
                 if (event._propagationStopped) {
                     cachedArray.length = 0;
@@ -140,7 +140,7 @@
                 if (target.isValid && target._bubblingListeners) {
                     event.currentTarget = target;
                     // fire event
-                    target._bubblingListeners.invoke(event.type, event);
+                    target._bubblingListeners.invoke(event);
                     // check if propagation stopped
                     if (event._propagationStopped) {
                         cachedArray.length = 0;
@@ -163,13 +163,13 @@
         event.eventPhase = 2;
         event.currentTarget = this;
         if (this._capturingListeners) {
-            this._capturingListeners.invoke(event.type, event);
+            this._capturingListeners.invoke(event);
             if (event._propagationStopped) {
                 return;
             }
         }
         if (this._bubblingListeners) {
-            this._bubblingListeners.invoke(event.type, event);
+            this._bubblingListeners.invoke(event);
         }
     };
 
@@ -212,7 +212,7 @@
     
     /**
      * Get all the targets listening to the supplied type of event in the target's bubbling phase.
-	 * The bubbling phase comprises any SUBSEQUENT nodes encountered on the return trip to the root of the hierarchy.
+	 * The bubbling phase comprises any SUBSEQUENT nodes encountered on the return trip to the root of the tree.
      * The result should save in the array parameter, and MUST SORT from child nodes to parent nodes.
      * Subclasses can override this method to make event propagable.
      * 

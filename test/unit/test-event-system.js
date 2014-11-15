@@ -163,7 +163,7 @@ test('test stop propagation', function () {
     // stop at bubble 2
 
     bubble2.callbackFunction(function (event) {
-        event.stopPropagation();
+        event.stop();
     });
     bubble1.disable('bubble1 should not be invoked if propagation stopped');
     node2.dispatchEvent(event);
@@ -173,7 +173,7 @@ test('test stop propagation', function () {
 
     // stop at capture 2
     capture2.callbackFunction(function (event) {
-        event.stopPropagation();
+        event.stop();
     });
     bubble2.disable('bubble2 should not be invoked if propagation stopped before');
     node2.dispatchEvent(event);
@@ -182,9 +182,65 @@ test('test stop propagation', function () {
 
     // stop at capture 1
     capture1.callbackFunction(function (event) {
-        event.stopPropagation();
+        event.stop();
     });
     capture2.disable('capture2 should not be invoked if propagation stopped before');
+    node2.dispatchEvent(event);
+    capture1.once('capture1 should be invoked if propagation not yet stopped before');
+});
+
+test('test stop propagation immediate', function () {
+    // define hierarchy
+    var node1 = new Fire.EventTarget();
+    var node2 = new Fire.EventTarget();
+    node2.parent = node1;
+    node2._getCapturingTargets = function (type, array) {
+        for (var target = this.parent; target; target = target.parent) {
+            if (target._capturingListeners && target._capturingListeners.has(type)) {
+                array.push(target);
+            }
+        }
+    };
+    node2._getBubblingTargets = function (type, array) {
+        for (var target = this.parent; target; target = target.parent) {
+            if (target._bubblingListeners && target._bubblingListeners.has(type)) {
+                array.push(target);
+            }
+        }
+    };
+
+    var event = new Fire.Event('fire', true);
+    var capture1 = new Callback().enable();
+    var capture1_2nd = new Callback().enable();
+    var capture2 = new Callback().enable();
+    var bubble1 = new Callback().enable();
+    var bubble2 = new Callback().enable();
+    var bubble2_2nd = new Callback().enable();
+    node1.on('fire', capture1, true);
+    node1.on('fire', capture1_2nd, true);
+    node2.on('fire', capture2, true);
+    node1.on('fire', bubble1, false);
+    node2.on('fire', bubble2, false);
+    node2.on('fire', bubble2_2nd, false);
+
+    // stop at bubble 2
+
+    bubble2.callbackFunction(function (event) {
+        event.stop(true);
+    });
+    bubble2_2nd.disable('bubble2_2nd should not be invoked if propagation stopped immediate');
+    bubble1.disable('bubble1 should not be invoked if propagation stopped immediate');
+    node2.dispatchEvent(event);
+    capture1.once('capture1 should be invoked if propagation not yet stopped before');
+    capture2.once('capture2 should be invoked if propagation not yet stopped before');
+    bubble2.once('bubble2 should be invoked if propagation not yet stopped before');
+
+    // stop at capture 1
+    capture1.callbackFunction(function (event) {
+        event.stop(true);
+    });
+    capture1_2nd.disable('capture1_2nd should not be invoked if propagation stopped immediate');
+    capture2.disable('capture2 should not be invoked if propagation stopped immediate');
     node2.dispatchEvent(event);
     capture1.once('capture1 should be invoked if propagation not yet stopped before');
 });
