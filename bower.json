@@ -19,7 +19,7 @@
   ],
   "dependencies": {
     "fire-core": "fireball-x/core#master",
-    "pixi": "2.0.0"
+    "pixi": "2.1.1"
   },
   "devDependencies": {}
 }

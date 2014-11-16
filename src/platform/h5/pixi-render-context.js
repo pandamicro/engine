@@ -1,8 +1,10 @@
-    
-// Setup PIXI
 
+// Tweak PIXI
 PIXI.dontSayHello = true;
-PIXI.DisplayObject.prototype.updateTransform = function () {};
+var EMPTY_METHOD = function () {};
+PIXI.DisplayObject.prototype.updateTransform = EMPTY_METHOD;
+PIXI.DisplayObject.prototype.displayObjectUpdateTransform = EMPTY_METHOD;
+PIXI.DisplayObjectContainer.prototype.displayObjectContainerUpdateTransform = EMPTY_METHOD;
 
 /**
  * The web renderer implemented rely on pixi.js
