@@ -193,12 +193,13 @@ gulp.task('unit-runner', function() {
 });
 
 gulp.task('test', ['js', 'unit-runner'], function() {
+    var timeOut_second = 5;
     return gulp.src('test/unit/runner.html', { read: false })
                //.pipe(fb.callback(function () {
                //    // launch server
                //    require('./test/server.js');
                //}))
-               .pipe(qunit())
+               .pipe(qunit({"phantomjs-options": "" + timeOut_second}))
                //.on('error', function(err) {
                //    // Make sure failed tests cause gulp to exit non-zero
                //    throw err;
