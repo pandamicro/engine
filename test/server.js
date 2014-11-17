@@ -10,24 +10,24 @@ function error(status, msg) {
 }
 
 // routes
-app.get('/', function(req, res){
-    res.sendfile('test/index.html');
+app.get('/', function(req, res) {
+    res.sendFile('test/index.html');
 });
 
 // serves all the static files
-app.get(/^(.+)$/, function(req, res){ 
+app.get(/^(.+)$/, function(req, res) {
     //console.log('static file request : ' + req.params);
     //console.log('send: ' + process.cwd() + req.params[0]);
-    res.sendfile( process.cwd() + req.params[0]); 
+    res.sendFile( process.cwd() + req.params[0]); 
 });
 
-app.use(function(err, req, res, next){
+app.use(function(err, req, res, next) {
     // whatever you want here, feel free to populate
     // properties on `err` to treat it differently in here.
     res.status(err.status || 500).send({ error: err.message });
 });
 
-app.use(function(req, res){
+app.use(function(req, res) {
     res.status(404).send({ error: "404 Error." });
 });
 
