@@ -15,6 +15,8 @@ var RenderContext = (function () {
      * render context 将在 pixi 中维护同样的 scene graph，这样做主要是为之后的 clipping 和 culling 提供支持。
      * 这里采用空间换时间的策略，所有 entity 都有对应的 PIXI.DisplayObjectContainer。
      * 毕竟一般 dummy entity 不会很多，因此这样产生的冗余对象可以忽略。
+     * 值得注意的是，sprite 等 pixi object，被视为 entity 对应的 PIXI.DisplayObjectContainer 的子物体，
+     * 并且排列在所有 entity 之前，以达到最先渲染的效果。
      * 
      * @param {number} width
      * @param {number} height
@@ -159,30 +161,58 @@ var RenderContext = (function () {
     };
 
     /**
+     * @param {Fire.Entity} entityParent
+     * @param {boolean} inSceneView
+     * @param {Fire.Entity} [customFirstChildEntity=null]
+     * @returns {number}
+     */
+    RenderContext._getChildrenOffset = function (entityParent, inSceneView, customFirstChildEntity) {
+        if (entityParent) {
+            var pixiParent = inSceneView ? entityParent._pixiObjInScene : entityParent._pixiObj;
+            var firstChildEntity = customFirstChildEntity || entityParent._children[0];
+            var firstChild = firstChildEntity && (inSceneView ? firstChildEntity._pixiObjInScene : firstChildEntity._pixiObj);
+            var offset = pixiParent.children.indexOf(firstChild);
+            return offset !== -1 ? offset : pixiParent.children.length;
+        }
+        else {
+            return 0;   // the root of hierarchy
+        }
+    };
+
+    /**
      * @param {Fire.Entity} entity
      * @param {number} oldIndex
      * @param {number} newIndex
      */
     RenderContext.prototype.onEntityIndexChanged = function (entity, oldIndex, newIndex) {
-        var item = entity._pixiObj;
         var array = null;
+        var siblingOffset;  // skip renderers of entity
+        var lastFirstSibling = null;
+        if (newIndex === 0 && oldIndex > 0) {
+            // unshift first sibling
+            lastFirstSibling = entity.getSibling(1);
+        }
+        // game view
+        var item = entity._pixiObj;
         if (item) {
+            siblingOffset = RenderContext._getChildrenOffset(entity._parent, false, lastFirstSibling);
             array = item.parent.children;
-            array.splice(oldIndex, 1);
-            if (newIndex < array.length) {
-                array.splice(newIndex, 0, item);
+            array.splice(oldIndex + siblingOffset, 1);
+            if (newIndex + siblingOffset < array.length) {
+                array.splice(newIndex + siblingOffset, 0, item);
             }
             else {
                 array.push(item);
             }
         }
-
+        // scene view
         if (this.sceneView) {
+            siblingOffset = RenderContext._getChildrenOffset(entity._parent, true, lastFirstSibling);
             item = entity._pixiObjInScene;
             array = item.parent.children;
-            array.splice(oldIndex, 1);
-            if (newIndex < array.length) {
-                array.splice(newIndex, 0, item);
+            array.splice(oldIndex + siblingOffset, 1);
+            if (newIndex + siblingOffset < array.length) {
+                array.splice(newIndex + siblingOffset, 0, item);
             }
             else {
                 array.push(item);
@@ -326,28 +356,31 @@ var RenderContext = (function () {
      * @param {Fire.Matrix23} matrix - the final matrix to render (Read Only)
      */
     RenderContext.prototype.updateTransform = function (target, matrix) {
-        if (target._renderObj || target._renderObjInScene) {
-            target._tempMatrix.set(matrix);
-            var mat = target._tempMatrix;
-            // revert Y axis for pixi
-            mat.ty = this.renderer.height - mat.ty;
-            // negate the rotation because our rotation transform not the same with pixi
-            mat.c = -mat.c;    
-            mat.b = -mat.b;
-            //
-            var isGameView = this === Engine._renderContext;
-            if (isGameView) {
-                if (target._renderObj) {
-                    target._renderObj.worldTransform = mat;
-                }
-            }
-            else if (target._renderObjInScene) {
-                target._renderObjInScene.worldTransform = mat;
+        // caculate matrix for pixi
+        var mat = target._tempMatrix;
+        mat.a = matrix.a;
+        // negate the rotation because our rotation transform not the same with pixi
+        mat.b = - matrix.b;
+        mat.c = - matrix.c;
+        //
+        mat.d = matrix.d;
+        mat.tx = matrix.tx;
+        // revert Y axis for pixi
+        mat.ty = this.renderer.height - matrix.ty;
+
+        // apply matrix
+        var isGameView = this === Engine._renderContext;
+        if (isGameView) {
+            if (target._renderObj) {
+                target._renderObj.worldTransform = mat;
+                return;
             }
         }
-        else {
-            Fire.error('' + target + ' must be added to render context first!');
+        else if (target._renderObjInScene) {
+            target._renderObjInScene.worldTransform = mat;
+            return;
         }
+        Fire.error('' + target + ' must be added to render context first!');
     };
 
     ///**

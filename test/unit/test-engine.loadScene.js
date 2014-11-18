@@ -23,7 +23,8 @@ asyncTest('load scene 1', function () {
         ok(sr._isOnEnableCalled, 'should trigger onEnable');
         ok(sr._isOnLoadCalled, 'should trigger onLoad');
         
-        ok(Engine._renderContext.checkMatchCurrentScene(), 'check render context');
+        // check render context
+        Engine._renderContext.checkMatchCurrentScene();
 
         var child = Entity.find('/Entity/Child Entity');
         ok(child, 'can load child entity');
