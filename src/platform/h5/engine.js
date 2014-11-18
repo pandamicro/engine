@@ -95,7 +95,9 @@ var Engine = (function () {
         },
         set: function (value) {
             Engine._renderContext.size = value;
-            render();
+            //if ( !isPlaying ) {
+            //    render();
+            //}
         }
     });
 

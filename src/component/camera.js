@@ -33,7 +33,7 @@
     
     Camera.prototype._calculateTransform = function (out_matrix, out_worldPos) {
         var screenSize = (this._renderContext || Engine._renderContext).size;
-        var scale = this._size / screenSize.y;
+        var scale = screenSize.y / this._size;
         var tf = this.entity.transform;
         var mat = tf.getLocalToWorldMatrix();
 
