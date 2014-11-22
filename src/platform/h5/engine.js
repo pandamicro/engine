@@ -35,6 +35,9 @@ var Engine = (function () {
     // the render context currently rendering
     Engine._curRenderContext = null;
 
+    // main input context
+    Engine._inputContext = null;
+
     // is rendering and allow update logic
     Object.defineProperty(Engine, 'isPlaying', {
         get: function () {
@@ -127,6 +130,7 @@ var Engine = (function () {
         Engine._renderContext = new RenderContext( w, h, canvas );
         Engine._interactionContext = new InteractionContext();
         Engine._scene = new Scene();
+        Engine._inputContext = new InputContext(Engine._renderContext);
 
         return Engine._renderContext;
     };
