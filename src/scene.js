@@ -85,18 +85,19 @@
     };
 
     function _updateInteractionContextRecursilvey ( entity, interactionContext ) {
-        for ( c = 0; c < entity._components.length; ++c ) {
+        for ( var c = 0; c < entity._components.length; ++c ) {
             var component = entity._components[c];
-
             if ( component instanceof Fire.Renderer ) { 
-                var boundingBox = component.getWorldBounds();
-                interactionContext.add( entity, boundingBox );
+                var obb = component.getWorldOrientedBounds();
+                var aabb = new Rect();
+                Math.calculateMaxRect(aabb, obb[0], obb[1], obb[2], obb[3]);
+                interactionContext.add( entity, aabb, obb );
                 break;
             }
         }
 
-        for ( var i = 0; i < entity.childCount; ++i ) {
-            var childEnt = entity.getChild(i);
+        for ( var i = 0, len = entity._children.length; i < len; ++i ) {
+            var childEnt = entity._children[i];
             _updateInteractionContextRecursilvey(childEnt, interactionContext);
         }
     }
@@ -107,8 +108,7 @@
 
         // recursively process each entity
         var entities = this.entities;
-        var i, len;
-        for (i = 0, len = entities.length; i < len; ++i) {
+        for (var i = 0, len = entities.length; i < len; ++i) {
             _updateInteractionContextRecursilvey( entities[i], interactionContext );
         }
     };

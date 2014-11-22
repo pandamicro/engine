@@ -4,11 +4,11 @@
 var InteractionContext = (function () {
 
     function InteractionContext () {
-        this.boundings = [];
+        this.boundings = [];    // sort from back to front
     }
 
-    InteractionContext.prototype.add = function ( entity, aabb ) {
-        this.boundings.push( { entity: entity, aabb: aabb } );
+    InteractionContext.prototype.add = function ( entity, aabb, obb ) {
+        this.boundings.push( { entity: entity, aabb: aabb, obb: obb } );
     };
 
     InteractionContext.prototype.clear = function () {

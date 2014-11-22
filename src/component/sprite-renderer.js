@@ -118,26 +118,6 @@
         //br.set(mat.transformPoint(new Vec2(width, -height)));
     }
 
-    function _doGetBounds(mat, out) {
-        var bl = new Vec2(0, 0);
-        var tl = new Vec2(0, 0);
-        var tr = new Vec2(0, 0);
-        var br = new Vec2(0, 0);
-        _doGetOrientedBounds.call(this, mat, bl, tl, tr, br);
-
-        // caculate max rect
-        out = out || new Fire.Rect();
-        var minX = Math.min(tl.x, tr.x, bl.x, br.x);
-        var maxX = Math.max(tl.x, tr.x, bl.x, br.x);
-        var minY = Math.min(tl.y, tr.y, bl.y, br.y);
-        var maxY = Math.max(tl.y, tr.y, bl.y, br.y);
-        out.x = minX;
-        out.y = minY;
-        out.width = maxX - minX;
-        out.height = maxY - minY;
-        return out;
-    }
-
     // 返回表示 sprite 的 width/height/pivot/skew/shear 等变换的 matrix，
     // 由于这些变换不影响子物体，所以不能放到 getLocalToWorldMatrix
     SpriteRenderer.prototype.getSelfMatrix = function (out) {
@@ -165,7 +145,14 @@
 
     SpriteRenderer.prototype.getWorldBounds = function (out) {
         var worldMatrix = this.entity.transform.getLocalToWorldMatrix();
-        return _doGetBounds.call(this, worldMatrix, out);
+        var bl = new Vec2(0, 0);
+        var tl = new Vec2(0, 0);
+        var tr = new Vec2(0, 0);
+        var br = new Vec2(0, 0);
+        _doGetOrientedBounds.call(this, worldMatrix, bl, tl, tr, br);
+        out = out || new Rect();
+        Math.calculateMaxRect(out, bl, tl, tr, br);
+        return out;
     };
 
     /**
