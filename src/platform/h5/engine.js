@@ -117,10 +117,9 @@ var Engine = (function () {
      * @param {number} [w]
      * @param {number} [h]
      * @param {Canvas} [canvas]
-     * @param {Fire._Scene} [scene]
      * @returns {RenderContext}
      */
-    Engine.init = function ( w, h, canvas, scene ) {
+    Engine.init = function ( w, h, canvas ) {
         if (inited) {
             Fire.error('Engine already inited');
             return;
