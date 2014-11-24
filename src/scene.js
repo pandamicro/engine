@@ -216,7 +216,6 @@
     };
 
     Scene.prototype.destroy = function () {
-        _super.prototype.destroy.call(this);
         var entities = this.entities;
         for (var i = 0, len = entities.length; i < len; ++i) {
             var entity = entities[i];
@@ -224,6 +223,7 @@
                 entity.destroy();
             }
         }
+        _super.prototype.destroy.call(this);
     };
 
     //Scene.prototype.onReady = function () {
