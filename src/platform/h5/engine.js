@@ -129,7 +129,6 @@ var Engine = (function () {
         Engine._renderContext = new RenderContext( w, h, canvas );
         Engine._interactionContext = new InteractionContext();
         Engine._scene = new Scene();
-        Engine._inputContext = new InputContext(Engine._renderContext);
 
         return Engine._renderContext;
     };
@@ -145,12 +144,18 @@ var Engine = (function () {
         }
         isPlaying = true;
 
+        Engine._inputContext = new InputContext(Engine._renderContext);
         var now = Ticker.now();
         Time._restart(now);
         update();
     };
 
     Engine.stop = function () {
+        if (isPlaying) {
+            Engine._inputContext.destruct();
+            Engine._inputContext = null;
+            Input._reset();
+        }
         // reset states
         isPlaying = false;
         isPaused = false;

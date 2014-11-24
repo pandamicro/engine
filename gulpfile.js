@@ -44,7 +44,7 @@ var paths = {
         'src/platform/h5/input-events.js',
         'src/platform/h5/input-context.js',
         'src/event/event-register.js',
-        'src/input-dispatcher.js',
+        'src/input.js',
         // debug
         'src/platform/debug/render-context.js',
     ],

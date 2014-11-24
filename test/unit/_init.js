@@ -33,7 +33,7 @@ function v2 (x, y) {
  */
 Engine._reset = function (w, h) {
     if (!Engine.inited) {
-        Engine.init(w, h);
+        var canvas = Engine.init(w, h).renderer.view;
     }
     else {
         Engine.screenSize = new V2(w, h);
