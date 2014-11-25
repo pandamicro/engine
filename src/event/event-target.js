@@ -28,7 +28,8 @@
     Fire.extend(EventTarget, HashObject);
 
     /**
-     * Register an callback of a specific event type on the EventTarget
+     * Register an callback of a specific event type on the EventTarget.
+     * This method is merely an alias to addEventListener.
      * 
      * @param {string} type - A string representing the event type to listen for.
      * @param {function} callback - The callback that will be invoked when the event is dispatched.
@@ -60,9 +61,10 @@
 
     /**
      * Removes the callback previously registered with the same type, callback, and capture.
+     * This method is merely an alias to removeEventListener.
      * 
      * @param {string} type - A string representing the event type being removed.
-     * @param {function} callback - The callback to be removed.
+     * @param {function} callback - The callback to remove.
      * @param {boolean} [useCapture=false] - Specifies whether the callback being removed was registered as a capturing callback or not.
      *                              If not specified, useCapture defaults to false. If a callback was registered twice,
      *                              one with capture and one without, each must be removed separately. Removal of a capturing callback
@@ -77,6 +79,26 @@
         if (listeners) {
             listeners.remove(type, callback);
         }
+    };
+
+    /**
+     * Register an callback of a specific event type on the EventTarget, the callback will remove itself after the first time it is triggered.
+     * 
+     * @param {string} type - A string representing the event type to listen for.
+     * @param {function} callback - The callback that will be invoked when the event is dispatched.
+     *                              The callback is ignored if it is a duplicate (the callbacks are unique).
+     * @param {boolean} [useCapture=false] - When set to true, the capture argument prevents callback
+     *                              from being invoked when the event's eventPhase attribute value is BUBBLING_PHASE.
+     *                              When false, callback will NOT be invoked when event's eventPhase attribute value is CAPTURING_PHASE.
+     *                              Either way, callback will be invoked when event's eventPhase attribute value is AT_TARGET.
+     */
+    EventTarget.prototype.once = function (type, callback, useCapture) {
+        var self = this;
+        var cb = function (event) {
+            self.off(type, cb, useCapture);
+            callback(event);
+        };
+        this.on(type, cb, useCapture);
     };
 
     ///**

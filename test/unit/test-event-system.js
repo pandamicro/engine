@@ -35,6 +35,20 @@ test('basic test', function () {
     cb2.once('callback2 should still be invoked after callback1 canceled');
 });
 
+test('once', function () {
+    var target = new Fire.EventTarget();
+    var fireEvent = new Fire.Event('fire');
+    var cb1 = new Callback();
+    
+    target.once('fire', cb1);
+    cb1.enable();
+    target.dispatchEvent(fireEvent);
+    cb1.once('should be invoked if registered by once');
+
+    cb1.disable('should not invoke anymore');
+    target.dispatchEvent(fireEvent);
+});
+
 test('test useCapture in on/off', function () {
     var target = new Fire.EventTarget();
     var event = new Fire.Event('fire');
