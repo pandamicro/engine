@@ -195,11 +195,11 @@
     Entity.prototype._onPreDestroy = function () {
         var parent = this._parent;
         this._objFlags |= Destroying;
-        var destroyByParent = (parent && (parent._objFlags & Destroying));
-        if (!destroyByParent) {
+        var isTopMost = !(parent && (parent._objFlags & Destroying));
+        if (isTopMost) {
             Engine._renderContext.onEntityRemoved(this);
             if (editorCallback.onEntityRemoved) {
-                editorCallback.onEntityRemoved(this);
+                editorCallback.onEntityRemoved(this/*, isTopMost*/);
             }
         }
         // destroy components
@@ -209,7 +209,7 @@
         }
         // remove self
         if (parent) {
-            if (!destroyByParent) {
+            if (isTopMost) {
                 parent._children.splice(parent._children.indexOf(this), 1);
             }
         }

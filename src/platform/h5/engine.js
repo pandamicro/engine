@@ -182,10 +182,7 @@ var Engine = (function () {
         // render
         Engine._scene.render(Engine._renderContext);
 
-        // update interaction context
-        Engine._scene.updateInteractionContext(Engine._interactionContext);
-
-        // test scene view
+        // render standalone scene view test
         if (Fire.isPureWeb && Engine._renderContext.sceneView) {
             Engine._scene.render(Engine._renderContext.sceneView);
         }
@@ -199,6 +196,9 @@ var Engine = (function () {
             FObject._deferredDestroy();
         }
         render();
+        
+        // update interaction context
+        Engine._interactionContext.update(Engine._scene.entities);
     };
 
     /**
