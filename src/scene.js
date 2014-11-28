@@ -84,35 +84,6 @@
         Engine._curRenderContext = null;
     };
 
-    function _updateInteractionContextRecursilvey ( entity, interactionContext ) {
-        for ( var c = 0; c < entity._components.length; ++c ) {
-            var component = entity._components[c];
-            if ( component instanceof Fire.Renderer ) { 
-                var obb = component.getWorldOrientedBounds();
-                var aabb = new Rect();
-                Math.calculateMaxRect(aabb, obb[0], obb[1], obb[2], obb[3]);
-                interactionContext.add( entity, aabb, obb );
-                break;
-            }
-        }
-
-        for ( var i = 0, len = entity._children.length; i < len; ++i ) {
-            var childEnt = entity._children[i];
-            _updateInteractionContextRecursilvey(childEnt, interactionContext);
-        }
-    }
-
-    Scene.prototype.updateInteractionContext = function (interactionContext) {
-        // clear intersection data
-        interactionContext.clear();
-
-        // recursively process each entity
-        var entities = this.entities;
-        for (var i = 0, len = entities.length; i < len; ++i) {
-            _updateInteractionContextRecursilvey( entities[i], interactionContext );
-        }
-    };
-
     ////////////////////////////////////////////////////////////////////
     // other functions
     ////////////////////////////////////////////////////////////////////

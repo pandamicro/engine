@@ -17,9 +17,10 @@ var editorCallback = {
     onEntityCreated: null,
 
     /**
-     * removes a transform and all its children from scene
+     * removes an entity and all its children from scene, this method will NOT be called if it is removed by hierarchy.
      * @callback Fire.Engine._editorCallback~onEntityRemoved
-     * @param {Fire.Entity} entity
+     * @param {Fire.Entity} entity - the entity to remove
+     * // @param {boolean} isTopMost - indicates whether it is the most top one among the entities who will be deleted in one operation
      */
     /**
      * @property {Fire.Engine._editorCallback~onEntityRemoved} Fire.Engine._editorCallback.onEntityRemoved
