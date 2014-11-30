@@ -59,7 +59,7 @@ var InteractionContext = (function () {
 
     InteractionContext.prototype.update = function (entities) {
         // 目前还没有专门处理physics的模块，暂时hack一下
-        var newFrame = this === Engine._interactionContext;
+        var newFrame = !Engine.isPlaying || this === Engine._interactionContext;
         if (newFrame) {
             aabbMap = {};
             obbMap = {};
