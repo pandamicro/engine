@@ -131,10 +131,10 @@ var Engine = (function () {
         Engine._scene = new Scene();
 
         //if (editorCallback.onSceneLoaded) {
-        //    editorCallback.onSceneLoaded(scene);
+        //    editorCallback.onSceneLoaded(Engine._scene);
         //}
         if (editorCallback.onSceneLaunched) {
-            editorCallback.onSceneLaunched(scene);
+            editorCallback.onSceneLaunched(Engine._scene);
         }
 
         return Engine._renderContext;
