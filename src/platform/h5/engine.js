@@ -128,13 +128,15 @@ var Engine = (function () {
 
         Engine._renderContext = new RenderContext( w, h, canvas );
         Engine._interactionContext = new InteractionContext();
-        Engine._scene = new Scene();
 
-        //if (editorCallback.onSceneLoaded) {
-        //    editorCallback.onSceneLoaded(Engine._scene);
-        //}
-        if (editorCallback.onSceneLaunched) {
-            editorCallback.onSceneLaunched(Engine._scene);
+        if (Fire.isEditor === false) {
+            Engine._scene = new Scene();
+            //if (editorCallback.onSceneLoaded) {
+            //    editorCallback.onSceneLoaded(Engine._scene);
+            //}
+            if (editorCallback.onSceneLaunched) {
+                editorCallback.onSceneLaunched(Engine._scene);
+            }
         }
 
         return Engine._renderContext;
