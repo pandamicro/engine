@@ -176,7 +176,7 @@
         return match;
     };
 
-    Scene.prototype.onLaunch = function () {
+    Scene.prototype.activate = function () {
         var entities = this.entities;
         for (var i = 0, len = entities.length; i < len; ++i) {
             var entity = entities[i];
