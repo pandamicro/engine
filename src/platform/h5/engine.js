@@ -130,6 +130,13 @@ var Engine = (function () {
         Engine._interactionContext = new InteractionContext();
         Engine._scene = new Scene();
 
+        //if (editorCallback.onSceneLoaded) {
+        //    editorCallback.onSceneLoaded(scene);
+        //}
+        if (editorCallback.onSceneLaunched) {
+            editorCallback.onSceneLaunched(scene);
+        }
+
         return Engine._renderContext;
     };
     
@@ -281,9 +288,9 @@ var Engine = (function () {
             }
             //scene.onReady();
             Engine._renderContext.onSceneLoaded(scene);
-            if (editorCallback.onSceneLoaded) {
-                editorCallback.onSceneLoaded(scene);
-            }
+            //if (editorCallback.onSceneLoaded) {
+            //    editorCallback.onSceneLoaded(scene);
+            //}
 
             Engine._setCurrentScene(scene);
 

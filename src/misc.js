@@ -65,14 +65,14 @@ var editorCallback = {
      */
     onSceneLaunched: null,
 
-    /**
-     * @callback Fire.Engine._editorCallback~onSceneLoaded
-     * @param {Scene} scene
-     */
-    /**
-     * @property {Fire.Engine._editorCallback~onSceneLoaded} Fire.Engine._editorCallback.onSceneLoaded
-     */
-    onSceneLoaded: null,
+    ///**
+    // * @callback Fire.Engine._editorCallback~onSceneLoaded
+    // * @param {Scene} scene
+    // */
+    ///**
+    // * @property {Fire.Engine._editorCallback~onSceneLoaded} Fire.Engine._editorCallback.onSceneLoaded
+    // */
+    //onSceneLoaded: null,
 
     /**
      * @callback Fire.Engine._editorCallback~onComponentEnabled
