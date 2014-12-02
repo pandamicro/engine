@@ -28,12 +28,10 @@
         }
     );
 
-    // TODO:
-    // SpriteRenderer.prop('width_', 100, Fire.DisplayName('Width') )
-    //               .watch( ['customSize_'], function ( propEL ) {
-    //                   propEL.disabled = !this.customSize_;
-    //               } );
-    SpriteRenderer.prop('width_', 100, Fire.DisplayName('Width'));
+    SpriteRenderer.prop('width_', 100, Fire.DisplayName('Width'), 
+                        Fire.Watch( 'customSize_', function ( obj, propEL ) {
+                            propEL.disabled = !obj.customSize; 
+                        } ));
     SpriteRenderer.getset('width',
         function () {
             if ( !this.customSize_ ) {
@@ -49,7 +47,10 @@
         Fire.HideInInspector
     );
 
-    SpriteRenderer.prop('height_', 100, Fire.DisplayName('Height'));
+    SpriteRenderer.prop('height_', 100, Fire.DisplayName('Height'),
+                        Fire.Watch( 'customSize_', function ( obj, propEL) {
+                            propEL.disabled = !obj.customSize;
+                        } ));
     SpriteRenderer.getset('height',
         function () {
             if ( !this.customSize_ ) {
