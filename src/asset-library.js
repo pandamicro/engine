@@ -154,6 +154,16 @@ var AssetLibrary = (function () {
             //loadAssetByUrl (url, callback, info);
         },
 
+        /**
+         * Get the exists asset by uuid.
+         * 
+         * @param {string} uuid
+         * @returns {Fire.Asset} - the existing asset, if not loaded, just returns null.
+         */
+        getAssetByUuid: function (uuid) {
+            return _uuidToAsset[uuid] || null;
+        },
+
         //loadAssetByUrl: function (url, callback, info) {},
 
         /**
