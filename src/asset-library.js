@@ -120,12 +120,14 @@ var AssetLibrary = (function () {
                                 asset[info.hostProp] = img;
                                 --pendingCount;
                                 if (pendingCount === 0) {
+                                    _uuidToAsset[uuid] = asset;
                                     _uuidToCallbacks.invokeAndRemove(uuid, asset);
                                 }
                             });
                         }
                     }
                     if (pendingCount === 0) {
+                        _uuidToAsset[uuid] = asset;
                         _uuidToCallbacks.invokeAndRemove(uuid, asset);
                         return;
                     }
@@ -144,6 +146,7 @@ var AssetLibrary = (function () {
                                 // check all finished
                                 --pendingCount;
                                 if (pendingCount === 0) {
+                                    _uuidToAsset[uuid] = asset;
                                     _uuidToCallbacks.invokeAndRemove(uuid, asset);
                                 }
                             };
