@@ -197,8 +197,11 @@
         _super.prototype.destroy.call(this);
     };
 
-    //Scene.prototype.onReady = function () {
-    //};
+    Scene.prototype._instantiate = function () {
+        var clone = Fire._doInstantiate(this);
+        Engine._renderContext.onSceneLoaded(clone);
+        return clone;
+    };
 
     return Scene;
 })();

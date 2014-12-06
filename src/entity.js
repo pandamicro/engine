@@ -483,10 +483,17 @@
         this._parent = null;
         var clone = Fire._doInstantiate(this);
         this._parent = oldParent;
-        
+        // init
         if (Engine.isPlaying) {
             clone._name = this._name + '(Clone)';
         }
+        if (position) {
+            clone.transform._position = position;
+        }
+        if (rotation) {
+            clone.transform._rotation = rotation;
+        }
+        // activate
         if (clone._active) {
             clone._onActivatedInHierarchy(true);
         }

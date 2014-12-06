@@ -253,6 +253,8 @@ var Engine = (function () {
         // TODO: allow dont destroy behaviours
         // unload scene
         var oldScene = Engine._scene;
+        // IMPORTANT! Dont cache last scene
+        AssetLibrary.unloadAsset(oldScene);
         if (FObject.isValid(oldScene)) {
             oldScene.destroy();
             FObject._deferredDestroy(); // simulate destroy immediate
@@ -290,6 +292,7 @@ var Engine = (function () {
                 callback(null, error);
                 return;
             }
+
             //scene.onReady();
             Engine._renderContext.onSceneLoaded(scene);
             //if (editorCallback.onSceneLoaded) {

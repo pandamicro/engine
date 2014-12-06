@@ -186,14 +186,12 @@ var AssetLibrary = (function () {
          *                                         referencing the asset, the references will become invalid.
          */
         unloadAsset: function (asset, destroyAsset) {
-            if (!asset) {
-                Fire.error('[AssetLibrary] unloadAsset: asset must be non-nil');
-                return;
+            if (asset) {
+                if (destroyAsset && asset.isValid) {
+                    asset.destroy();
+                }
+                delete _uuidToAsset[asset._uuid];
             }
-            if (destroyAsset && asset.isValid) {
-                asset.destroy();
-            }
-            delete _uuidToAsset[asset._uuid];
         },
 
         /**
