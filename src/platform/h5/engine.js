@@ -63,9 +63,9 @@ var Engine = (function () {
 
     /**
      * You should check whether you can modify the scene in constructors which may called by the engine while deserializing.
-     * 这个属性和 Fire._isDeserializing 很类似。但这里关注的是场景是否能修改，而 Fire._isDeserializing 强调的是持有的对象是否需要重新创建。
+     * 这个属性和 Fire._isCloning 很类似。但这里关注的是场景是否能修改，而 Fire._isCloning 强调的是持有的对象是否需要重新创建。
      * @param {boolean} Engine._canModifyCurrentScene
-     * @see Fire._isDeserializing
+     * @see Fire._isCloning
      */
     Object.defineProperty(Engine, '_canModifyCurrentScene', {
         get: function () {
@@ -249,6 +249,8 @@ var Engine = (function () {
             Fire.error('Argument must be non-nil');
             return;
         }
+
+        // TODO: allow dont destroy behaviours
         // unload scene
         var oldScene = Engine._scene;
         if (FObject.isValid(oldScene)) {

@@ -5,8 +5,8 @@
         this._name = typeof name !== 'undefined' ? name : 'New Entity';
         this._objFlags |= Entity._defaultFlags;
 
-        if (Fire._isDeserializing) {
-            // create by deserializer
+        if (Fire._isCloning) {
+            // create by deserializer or instantiating
             
             this._activeInHierarchy = false;
         }
@@ -428,6 +428,10 @@
         this.setSiblingIndex(-1);
     };
 
+    ////////////////////////////////////////////////////////////////////
+    // other methods
+    ////////////////////////////////////////////////////////////////////
+
     Entity.prototype._onActivatedInHierarchy = function (value) {
         this._activeInHierarchy = value;
 
@@ -473,7 +477,31 @@
         }
     };
 
+    Entity.prototype._instantiate = function (position, rotation) {
+        // 临时实现版本，之后应该不拷贝scene object
+        var oldParent = this._parent;
+        this._parent = null;
+        var clone = Fire._doInstantiate(this);
+        this._parent = oldParent;
+        
+        if (Engine.isPlaying) {
+            clone._name = this._name + '(Clone)';
+        }
+        if (clone._active) {
+            clone._onActivatedInHierarchy(true);
+        }
+        if (Engine._scene) {
+            Engine._scene.appendRoot(clone);
+        }
 
+        // invoke callbacks
+        Engine._renderContext.onEntityLoaded(clone);
+        if (editorCallback.onEntityCreated) {
+            editorCallback.onEntityCreated(clone);
+        }
+
+        return clone;
+    };
 
     return Entity;
 })();
