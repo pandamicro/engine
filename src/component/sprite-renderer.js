@@ -35,7 +35,7 @@
     SpriteRenderer.getset('width',
         function () {
             if ( !this.customSize_ ) {
-                return FObject.isValid(this._sprite) ? this._sprite.width : 0;
+                return Fire.isValid(this._sprite) ? this._sprite.width : 0;
             }
             else {
                 return this.width_;
@@ -54,7 +54,7 @@
     SpriteRenderer.getset('height',
         function () {
             if ( !this.customSize_ ) {
-                return FObject.isValid(this._sprite) ? this._sprite.height : 0;
+                return Fire.isValid(this._sprite) ? this._sprite.height : 0;
             }
             else {
                 return this.height_;
@@ -134,7 +134,7 @@
         var pivotY = 0.5;
         var scaleX = 1;
         var scaleY = 1;
-        if (FObject.isValid(this._sprite)) {
+        if (Fire.isValid(this._sprite)) {
             pivotX = this._sprite.pivot.x;
             pivotY = this._sprite.pivot.y;
             scaleX = w / this._sprite.width;

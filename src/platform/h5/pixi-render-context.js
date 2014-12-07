@@ -85,11 +85,14 @@ var RenderContext = (function () {
 
     Object.defineProperty(RenderContext.prototype, 'camera', {
         get: function () {
+            //return (this._camera && this._camera.isValid) || null;
             return this._camera;
         },
         set: function (value) {
             this._camera = value;
-            value.renderContext = this;
+            if (Fire.isValid(value)) {
+                value.renderContext = this;
+            }
         }
     });
 

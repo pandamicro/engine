@@ -255,7 +255,7 @@ var Engine = (function () {
         var oldScene = Engine._scene;
         // IMPORTANT! Dont cache last scene
         AssetLibrary.unloadAsset(oldScene);
-        if (FObject.isValid(oldScene)) {
+        if (Fire.isValid(oldScene)) {
             oldScene.destroy();
             FObject._deferredDestroy(); // simulate destroy immediate
         }
@@ -273,7 +273,8 @@ var Engine = (function () {
     /**
      * Load scene sync
      * @method Fire.Engine.loadScene
-     * @param {string} name - the scene name
+     * @param {string} uuid - the uuid of scene asset
+     * @param {function} [callback]
      */
     Engine.loadScene = function (uuid, callback) {
         // TODO: lookup uuid by name
@@ -282,14 +283,18 @@ var Engine = (function () {
             if (error) {
                 Fire.error('Failed to load scene: ' + error);
                 isLoadingScene = false;
-                callback(null, error);
+                if (callback) {
+                    callback(null, error);
+                }
                 return;
             }
             if (!(scene instanceof Fire._Scene)) {
                 error = 'The asset ' + uuid + ' is not a scene';
                 Fire.error(error);
                 isLoadingScene = false;
-                callback(null, error);
+                if (callback) {
+                    callback(null, error);
+                }
                 return;
             }
 
@@ -302,7 +307,9 @@ var Engine = (function () {
             Engine._setCurrentScene(scene);
 
             isLoadingScene = false;
-            callback(scene);
+            if (callback) {
+                callback(scene);
+            }
         });
     };
 

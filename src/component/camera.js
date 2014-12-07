@@ -68,8 +68,12 @@
     };
     //Camera.prototype.onPreRender = function () {
     //};
-    //Camera.prototype.onDestroy = function () {
-    //};
+    Camera.prototype.onDestroy = function () {
+        if (Engine._scene.camera === this) {
+            Engine._scene.camera = null;
+        }
+        this._renderContext.camera = null;
+    };
 
     // other functions
 

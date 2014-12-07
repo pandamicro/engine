@@ -8,6 +8,7 @@
 var editorCallback = {
     
     /**
+     * This will be called before component callbacks
      * @callback Fire.Engine._editorCallback~onEntityCreated
      * @param {Fire.Entity} entity
      */

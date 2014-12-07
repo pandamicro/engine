@@ -14,23 +14,22 @@
             // create dynamically
 
             this._activeInHierarchy = true;
-
             // init transform
             var transform = new Transform();
             transform.entity = this;
             this._components = [transform];
             this.transform = transform;
-            transform._onEntityActivated(true);     // 因为是刚刚创建，所以 activeInHierarchy 肯定为 true
-
+            // add to scene
             if (Engine._scene) {
                 Engine._scene.appendRoot(this);
             }
-            
             // invoke callbacks
             Engine._renderContext.onEntityCreated(this);
             if (editorCallback.onEntityCreated) {
                 editorCallback.onEntityCreated(this);
             }
+            // activate componet
+            transform._onEntityActivated(true);     // 因为是刚刚创建，所以 activeInHierarchy 肯定为 true
         }
     });
     Entity.prop('_active', true, Fire.HideInInspector);
@@ -493,10 +492,6 @@
         if (rotation) {
             clone.transform._rotation = rotation;
         }
-        // activate
-        if (clone._active) {
-            clone._onActivatedInHierarchy(true);
-        }
         if (Engine._scene) {
             Engine._scene.appendRoot(clone);
         }
@@ -505,6 +500,10 @@
         Engine._renderContext.onEntityLoaded(clone);
         if (editorCallback.onEntityCreated) {
             editorCallback.onEntityCreated(clone);
+        }
+        // activate components
+        if (clone._active) {
+            clone._onActivatedInHierarchy(true);
         }
 
         return clone;
