@@ -149,6 +149,9 @@ var Engine = (function () {
         }
         if (isPlaying && isPaused) {
             isPaused = false;
+            if (editorCallback.onEnginePlayed) {
+                editorCallback.onEnginePlayed(true);
+            }
             return;
         }
         isPlaying = true;
@@ -157,6 +160,10 @@ var Engine = (function () {
         var now = Ticker.now();
         Time._restart(now);
         update();
+
+        if (editorCallback.onEnginePlayed) {
+            editorCallback.onEnginePlayed(false);
+        }
     };
 
     Engine.stop = function () {
@@ -173,16 +180,23 @@ var Engine = (function () {
             Ticker.cancelAnimationFrame(requestId);
             requestId = -1;
         }
+
+        if (editorCallback.onEngineStopped) {
+            editorCallback.onEngineStopped();
+        }
     };
     
     Engine.pause = function () {
         isPaused = true;
+        if (editorCallback.onEnginePaused) {
+            editorCallback.onEnginePaused();
+        }
     };
 
     Engine.step = function () {
-        isPaused = true;
+        this.pause();
         stepOnce = true;
-        if (isPlaying === false) {
+        if ( !isPlaying ) {
             Engine.play();
         }
     };

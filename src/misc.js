@@ -7,6 +7,10 @@
  */
 var editorCallback = {
     
+    onEnginePlayed: null,
+    onEngineStopped: null,
+    onEnginePaused: null,
+
     /**
      * This will be called before component callbacks
      * @callback Fire.Engine._editorCallback~onEntityCreated
