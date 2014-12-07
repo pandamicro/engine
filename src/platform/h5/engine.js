@@ -242,9 +242,10 @@ var Engine = (function () {
      * Set current scene directly, only used in Editor
      * @method Fire.Engine._setCurrentScene
      * @param {Scene} scene
+     * @param {function} [onUnloaded]
      * @private
      */
-    Engine._setCurrentScene = function (scene) {
+    Engine._setCurrentScene = function (scene, onUnloaded) {
         if (!scene) {
             Fire.error('Argument must be non-nil');
             return;
@@ -258,6 +259,9 @@ var Engine = (function () {
         if (Fire.isValid(oldScene)) {
             oldScene.destroy();
             FObject._deferredDestroy(); // simulate destroy immediate
+        }
+        if (onUnloaded) {
+            onUnloaded();
         }
 
         // launch scene
@@ -274,17 +278,18 @@ var Engine = (function () {
      * Load scene sync
      * @method Fire.Engine.loadScene
      * @param {string} uuid - the uuid of scene asset
-     * @param {function} [callback]
+     * @param {function} [onLaunched]
+     * @param {function} [onUnloaded] - will be called when the previous scene was unloaded
      */
-    Engine.loadScene = function (uuid, callback) {
+    Engine.loadScene = function (uuid, onLaunched, onUnloaded) {
         // TODO: lookup uuid by name
         isLoadingScene = true;
         AssetLibrary.loadAssetByUuid(uuid, function onSceneLoaded (scene, error) {
             if (error) {
                 Fire.error('Failed to load scene: ' + error);
                 isLoadingScene = false;
-                if (callback) {
-                    callback(null, error);
+                if (onLaunched) {
+                    onLaunched(null, error);
                 }
                 return;
             }
@@ -292,8 +297,8 @@ var Engine = (function () {
                 error = 'The asset ' + uuid + ' is not a scene';
                 Fire.error(error);
                 isLoadingScene = false;
-                if (callback) {
-                    callback(null, error);
+                if (onLaunched) {
+                    onLaunched(null, error);
                 }
                 return;
             }
@@ -304,11 +309,11 @@ var Engine = (function () {
             //    editorCallback.onSceneLoaded(scene);
             //}
 
-            Engine._setCurrentScene(scene);
+            Engine._setCurrentScene(scene, onUnloaded);
 
             isLoadingScene = false;
-            if (callback) {
-                callback(scene);
+            if (onLaunched) {
+                onLaunched(scene);
             }
         });
     };
