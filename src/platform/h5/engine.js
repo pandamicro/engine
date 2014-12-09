@@ -168,6 +168,7 @@ var Engine = (function () {
 
     Engine.stop = function () {
         if (isPlaying) {
+            FObject._deferredDestroy();
             Engine._inputContext.destruct();
             Engine._inputContext = null;
             Input._reset();

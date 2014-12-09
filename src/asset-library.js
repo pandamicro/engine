@@ -178,7 +178,7 @@ var AssetLibrary = (function () {
         /**
          * Kill references to the asset so it can be garbage collected.
          * Fireball will reload the asset from disk or remote if loadAssetByUuid being called again.
-         * 如果还有地方引用到asset，除非destroyAsset为true，否则不应该执行这个方法。
+         * 如果还有地方引用到asset，除非destroyAsset为true，否则不应该执行这个方法，因为那样可能会导致 asset 被多次创建。
          * 
          * @method Fire.AssetLibrary.unloadAsset
          * @param {Fire.Asset} asset
@@ -199,12 +199,24 @@ var AssetLibrary = (function () {
          * @method Fire.AssetLibrary.init
          * @param {string} baseUrl
          * @param {object} [uuidToUrl]
+         * @private
          */
         init: function (libraryPath, uuidToUrl) {
             _libraryBase = Fire.Path.setEndWithSep(libraryPath);
             //Fire.log('[AssetLibrary] library: ' + _libraryBase);
 
             _uuidToUrl = uuidToUrl;
+        },
+
+        /**
+         * Kill all references to assets so they can be garbage collected.
+         * Fireball will reload the asset from disk or remote if loadAssetByUuid being called again.
+         * 如果还有地方引用到 asset，调用该方法可能会导致 asset 被多次创建。
+         *
+         * @private
+         */
+        _clearAllCache: function () {
+            _uuidToAsset = {};
         },
 
         ///**
