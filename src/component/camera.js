@@ -2,9 +2,7 @@
 
     var Camera = Fire.define('Fire.Camera', Component, function () {
         Component.call(this);
-
         this._renderContext = null;
-        this.renderContext = Engine._renderContext;
     });
     Fire.addComponentMenu(Camera, 'Camera');
 
@@ -58,16 +56,17 @@
         }
     });
 
-    //// built-in functions
-    //Camera.prototype.onLoad = function () {
-    //};
+    // built-in functions
+    Camera.prototype.onLoad = function () {
+        if (!(this.entity._objFlags & Hide)) {
+            this.renderContext = Engine._renderContext;
+        }
+    };
     Camera.prototype.onEnable = function () {
         if (!(this.entity._objFlags & HideInGame)) {
             Engine._scene.camera = this;
         }
     };
-    //Camera.prototype.onPreRender = function () {
-    //};
     Camera.prototype.onDestroy = function () {
         if (Engine._scene.camera === this) {
             Engine._scene.camera = null;

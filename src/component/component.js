@@ -51,15 +51,14 @@
         }
     });
    
-    /* callback functions
-    Component.prototype.onCreate = function () {};  // (NYI) customized constructor for template
-    Component.prototype.onLoad = function () {};    // when attaching to an active entity or its entity first activated
-    Component.prototype.onStart = function () {};   // (NYI) called just before first update, but after onEnable
-    Component.prototype.onEnable = function () {};
-    Component.prototype.onDisable = function () {};
-    Component.prototype.update = function () {};
-    Component.prototype.onDestroy = function () {};
-    */
+    // callback functions
+    Component.prototype.update = null;
+    //(NYI) Component.prototype.onCreate = null;  // customized constructor for template
+    Component.prototype.onLoad = null;    // when attaching to an active entity or its entity first activated
+    //(NYI) Component.prototype.onStart = null;   // called just before first update, but after onEnable
+    Component.prototype.onEnable = null;
+    Component.prototype.onDisable = null;
+    Component.prototype.onDestroy = null;
 
     /**
      * This method will be invoked when the scene graph changed, which is means the parent of its transform changed,
