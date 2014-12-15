@@ -40,13 +40,36 @@ test('once', function () {
     var fireEvent = new Fire.Event('fire');
     var cb1 = new Callback();
     
-    target.once('fire', cb1);
-    cb1.enable();
+    // once
+    target.once('fire', cb1.enable());
     target.dispatchEvent(fireEvent);
-    cb1.once('should be invoked if registered by once');
+    cb1.once('should be invoked if registered by once')
+       .disable('should only invoke once 1');
+    target.dispatchEvent(fireEvent);
 
-    cb1.disable('should not invoke anymore');
+    // once + on
+    var cb2 = new Callback().enable();
+
+    target.once('fire', cb1.enable());
+    target.on('fire', cb2);
+
     target.dispatchEvent(fireEvent);
+    cb1.once('should be invoked if registered by once and before other callback');
+    cb2.once('should still be invoked if previous event was removed');
+
+    cb1.disable('should only invoke once 2');
+    target.dispatchEvent(fireEvent);
+    cb2.once('should not remove common event');
+
+    // on + once
+
+    target.once('fire', cb1.enable());
+    target.dispatchEvent(fireEvent);
+    cb2.once();
+    cb1.once('should be invoked if registered by once and after other callback')
+       .disable('should only invoke once 3');
+    target.dispatchEvent(fireEvent);
+    cb2.once();
 });
 
 test('test useCapture in on/off', function () {
