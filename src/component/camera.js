@@ -14,7 +14,7 @@
         function (value) {
             this._background = value;
             if (this._renderContext) {
-                this._renderContext.stage.setBackgroundColor(value.toRGBValue());
+                this._renderContext.background = value;
             }
         }
     );
@@ -28,46 +28,29 @@
             this._size = value;
         }
     );
-    
-    Camera.prototype._calculateTransform = function (out_matrix, out_worldPos) {
-        var screenSize = (this._renderContext || Engine._renderContext).size;
-        var scale = screenSize.y / this._size;
-        var tf = this.entity.transform;
-        var mat = tf.getLocalToWorldMatrix();
-
-        out_worldPos.x = mat.tx;
-        out_worldPos.y = mat.ty;
-
-        out_matrix.identity();
-        out_matrix.tx = screenSize.x * 0.5;
-        out_matrix.ty = screenSize.y * 0.5;
-        out_matrix.a = scale;
-        out_matrix.d = scale;
-        out_matrix.rotate(mat.getRotation());
-    };
 
     // save the render context this camera belongs to, if null, main render context will be used.
     Object.defineProperty(Camera.prototype, 'renderContext', {
         set: function (value) {
             this._renderContext = value;
             this.size = value.size.y;
-            // update render settings
-            this.background = this._background;
+            this._applyRenderSettings();
         }
     });
 
     // built-in functions
     Camera.prototype.onLoad = function () {
-        if (!(this.entity._objFlags & Hide)) {
+        if (!(this.entity._objFlags & HideInGame)) {
             this.renderContext = Engine._renderContext;
         }
     };
     Camera.prototype.onEnable = function () {
         if (!(this.entity._objFlags & HideInGame)) {
             Engine._scene.camera = this;
+            this._applyRenderSettings();
         }
     };
-    Camera.prototype.onDestroy = function () {
+    Camera.prototype.onDisable = function () {
         if (Engine._scene.camera === this) {
             Engine._scene.camera = null;
         }
@@ -163,6 +146,33 @@
     Camera.prototype.worldToViewport = function (position, out) {
         out = this.worldToScreen(position, out);
         return this.screenToViewport(out, out);
+    };
+
+    Camera.prototype._calculateTransform = function (out_matrix, out_worldPos) {
+        var screenSize = (this._renderContext || Engine._renderContext).size;
+        var scale = screenSize.y / this._size;
+        var tf = this.entity.transform;
+        var mat = tf.getLocalToWorldMatrix();
+
+        out_worldPos.x = mat.tx;
+        out_worldPos.y = mat.ty;
+
+        out_matrix.identity();
+        out_matrix.tx = screenSize.x * 0.5;
+        out_matrix.ty = screenSize.y * 0.5;
+        out_matrix.a = scale;
+        out_matrix.d = scale;
+        out_matrix.rotate(mat.getRotation());
+    };
+
+    Camera.prototype._applyRenderSettings = function () {
+        // if editor
+        if (!this._renderContext) {
+            Fire.error('No corresponding render context for camera ' + this.entity.name);
+            return;
+        }
+        // endif
+        this._renderContext.background = this._background;
     };
 
     return Camera;

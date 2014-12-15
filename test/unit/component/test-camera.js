@@ -2,7 +2,8 @@
 module('Camera', TestEnv);
 
 test('viewportToScreen', function () {
-    var cam = new Camera();
+    var ent = new Entity();
+    var cam = ent.addComponent(Camera);
 
     ok(cam.viewportToScreen(V2.zero).equals(V2.zero));
     ok(cam.viewportToScreen(new V2(0.5, 0.5)).equals(new V2(128, 256)));
@@ -10,7 +11,8 @@ test('viewportToScreen', function () {
 });
 
 test('screenToViewport', function () {
-    var cam = new Camera();
+    var ent = new Entity();
+    var cam = ent.addComponent(Camera);
 
     ok(cam.screenToViewport(V2.zero).equals(V2.zero));
     ok(cam.screenToViewport(new V2(128, 256)).equals(new V2(0.5, 0.5)));

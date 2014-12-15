@@ -83,6 +83,12 @@ var RenderContext = (function () {
         }
     });
 
+    Object.defineProperty(RenderContext.prototype, 'background', {
+        set: function (value) {
+            this.stage.setBackgroundColor(value.toRGBValue());
+        }
+    });
+
     Object.defineProperty(RenderContext.prototype, 'camera', {
         get: function () {
             //return (this._camera && this._camera.isValid) || null;
