@@ -14,7 +14,7 @@
      * @method Fire.Time._update
      * @param {boolean} [paused=false] if true, only realTime will be updated
      * @private
-     */ 
+     */
     Time._update = function (timestamp, paused) {
         if (!paused) {
             var delta = timestamp - lastUpdateTime;

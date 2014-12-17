@@ -1,6 +1,6 @@
 
 /**
- * 
+ *
  */
 function ImageLoader(url, callback, onProgress) {
     var image = document.createElement('img');
@@ -87,7 +87,7 @@ function TextLoader(url, callback, onProgress) {
             callback(xhr.responseText);
         }
         else {
-            callback(null, 'LoadText: "' + url + 
+            callback(null, 'LoadText: "' + url +
                 '" seems to be unreachable or the file is empty. InnerMessage: ' + error);
         }
     };

@@ -51,7 +51,7 @@ var InteractionContext = (function () {
                 aabbMap[id] = aabb;
             }
         }
-        
+
         for ( var i = 0, len = entity._children.length; i < len; ++i ) {
             this._updateRecursilvey(entity._children[i]);
         }

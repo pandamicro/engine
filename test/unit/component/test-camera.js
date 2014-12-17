@@ -25,7 +25,7 @@ test('screenToWorld', function () {
 
     deepEqual(cam.screenToWorld(V2.zero), new V2(-128, 256));
     deepEqual(cam.screenToWorld(new V2(256, 512)), new V2(128, -256));
-    
+
     var ent2 = new Entity();
     ent.parent = ent2;
     ent2.transform.scale = new V2(1, 2);
@@ -41,7 +41,7 @@ test('world to screen', function () {
 
     deepEqual(cam.worldToScreen(new V2(-128, 256)), V2.zero);
     deepEqual(cam.worldToScreen(new V2(128, -256)), new V2(256, 512));
-    
+
     var ent2 = new Entity();
     ent.parent = ent2;
     ent2.transform.scale = new V2(1, 2);

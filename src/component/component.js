@@ -2,7 +2,7 @@
 
     /**
      * @class Fire.Component
-     * NOTE: Not allowed to use construction parameters for Component's subclasses, 
+     * NOTE: Not allowed to use construction parameters for Component's subclasses,
      *       because Component is created by the engine.
      */
     var Component = Fire.define('Fire.Component', HashObject, function () {
@@ -13,7 +13,7 @@
             // 从逻辑上来说OnEnable和OnDisable的交替调用不需要由额外的变量进行保护，但那样会使设计变得复杂
             // 例如Entity.destory调用后但还未真正销毁时，会调用所有Component的OnDisable。
             // 这时如果又有addComponent，Entity需要对这些新来的Component特殊处理。将来调度器做了之后可以尝试去掉这个标记。
-        
+
         this._isOnLoadCalled = false;   // TODO: use flag
     });
 
@@ -50,7 +50,7 @@
             return this.entity.transform;
         }
     });
-   
+
     // callback functions
     Component.prototype.update = null;
     //(NYI) Component.prototype.onCreate = null;  // customized constructor for template
@@ -64,7 +64,7 @@
      * This method will be invoked when the scene graph changed, which is means the parent of its transform changed,
      * or one of its ancestor's parent changed, or one of their sibling index changed.
      * NOTE: This callback only available after onLoad.
-     * 
+     *
      * @param {Fire.Transform} transform - the transform which is changed, can be any of this transform's ancestor.
      * @param {Fire.Transform} oldParent - the transform's old parent, if not changed, its sibling index changed.
      * @returns {boolean} return whether stop propagation to this component's child components.
@@ -121,7 +121,7 @@
             _callOnEnable(this, active);
         }
     };
-    
+
     Component.prototype._onPreDestroy = function () {
         // ensure onDisable called
         _callOnEnable(this, false);
@@ -140,7 +140,7 @@ Fire.Component = Component;
 
 /**
  * Register a component to the "Component" menu.
- * 
+ *
  * @method Fire.addComponentMenu
  * @param {function} constructor - the class you want to register, must inherit from Component
  * @param {string} menuPath - the menu path name. Eg. "Rendering/Camera"

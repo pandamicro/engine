@@ -28,7 +28,7 @@ test('getCapturingTargets and getBubblingTargets', function () {
 	list.length = 0;
     node1._getCapturingTargets('fire', list);
 	strictEqual(list.length, 0, 'no capturing targets can dispatched from root');
-	
+
 	list.length = 0;
     node1._getBubblingTargets('fire', list);
 	strictEqual(list.length, 0, 'no bubbling targets can dispatched from root');

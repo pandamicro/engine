@@ -8,7 +8,7 @@
     function Event (type, bubbles) {
         //HashObject.call(this);
         if (typeof bubbles === 'undefined') { bubbles = false; }
-        
+
         /**
          * The name of the event (case-sensitive), e.g. "click", "fire", or "submit"
          * @property {string}
@@ -36,7 +36,7 @@
          *  - Event.BUBBLING_PHASE = 3
          * The phases are explained in the [section 3.1, Event dispatch and DOM event flow]
          * (http://www.w3.org/TR/DOM-Level-3-Events/#event-flow), of the DOM Level 3 Events specification.
-         * 
+         *
          * @property {number}
          */
         this.eventPhase = 0;
@@ -46,7 +46,7 @@
          * @property {boolean}
          */
         this.bubbles = bubbles;
-        
+
         /**
          * Indicates whether or not event.preventDefault() has been called on the event
          * @property {boolean}

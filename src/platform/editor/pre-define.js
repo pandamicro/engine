@@ -5,7 +5,7 @@ Fire._componentMenuItems = [];
 
 /**
  * Register a component to the "Component" menu.
- * 
+ *
  * @method Fire.addComponentMenu
  * @param {function} constructor - the class you want to register, must inherit from Component
  * @param {string} menuPath - the menu path name. Eg. "Rendering/Camera"

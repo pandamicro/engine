@@ -5,7 +5,7 @@ test('basic test', function () {
     var target = new Fire.EventTarget();
     var fireEvent = new Fire.Event('fire');
     var jumpEvent = new Fire.Event('jump');
-    
+
     var cb1 = new Callback();
     var cb2 = new Callback();
     var cb3 = new Callback();
@@ -13,14 +13,14 @@ test('basic test', function () {
     target.on('fire', cb1);
     target.on('fire', cb2);
     target.on('jump', cb3);
-    
+
     cb1.enable();
     cb2.enable();
     cb3.disable('should only invoke the callbacks with the same event type');
     target.dispatchEvent(fireEvent);
     cb1.once('callback1 should be invoked by fire event');
     cb2.once('callback2 should be invoked by fire event');
-    
+
     cb3.enable();
     target.dispatchEvent(jumpEvent);
     cb3.once('callback3 should be invoked by jump event');
@@ -39,7 +39,7 @@ test('once', function () {
     var target = new Fire.EventTarget();
     var fireEvent = new Fire.Event('fire');
     var cb1 = new Callback();
-    
+
     // once
     target.once('fire', cb1.enable());
     target.dispatchEvent(fireEvent);
@@ -77,7 +77,7 @@ test('test useCapture in on/off', function () {
     var event = new Fire.Event('fire');
     var cb1 = new Callback().enable();
     var cb2 = new Callback().enable();
-    
+
     target.on('fire', cb1, true);
     target.on('fire', cb2, false);
     target.dispatchEvent(event);

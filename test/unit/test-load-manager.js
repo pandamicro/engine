@@ -60,7 +60,7 @@ asyncTest('Concurrent', function () {
     });
     // deferred load second
     LoadManager.load(asyncLoader, '', cb);
-    
+
     var timerId = setTimeout(function () {
         ok(false, 'time out!');
         start();

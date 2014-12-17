@@ -8,7 +8,7 @@
     ///**
     // * Returns a "local" axis aligned bounding box(AABB) of the renderer.
     // * The returned box is relative only to its parent.
-    // * 
+    // *
     // * @function Fire.Renderer#getLocalBounds
     // * @param {Fire.Rect} [out] - optional, the receiving rect
     // * @returns {Fire.Rect}
@@ -20,7 +20,7 @@
 
     /**
      * Returns a "world" axis aligned bounding box(AABB) of the renderer.
-     * 
+     *
      * @function Fire.Renderer#getWorldBounds
      * @param {Fire.Rect} [out] - optional, the receiving rect
      * @returns {Fire.Rect} - the rect represented in world position
@@ -32,7 +32,7 @@
 
     /**
      * Returns a "world" oriented bounding box(OBB) of the renderer.
-     * 
+     *
      * @function Fire.Renderer#getWorldOrientedBounds
      * @param {...Fire.Vec2} [out] - optional, the vector to receive the world position
      * @returns {Fire.Vec2[]} - the array contains vectors represented in world position

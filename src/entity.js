@@ -7,7 +7,7 @@
 
         if (Fire._isCloning) {
             // create by deserializer or instantiating
-            
+
             this._activeInHierarchy = false;
         }
         else {
@@ -37,7 +37,7 @@
     Entity.prop('_children', [], Fire.HideInInspector);
     Entity.prop('_components', null, Fire.HideInInspector);
     Entity.prop('transform', null, Fire.HideInInspector);
-    
+
     Entity.getset('name',
         function () {
             return this._name;
@@ -65,7 +65,7 @@
             }
         }
     );
-    
+
     /**
      * The parent of the entity.
      * Changing the parent will keep the transform's local space position, rotation and scale the same but modify the world space position, scale and rotation.
@@ -137,12 +137,12 @@
     ////////////////////////////////////////////////////////////////////
     // static
     ////////////////////////////////////////////////////////////////////
-    
+
     /**
-     * the temp property that indicates the current creating entity should 
+     * the temp property that indicates the current creating entity should
      * binded with supplied object flags.
      * only used in editor
-     * 
+     *
      * @property {number} Entity._defaultFlags
      * @private
      */
@@ -171,7 +171,7 @@
     ////////////////////////////////////////////////////////////////////
     // properties
     ////////////////////////////////////////////////////////////////////
-    
+
     Object.defineProperty(Entity.prototype, 'activeInHierarchy', {
         get: function () {
             return this._activeInHierarchy;
@@ -181,7 +181,7 @@
     ////////////////////////////////////////////////////////////////////
     // overrides
     ////////////////////////////////////////////////////////////////////
-    
+
     Entity.prototype.destroy = function () {
         if (FObject.prototype.destroy.call(this)) {
             // disable hierarchy
@@ -227,7 +227,7 @@
      * The capturing phase comprises the journey from the root to the last node BEFORE the event target's node.
      * The result should save in the array parameter, and MUST SORT from child nodes to parent nodes.
      * Subclasses can override this method to make event propagable.
-     * 
+     *
      * @param {string} type - the event type
      * @param {array} array - the array to receive targets
      */
@@ -238,13 +238,13 @@
             }
         }
     };
-    
+
     /**
      * Get all the targets listening to the supplied type of event in the target's bubbling phase.
 	 * The bubbling phase comprises any SUBSEQUENT nodes encountered on the return trip to the root of the hierarchy.
      * The result should save in the array parameter, and MUST SORT from child nodes to parent nodes.
      * Subclasses can override this method to make event propagable.
-     * 
+     *
      * @param {string} type - the event type
      * @param {array} array - the array to receive targets
      */
@@ -258,7 +258,7 @@
 
     /**
      * Send an event to this object directly, this method will not propagate the event to any other objects.
-     * 
+     *
      * @param {Fire.Event} event - The Event object that is sent to this event target.
      */
     Entity.prototype._doSendEvent = function (event) {
@@ -270,7 +270,7 @@
     ////////////////////////////////////////////////////////////////////
     // component methods
     ////////////////////////////////////////////////////////////////////
-    
+
     Entity.prototype.addComponent = function (constructor) {
         if (this._objFlags & Destroying) {
             Fire.error('isDestroying');
@@ -287,7 +287,7 @@
         var component = new constructor();
         component.entity = this;
         this._components.push(component);
-        
+
         if (this._activeInHierarchy) {
             // call onLoad/onEnable
             component._onEntityActivated(true);
@@ -336,7 +336,7 @@
     Entity.prototype.getChild = function (index) {
         return this._children[index];
     };
-    
+
     /**
      * is or is child of
      */
@@ -354,9 +354,9 @@
 
     /**
      * Get the sibling index.
-     * NOTE: If this entity does not have parent and not belongs to the current scene, 
+     * NOTE: If this entity does not have parent and not belongs to the current scene,
      *       The return value will be -1
-     * 
+     *
      * @method Fire.Entity#getSiblingIndex
      * @returns {number}
      */
@@ -410,7 +410,7 @@
             //this._onHierarchyChanged(this, this.parent);
         }
     };
-    
+
     /**
      * Move the entity to the top.
      * @method Fire.Entity#setAsFirstSibling
@@ -436,7 +436,7 @@
 
         // 当引入DestroyImmediate后，_components的元素有可能会在遍历过程中变少，需要复制一个新的数组，或者做一些标记
         // var components = this._components.slice();
-        
+
         // component有可能在onEnable时增加，而新增的component已经onEnable了，所以这里事先记下长度，以免重复调用
         var countBefore = this._components.length;
         for (var c = 0; c < countBefore; ++c) {
@@ -467,7 +467,7 @@
             }
         }
     };
-    
+
     Entity.prototype._onHierarchyChanged = function (oldParent) {
         var activeInHierarchyBefore = this._active && (!oldParent || oldParent._activeInHierarchy);
         var shouldActiveNow = this._active && (!this._parent || this._parent._activeInHierarchy);

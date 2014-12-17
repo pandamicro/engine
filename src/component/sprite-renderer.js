@@ -28,9 +28,9 @@
         }
     );
 
-    SpriteRenderer.prop('width_', 100, Fire.DisplayName('Width'), 
+    SpriteRenderer.prop('width_', 100, Fire.DisplayName('Width'),
                         Fire.Watch( 'customSize_', function ( obj, propEL ) {
-                            propEL.disabled = !obj.customSize; 
+                            propEL.disabled = !obj.customSize;
                         } ));
     SpriteRenderer.getset('width',
         function () {
@@ -96,10 +96,10 @@
     function _doGetOrientedBounds(mat, bl, tl, tr, br) {
         var width = this._sprite ? this._sprite.width : 0;
         var height = this._sprite ? this._sprite.height : 0;
-        
+
         this.getSelfMatrix(tempMatrix);
         mat = tempMatrix.prepend(mat);
-        
+
         // transform rect(0, 0, width, height) by matrix
         var tx = mat.tx;
         var ty = mat.ty;
@@ -140,7 +140,7 @@
             scaleX = w / this._sprite.width;
             scaleY = h / this._sprite.height;
         }
-        
+
         out.tx = - pivotX * w;
         out.ty = (1.0 - pivotY) * h;
         out.a = scaleX;
@@ -163,7 +163,7 @@
 
     /**
      * Returns a "world" oriented bounding box(OBB) of the renderer.
-     * 
+     *
      * @function Fire.SpriteRenderer#getWorldOrientedBounds
      * @param {Fire.Vec2} [out1] - optional, the vector to receive the 1st world position
      * @param {Fire.Vec2} [out2] - optional, the vector to receive the 2nd world position

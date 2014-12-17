@@ -1,5 +1,5 @@
 ﻿(function () {
-    
+
     /**
      * The debugging method that checks whether the render context matches the current scene or not.
      * @throws {string} error info
@@ -12,7 +12,7 @@
             pixiSceneNodes = this.sceneView.stage.children;
             pixiSceneNodes = pixiSceneNodes[1].children;    // skip forground and background
         }
-        
+
         function checkMatch (ent, gameNode, sceneNode) {
             if (sceneNode && ent._pixiObjInScene !== sceneNode) {
                 throw new Error('entity does not match pixi scene node: ' + ent.name);

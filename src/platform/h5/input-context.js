@@ -25,7 +25,7 @@
 
         this.renderContext = renderContext;
         this.eventRegister = new DomEventRegister(canvas);
-        
+
         // bind event
         for (var type in EventRegister.inputEvents) {
             this.eventRegister.addEventListener(type, this.onDomInputEvent.bind(this), true);
@@ -50,7 +50,7 @@
 
         // inner dispatch
         Input._dispatchEvent(event, this);
-        
+
         // update dom event
         if (event._defaultPrevented) {
             domEvent.preventDefault();

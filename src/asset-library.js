@@ -6,7 +6,7 @@ var AssetLibrary = (function () {
 
     /**
      * uuid to urls
-     * 
+     *
      * 如果uuid能映射到url则优先从url加载，否则从library加载。这个步骤在最终发布版本中应该是不需要的？
      */
     var _uuidToUrl = {};
@@ -20,7 +20,7 @@ var AssetLibrary = (function () {
 
     /**
      * uuid to all loaded assets
-     * 
+     *
      * 这里保存所有已经加载的资源，防止同一个资源在内存中加载出多份拷贝。
      * 由于弱引用尚未标准化，在浏览器中所有加载过的资源都只能手工调用 unloadAsset 释放。
      * 参考：
@@ -45,7 +45,7 @@ var AssetLibrary = (function () {
          * 3. 查找_uuidToUrl，如果有则从指定url加载，这一步方便引擎单独测试
          * 4. 如果没有url，则将uuid直接作为路径
          * 5. 递归加载Asset及其引用到的其它Asset
-         * 
+         *
          * @param {string} uuid
          * @param {AssetLibrary~loadCallback} [callback] - the callback to receive the asset
          * @param {Fire._DeserializeInfo} [info] - reused temp obj
@@ -79,7 +79,7 @@ var AssetLibrary = (function () {
             }
 
             // step 5
-            LoadManager.load(TextLoader, url, 
+            LoadManager.load(TextLoader, url,
                 function onFileLoaded(json, error) {
                     if (error) {
                         _uuidToCallbacks.invokeAndRemove(uuid, null, error);
@@ -100,7 +100,7 @@ var AssetLibrary = (function () {
                     var asset = Fire.deserialize(json, info, Fire.isEditor);
                     asset._uuid = uuid;
                     Engine._canModifyCurrentScene = true;
-                    
+
                     // load depends
                     var pendingCount = info.uuidList.length;
 
@@ -159,7 +159,7 @@ var AssetLibrary = (function () {
 
         /**
          * Get the exists asset by uuid.
-         * 
+         *
          * @param {string} uuid
          * @returns {Fire.Asset} - the existing asset, if not loaded, just returns null.
          */
@@ -179,10 +179,10 @@ var AssetLibrary = (function () {
          * Kill references to the asset so it can be garbage collected.
          * Fireball will reload the asset from disk or remote if loadAssetByUuid being called again.
          * 如果还有地方引用到asset，除非destroyAsset为true，否则不应该执行这个方法，因为那样可能会导致 asset 被多次创建。
-         * 
+         *
          * @method Fire.AssetLibrary.unloadAsset
          * @param {Fire.Asset} asset
-         * @param {boolean} [destroyAsset=false] - When destroyAsset is true, if there are objects 
+         * @param {boolean} [destroyAsset=false] - When destroyAsset is true, if there are objects
          *                                         referencing the asset, the references will become invalid.
          */
         unloadAsset: function (asset, destroyAsset) {

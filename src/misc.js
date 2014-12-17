@@ -6,7 +6,7 @@
  * @private
  */
 var editorCallback = {
-    
+
     onEnginePlayed: null,
     onEngineStopped: null,
     onEnginePaused: null,
@@ -40,7 +40,7 @@ var editorCallback = {
      * @property {Fire.Engine._editorCallback~onEntityParentChanged} Fire.Engine._editorCallback.onEntityParentChanged
      */
     onEntityParentChanged: null,
-    
+
     /**
      * @callback Fire.Engine._editorCallback~onEntityIndexChanged
      * @param {Fire.Entity} entity

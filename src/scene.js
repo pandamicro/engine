@@ -4,12 +4,12 @@
      * @class
      * @extends Fire.Asset
      * @private
-     */ 
+     */
     function Scene () {
         _super.call(this);
 
         /**
-         * root entities 
+         * root entities
          * @member {Fire.Entity[]} Fire.Scene#entities
          */
         this.entities = [];
@@ -55,7 +55,7 @@
     var updateRecursively = eval(visitFunctionTmpl.replace(/_FUNC_NAME_/g, 'update'));
     var onPreRenderRecursively = eval(visitFunctionTmpl.replace(/_FUNC_NAME_/g, 'onPreRender'));
     // jshint evil: false
-    
+
     Scene.prototype.update = function () {
         // call update
         var self = this;

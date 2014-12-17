@@ -17,7 +17,7 @@ test('basic state transition', function() {
     Engine.play();
     strictEqual(Engine.isPlaying, true, 'stop to play, not paused');
     strictEqual(Engine.isPaused, false, 'stop to play, not paused');
-    
+
     Engine.pause();
     strictEqual(Engine.isPlaying, true, 'play to pause');
     strictEqual(Engine.isPaused, true, 'play to pause');
@@ -53,7 +53,7 @@ test('step state transition', function() {
     strictEqual(Engine.isPaused, true, 'state should not changed if step to pause');
 
     Engine.play();
-    
+
     Engine.step();
     strictEqual(Engine.isPlaying, true, 'play to step');
     strictEqual(Engine.isPaused, true, 'play to step');
@@ -63,7 +63,7 @@ test('step state transition', function() {
     strictEqual(Engine.isPaused, false, 'step to play');
 
     Engine.pause();
-    
+
     Engine.step();
     strictEqual(Engine.isPlaying, true, 'state should not changed if pause to step');
     strictEqual(Engine.isPaused, true, 'state should not changed if pause to step');
@@ -124,7 +124,7 @@ asyncTest('stop -> play -> stop, all in 1 frame', 4, function () {
     };
     Engine.play();
     Engine.stop();
-    
+
     setTimeout(function () {
         asyncEnd();
     }, 30);
@@ -138,7 +138,7 @@ asyncTest('play -> pause -> play', function () {
             var lastTime = Time.time;
             var lastRealTime = Time.realTime;
             var lastFrame = Time.frameCount;
-            
+
             TestOnly.update = function (updateLogic) {
                 // frame 3
                 strictEqual(updateLogic, false, 'should not update logic if paused');

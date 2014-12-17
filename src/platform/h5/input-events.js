@@ -1,6 +1,6 @@
 
 var ModifierKeyStates = (function () {
-    
+
     /**
      * @param {string} type - The name of the event (case-sensitive), e.g. "click", "fire", or "submit"
      * @param {MouseEvent|KeyboardEvent} nativeEvent - The original DOM event
@@ -14,7 +14,7 @@ var ModifierKeyStates = (function () {
     /**
      * Returns the current state of the specified modifier key. true if the modifier is active (i.e., the modifier key is pressed or locked). Otherwise, false.
      * @see https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent.getModifierState
-     * 
+     *
      * @param {string} keyArg - A modifier key value. The value must be one of the KeyboardEvent.key values which represent modifier keys or "Accel". This is case-sensitive.
      *                          NOTE: If an application wishes to distinguish between right and left modifiers, this information could be deduced using keyboard events and Fire.KeyboardEvent.location.
      * @returns {boolean} true if it is a modifier key and the modifier is activated, false otherwise.
@@ -48,14 +48,14 @@ Fire.ModifierKeyStates = ModifierKeyStates;
 Fire.KeyboardEvent = KeyboardEvent;
 
 var MouseEvent = (function () {
-    
+
     /**
      * @param {string} type - The name of the event (case-sensitive), e.g. "click", "fire", or "submit"
      * @param {MouseEvent} nativeEvent - The original DOM event
-     * 
+     *
      * @see https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent
      * http://www.quirksmode.org/dom/w3c_events.html#mousepos
-     * 
+     *
      */
     function MouseEvent (type, nativeEvent) {
         Fire.ModifierKeyStates.call(this, type, nativeEvent);

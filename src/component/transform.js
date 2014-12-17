@@ -4,10 +4,10 @@
      * @class
      * @alias Fire.Transform
      * @extends Fire.Component
-     */ 
+     */
     var Transform = Fire.define('Fire.Transform', Component, function () {
         Component.call(this);
-        
+
         this._position = new Vec2(0, 0);
         this._scale = new Vec2(1, 1);
 
@@ -31,7 +31,7 @@
      * The local position in its parent's coordinate system
      * @property {Fire.Vec2} Fire.Transform#position
      */
-    Transform.getset('position', 
+    Transform.getset('position',
         function () {
             return new Vec2(this._position.x, this._position.y);
         },
@@ -66,7 +66,7 @@
      * The counterclockwise degrees of rotation relative to the parent
      * @property {number} Fire.Transform#rotation
      */
-    Transform.getset('rotation', 
+    Transform.getset('rotation',
         function () {
             return this._rotation;
         },
@@ -149,7 +149,7 @@
         Fire.error("Not allowed to destroy the transform. Please destroy the entity instead.");
         return;
     };
-    
+
     // other functions
 
     Transform.prototype._updateTransform = function (parentMatrix) {
@@ -223,10 +223,10 @@
      */
     Transform.prototype.getLocalMatrix = function (out) {
         out = out || new Matrix23();
-        
+
         //var px = this._pivot.x;
         //var py = this._pivot.y;
-        
+
         var radians = this._rotation * 0.017453292519943295;
         var sin = this._rotation === 0 ? 0 : Math.sin(radians);
         var cos = this._rotation === 0 ? 1 : Math.cos(radians);
@@ -330,11 +330,11 @@
 
     ///**
     // * Subscribe the `onHierarchyChanged` event.
-    // * When this transform or one of its parents' hierarchy changed, the `onHierarchyChanged` 
-    // * method will be invoked on supplied instance of Component. If you want to unsubscribe this event, 
+    // * When this transform or one of its parents' hierarchy changed, the `onHierarchyChanged`
+    // * method will be invoked on supplied instance of Component. If you want to unsubscribe this event,
     // * you must destroy the Component.
     // * 这里不支持自定义回调，因为如果忘了反注册很容易就会内存泄漏。
-    // * 
+    // *
     // * @method Fire.Transform#_addListener
     // * @param {Fire.Component} component - the component to be invoked.
     // * @private

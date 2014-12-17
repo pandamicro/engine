@@ -104,7 +104,7 @@ test('component', function () {
     comp.expect(CallbackTester.OnDisable, 'should called onDisable when destory');
 
     comp.destroy();     // onDisable
-    
+
     comp.notExpect(CallbackTester.OnDisable, 'onDisable should called only once');
     comp.destroy();
 
@@ -130,7 +130,7 @@ test('component in hierarchy', 4, function () {
         this.notExpect(CallbackTester.OnLoad, 'should not call onLoad while entity inactive');
     });
     var comp = child.addComponent(MyComponent);
-    
+
     comp.expect(CallbackTester.OnLoad, 'should call onLoad while entity activated');
     comp.expect(CallbackTester.OnEnable, 'should enable when parent become active', true);
     parent.active = true;   // onEnable
@@ -154,7 +154,7 @@ test('destroy', function () {
         this.expect([CallbackTester.OnLoad, CallbackTester.OnEnable]);
     });
     var childComp = child.addComponent(ChildComp);
-    
+
     // expect ondisable
     childComp.expect(CallbackTester.OnDisable, 'should disable while destroy parent');
     childComp.notExpect(CallbackTester.OnDestroy, 'can not destroyed before the end of this frame');
@@ -162,7 +162,7 @@ test('destroy', function () {
     child.parent = parent;
     // call destroy
     parent.destroy();
-    
+
     childComp.notExpect(CallbackTester.OnDisable, 'child comp should only disabled once');
     childComp.notExpect(CallbackTester.OnEnable, 'child component should not re-enable when parent destroying');
     childComp.expect(CallbackTester.OnDestroy, 'should destroyed at the end of frame');

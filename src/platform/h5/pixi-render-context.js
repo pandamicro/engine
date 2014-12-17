@@ -17,7 +17,7 @@ var RenderContext = (function () {
      * 毕竟一般 dummy entity 不会很多，因此这样产生的冗余对象可以忽略。
      * 值得注意的是，sprite 等 pixi object，被视为 entity 对应的 PIXI.DisplayObjectContainer 的子物体，
      * 并且排列在所有 entity 之前，以达到最先渲染的效果。
-     * 
+     *
      * @param {number} width
      * @param {number} height
      * @param {Canvas} [canvas]
@@ -33,8 +33,8 @@ var RenderContext = (function () {
         this.stage = new PIXI.Stage(0x000000);
         this.root = this.stage;
         this.renderer = PIXI.autoDetectRenderer(width, height, {
-            view: canvas, 
-            transparent: transparent, 
+            view: canvas,
+            transparent: transparent,
             antialias: antialias
         } );
 
@@ -307,7 +307,7 @@ var RenderContext = (function () {
         }
 
         if (this.sceneView) {
-            // pixi may not share display object between stages at the same time, 
+            // pixi may not share display object between stages at the same time,
             // so another sprite is needed.
             target._renderObjInScene = new PIXI.Sprite(tex);
             target.entity._pixiObjInScene.addChildAt(target._renderObjInScene, 0);

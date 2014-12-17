@@ -46,7 +46,7 @@ test('getLocalMatrix', function () {
     close(mat.getRotation(), (child.transform.rotation + 360)* Math.PI / 180, 0.0001, 'rotate 2');
     mat = parent.transform.getLocalMatrix();
     close(mat.getRotation(), (parent.transform.rotation % 360)* Math.PI / 180, 0.0001, 'rotate 3');
-    
+
     //var rotateMat = new M3();
     //rotateMat.rotate();
     //var scaleMat = new M3();
@@ -72,7 +72,7 @@ test('worldPosition/Rotation', function () {
     deepClose(parent.transform.worldScale, parent.transform.scale, 0.0001, 'worldScale equals localScale if no parent');
 
     //console.log(child.transform.getLocalToWorldMatrix());
-    
+
     // position
 
     var worldPosition = new V2(-11.16675, 54474.28);

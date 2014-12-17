@@ -3,7 +3,7 @@
     /**
      * EventTarget is an object to which an event is dispatched when something has occurred.
      * Entity are the most common event targets, but other objects can be event targets too.
-     * 
+     *
      * Event targets are an important part of the Fireball-x event model.
      * The event target serves as the focal point for how events flow through the scene graph.
      * When an event such as a mouse click or a keypress occurs, Fireball-x dispatches an event object
@@ -14,7 +14,7 @@
      * - The target phase comprises only the event target node
      * - The bubbling phase comprises any subsequent nodes encountered on the return trip to the root of the tree
 	 * See also: http://www.w3.org/TR/DOM-Level-3-Events/#event-flow
-     * 
+     *
      * Event targets can implement the following methods:
      *  - _getCapturingTargets
      *  - _getBubblingTargets
@@ -30,7 +30,7 @@
     /**
      * Register an callback of a specific event type on the EventTarget.
      * This method is merely an alias to addEventListener.
-     * 
+     *
      * @param {string} type - A string representing the event type to listen for.
      * @param {function} callback - The callback that will be invoked when the event is dispatched.
      *                              The callback is ignored if it is a duplicate (the callbacks are unique).
@@ -62,7 +62,7 @@
     /**
      * Removes the callback previously registered with the same type, callback, and capture.
      * This method is merely an alias to removeEventListener.
-     * 
+     *
      * @param {string} type - A string representing the event type being removed.
      * @param {function} callback - The callback to remove.
      * @param {boolean} [useCapture=false] - Specifies whether the callback being removed was registered as a capturing callback or not.
@@ -83,7 +83,7 @@
 
     /**
      * Register an callback of a specific event type on the EventTarget, the callback will remove itself after the first time it is triggered.
-     * 
+     *
      * @param {string} type - A string representing the event type to listen for.
      * @param {function} callback - The callback that will be invoked when the event is dispatched.
      *                              The callback is ignored if it is a duplicate (the callbacks are unique).
@@ -103,7 +103,7 @@
 
     ///**
     // * Checks whether the EventTarget object has any callback registered for a specific type of event.
-    // * 
+    // *
     // * @param {string} type - The type of event.
     // * @param {boolean} A value of true if a callback of the specified type is registered; false otherwise.
     // */
@@ -114,7 +114,7 @@
 
     /**
      * Dispatches an event into the event flow. The event target is the EventTarget object upon which the dispatchEvent() method is called.
-     * 
+     *
      * @param {Fire.Event} event - The Event object that is dispatched into the event flow
      * @returns {boolean} - returns true if either the event's preventDefault() method was not invoked,
      *                      or its cancelable attribute value is false, and false otherwise.
@@ -151,7 +151,7 @@
                 return ! event._defaultPrevented;
             }
         }
-        
+
         if (event.bubbles) {
             // Event.BUBBLING_PHASE
             this._getBubblingTargets(event.type, cachedArray);
@@ -177,7 +177,7 @@
 
     /**
      * Send an event to this object directly, this method will not propagate the event to any other objects.
-     * 
+     *
      * @param {Fire.Event} event - The Event object that is sent to this event target.
      */
     EventTarget.prototype._doSendEvent = function (event) {
@@ -197,7 +197,7 @@
 
     ///**
     // * Send an event to this object directly, this method will not propagate the event to any other objects.
-    // * 
+    // *
     // * @param {Fire.Event} event - The Event object that is sent to this event target.
     // * @returns {boolean} - returns true if either the event's preventDefault() method was not invoked,
     // *                      or its cancelable attribute value is false, and false otherwise.
@@ -215,7 +215,7 @@
      * The capturing phase comprises the journey from the root to the last node BEFORE the event target's node.
      * The result should save in the array parameter, and MUST SORT from child nodes to parent nodes.
      * Subclasses can override this method to make event propagable.
-     * 
+     *
      * @param {string} type - the event type
      * @param {array} array - the array to receive targets
      */
@@ -223,7 +223,7 @@
         /**
          * Subclasses can override this method to make event propagable, E.g.
          * ```
-         * for (var target = this._parent; target; target = target._parent) { 
+         * for (var target = this._parent; target; target = target._parent) {
          *     if (target._capturingListeners && target._capturingListeners.has(type)) {
          *         array.push(target);
          *     }
@@ -231,13 +231,13 @@
          * ```
          */
     };
-    
+
     /**
      * Get all the targets listening to the supplied type of event in the target's bubbling phase.
 	 * The bubbling phase comprises any SUBSEQUENT nodes encountered on the return trip to the root of the tree.
      * The result should save in the array parameter, and MUST SORT from child nodes to parent nodes.
      * Subclasses can override this method to make event propagable.
-     * 
+     *
      * @param {string} type - the event type
      * @param {array} array - the array to receive targets
      */

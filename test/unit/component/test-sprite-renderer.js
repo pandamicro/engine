@@ -11,7 +11,7 @@ var epsilon = 0.0001;
 //    sprite.width = 40;
 //    sprite.height = 10;
 //    renderer.sprite = sprite;
-    
+
 //    deepEqual(renderer.getLocalBounds(), new Rect(0, -10, 40, 10), 'identity transform');
 
 //    ent.transform.rotation = -90;
@@ -48,7 +48,7 @@ test('getWorldBounds', function () {
     parentEnt.transform.position = new V2(-100, -30);
     parentEnt.transform.scale = new V2(3, 1);
     parentEnt.transform.rotation = -90;
-    
+
     // start: (-8, -9, 20, 40)
     // scale: (-24, -9, 60, 40)
     // rotate: (-9, 24-60, 40, 60)

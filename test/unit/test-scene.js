@@ -11,7 +11,7 @@ test('findEntity', function () {
     var ent = new Entity('');
 
     ok(Entity.find('/') === ent, 'should found, empty name');
-    
+
     var ent2 = new Entity('.去');
     ok(Entity.find('/.去') === ent2, 'should found, Chinese name');
 

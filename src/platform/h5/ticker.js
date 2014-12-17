@@ -23,7 +23,7 @@
 
     // Ticker.cancelAnimationFrame
 
-    window.cancelAnimationFrame = window.cancelAnimationFrame || 
+    window.cancelAnimationFrame = window.cancelAnimationFrame ||
                                   window.webkitCancelAnimationFrame ||
                                   window.msCancelAnimationFrame ||
                                   window.mozCancelAnimationFrame ||

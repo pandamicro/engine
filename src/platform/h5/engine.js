@@ -21,7 +21,7 @@ var Engine = (function () {
      * 也就是说构造函数调用到的代码如果要操作 Engine._scene，必须判断非空，如果操作不直接针对 Engine._scene，
      * 也判断 Engine._canModifyCurrentScene。
      * 另外，如果存在辅助场景，当在辅助场景内创建物件时，Engine._scene会被临时修改为辅助场景。
-     * 
+     *
      * @property {Scene} Engine._scene - the active scene
      */
     Engine._scene = null;
@@ -141,7 +141,7 @@ var Engine = (function () {
 
         return Engine._renderContext;
     };
-    
+
     Engine.play = function () {
         if (isPlaying && !isPaused) {
             Fire.warn('Fireball is already playing');
@@ -186,7 +186,7 @@ var Engine = (function () {
             editorCallback.onEngineStopped();
         }
     };
-    
+
     Engine.pause = function () {
         isPaused = true;
         if (editorCallback.onEnginePaused) {
@@ -220,7 +220,7 @@ var Engine = (function () {
             FObject._deferredDestroy();
         }
         render();
-        
+
         // update interaction context
         Engine._interactionContext.update(Engine._scene.entities);
     };

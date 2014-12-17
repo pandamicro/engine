@@ -42,7 +42,7 @@ var LoadManager = (function () {
     }
 
     var LoadManager = {
-        
+
         /**
          * Max allowed concurrent request count
          * @property {number} LoadManager.maxConcurrent

@@ -18,7 +18,7 @@ asyncTest('load asset with host', function () {
     //texture.height = 123;
     //texture.width = 321;
     //Fire.log(Fire.serialize(texture));
-    
+
     AssetLibrary.loadAssetByUuid(grossini_uuid, function (asset) {
         clearTimeout(timerId);
         ok(asset, 'can load asset by uuid');
