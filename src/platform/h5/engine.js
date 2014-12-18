@@ -253,6 +253,17 @@ var Engine = (function () {
     };
     Engine.update = update;
 
+    function ensureSceneInited (scene) {
+        if ( !scene.loaded ) {
+            //scene.onReady();
+            Engine._renderContext.onSceneLoaded(scene);
+            //if (editorCallback.onSceneLoaded) {
+            //    editorCallback.onSceneLoaded(scene);
+            //}
+            scene.loaded = true;
+        }
+    }
+
     /**
      * Set current scene directly, only used in Editor
      * @method Fire.Engine._setCurrentScene
@@ -280,6 +291,7 @@ var Engine = (function () {
         }
 
         // launch scene
+        ensureSceneInited(scene);
         Engine._scene = scene;
         Engine._renderContext.onSceneLaunched(scene);
         if (editorCallback.onSceneLaunched) {
@@ -318,11 +330,7 @@ var Engine = (function () {
                 return;
             }
 
-            //scene.onReady();
-            Engine._renderContext.onSceneLoaded(scene);
-            //if (editorCallback.onSceneLoaded) {
-            //    editorCallback.onSceneLoaded(scene);
-            //}
+            ensureSceneInited(scene);
 
             Engine._setCurrentScene(scene, onUnloaded);
 

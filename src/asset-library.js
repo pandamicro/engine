@@ -219,6 +219,17 @@ var AssetLibrary = (function () {
             _uuidToAsset = {};
         },
 
+        /**
+         * @param {Fire.Asset} newAsset
+         * @param {string} [uuid]
+         */
+        _replaceAsset: function (newAsset, uuid) {
+            uuid = uuid || newAsset._uuid;
+            if (uuid) {
+                _uuidToAsset[uuid] = newAsset;
+            }
+        },
+
         ///**
         // * temporary flag for deserializing assets
         // * @property {boolean} Fire.AssetLibrary.isLoadingAsset

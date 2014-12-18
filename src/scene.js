@@ -19,6 +19,12 @@
          * @member {Fire.Camera} Fire.Scene#camera
          */
         this.camera = null;
+
+        /**
+         * used by engine
+         * @member {boolean} Fire.Scene#loaded
+         */
+        this.loaded = false;
     }
     Fire.extend(Scene, _super);
     Fire.registerClass("Fire.Scene", Scene);
@@ -198,9 +204,7 @@
     };
 
     Scene.prototype._instantiate = function () {
-        var clone = Fire._doInstantiate(this);
-        Engine._renderContext.onSceneLoaded(clone);
-        return clone;
+        return Fire._doInstantiate(this);
     };
 
     return Scene;
