@@ -19,12 +19,6 @@
          * @member {Fire.Camera} Fire.Scene#camera
          */
         this.camera = null;
-
-        /**
-         * used by engine
-         * @member {boolean} Fire.Scene#loaded
-         */
-        this.loaded = false;
     }
     Fire.extend(Scene, _super);
     Fire.registerClass("Fire.Scene", Scene);
