@@ -1,0 +1,17 @@
+﻿var MissingScript = (function () {
+
+    /**
+     * A temp fallback to contain the original component which can not be loaded.
+     * Actually, this class will be used whenever a class failed to deserialize,
+     * regardless of whether it is component.
+     */
+    var MissingScript = Fire.define('Fire.MissingScript', Component);
+
+    MissingScript.prototype.onLoad = function () {
+        Fire.warn('The referenced script on this Component is missing!');
+    };
+
+    return MissingScript;
+})();
+
+Fire._MissingScript = MissingScript;

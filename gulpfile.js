@@ -35,6 +35,7 @@ var paths = {
         'src/component/renderer.js',
         'src/component/sprite-renderer.js',
         'src/component/camera.js',
+        'src/component/missing.js',
         'src/interaction-context.js',
         'src/entity.js',
         'src/scene.js',

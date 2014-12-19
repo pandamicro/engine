@@ -245,7 +245,7 @@ var AssetLibrary = (function () {
     };
 
     /**
-     * Get the original cache assets (Read Only)
+     * Get the original cached assets (Read Only)
      * This property can only be used for debugging purpose.
      * @private
      */
