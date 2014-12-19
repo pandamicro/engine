@@ -181,11 +181,18 @@ var AssetLibrary = (function () {
          * 如果还有地方引用到asset，除非destroyAsset为true，否则不应该执行这个方法，因为那样可能会导致 asset 被多次创建。
          *
          * @method Fire.AssetLibrary.unloadAsset
-         * @param {Fire.Asset} asset
+         * @param {Fire.Asset|string} assetOrUuid
          * @param {boolean} [destroyAsset=false] - When destroyAsset is true, if there are objects
          *                                         referencing the asset, the references will become invalid.
          */
-        unloadAsset: function (asset, destroyAsset) {
+        unloadAsset: function (assetOrUuid, destroyAsset) {
+            var asset;
+            if (typeof assetOrUuid === 'string') {
+                asset = _uuidToAsset[assetOrUuid];
+            }
+            else {
+                asset = assetOrUuid;
+            }
             if (asset) {
                 if (destroyAsset && asset.isValid) {
                     asset.destroy();
@@ -236,6 +243,17 @@ var AssetLibrary = (function () {
         // */
         //isLoadingAsset: false,
     };
+
+    /**
+     * Get the original cache assets (Read Only)
+     * This property can only be used for debugging purpose.
+     * @private
+     */
+    Object.defineProperty(AssetLibrary, '_uuidToAsset', {
+        get: function () {
+            return _uuidToAsset;
+        }
+    });
 
     return AssetLibrary;
 })();
