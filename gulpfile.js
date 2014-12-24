@@ -150,9 +150,7 @@ var insertCoreShortcut = function (path, moduleName, filter) {
         }
         this.emit('data', file);
     }
-    return through(write, function () {
-        this.emit('end');
-    });
+    return through(write);
 };
 
 gulp.task('js-dev', function() {
