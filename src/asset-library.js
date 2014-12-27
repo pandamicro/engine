@@ -97,7 +97,7 @@ var AssetLibrary = (function () {
 
                     // deserialize asset
                     Engine._canModifyCurrentScene = false;
-                    var asset = Fire.deserialize(json, info, Fire.isEditor);
+                    var asset = Fire.deserialize(json, info);
                     asset._uuid = uuid;
                     Engine._canModifyCurrentScene = true;
 
