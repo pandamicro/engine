@@ -79,4 +79,6 @@ var LoadManager = (function () {
     return LoadManager;
 })();
 
+// @ifdef DEV
 __TESTONLY__.LoadManager = LoadManager;
+// @endif

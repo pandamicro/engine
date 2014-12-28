@@ -11,6 +11,7 @@ var jshint = require('gulp-jshint');
 var qunit = require('gulp-qunit');
 var rename = require('gulp-rename');
 var uglify = require('gulp-uglify');
+var preprocess = require('gulp-preprocess');
 
 var fb = require('gulp-fb');
 var del = require('del');
@@ -74,6 +75,8 @@ var paths = {
     output: 'bin/',
     engine_dev: 'engine.dev.js',
     engine_min: 'engine.min.js',
+    engine_player_dev: 'engine.player.dev.js',
+    engine_player: 'engine.player.js',
 
     // references
     ref: {
@@ -164,14 +167,38 @@ gulp.task('js-dev', function() {
                .pipe(jshint.reporter(stylish))
                .pipe(concat(paths.engine_dev))
                .pipe(embedIntoModule(paths.index))
+               .pipe(preprocess({context: { EDITOR: true, DEBUG: true, DEV: true }}))
                .pipe(gulp.dest(paths.output))
                ;
 });
 
-gulp.task('js', ['js-dev'], function() {
-    return gulp.src(Path.join(paths.output, paths.engine_dev))
+gulp.task('js', function() {
+    return gulp.src(paths.src)
+               // .pipe(insertCoreShortcut('./ext/fire-core/bin/core.min.js', 'Fire'))
+               .pipe(concat(paths.engine_min))
+               .pipe(embedIntoModule(paths.index))
+               .pipe(preprocess({context: { EDITOR: true, DEV: true }}))
                .pipe(uglify())
-               .pipe(rename(paths.engine_min))
+               .pipe(gulp.dest(paths.output))
+               ;
+});
+
+gulp.task('js-player-dev', function() {
+    return gulp.src(paths.src)
+               // .pipe(insertCoreShortcut('./ext/fire-core/bin/core.min.js', 'Fire'))
+               .pipe(concat(paths.engine_player_dev))
+               .pipe(embedIntoModule(paths.index))
+               .pipe(preprocess({context: { PLAYER: true, DEBUG: true, DEV: true }}))
+               .pipe(gulp.dest(paths.output))
+               ;
+});
+
+gulp.task('js-player', function() {
+    return gulp.src(paths.src)
+               // .pipe(insertCoreShortcut('./ext/fire-core/bin/core.min.js', 'Fire'))
+               .pipe(concat(paths.engine_player))
+               .pipe(embedIntoModule(paths.index))
+               .pipe(preprocess({context: { PLAYER: true }}))
                .pipe(gulp.dest(paths.output))
                ;
 });
@@ -227,16 +254,15 @@ gulp.task('ref', ['cp-core'], function() {
 });
 
 // watch
-gulp.task('watch', function() {
-    gulp.watch(paths.ext_core, ['cp-core']).on ( 'error', gutil.log );
-    gulp.watch(paths.src.concat(paths.index), ['js']).on ( 'error', gutil.log );
-});
 gulp.task('watch-self', function() {
-    gulp.watch(paths.src.concat(paths.index), ['js']).on ( 'error', gutil.log );
+    gulp.watch(paths.src.concat(paths.index), ['js', 'js-dev', 'js-player-dev', 'js-player']).on ( 'error', gutil.log );
+});
+gulp.task('watch', ['watch-self'], function() {
+    gulp.watch(paths.ext_core, ['cp-core']).on ( 'error', gutil.log );
 });
 
 // tasks
-gulp.task('default', ['js' ] );
-gulp.task('dev', ['default'] );
+gulp.task('default', ['js', 'js-dev', 'js-player-dev', 'js-player'] );
+gulp.task('dev', ['js-dev', 'js-player-dev'] );
 gulp.task('all', ['cp-core', 'default', 'test', 'ref'] );
 gulp.task('ci', ['js', 'test'] );

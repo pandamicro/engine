@@ -244,6 +244,7 @@ var AssetLibrary = (function () {
         //isLoadingAsset: false,
     };
 
+    // @ifdef EDITOR
     /**
      * Get the original cached assets (Read Only)
      * This property can only be used for debugging purpose.
@@ -254,6 +255,7 @@ var AssetLibrary = (function () {
             return _uuidToAsset;
         }
     });
+    // @endif
 
     return AssetLibrary;
 })();
