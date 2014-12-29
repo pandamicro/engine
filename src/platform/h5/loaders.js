@@ -94,4 +94,24 @@ function TextLoader(url, callback, onProgress) {
     _LoadFromXHR(url, cb, onProgress);
 }
 
-Fire._TextLoader = TextLoader;
+function JsonLoader(url, callback, onProgress) {
+    var cb = callback && function(text, error) {
+        if (!error) {
+            var json;
+            try {
+                json = JSON.parse(text);
+            }
+            catch (e) {
+                callback(null, e);
+                return;
+            }
+            callback(json);
+        }
+        else {
+            callback(null, error);
+        }
+    };
+    TextLoader(url, cb, onProgress);
+}
+
+Fire._JsonLoader = JsonLoader;

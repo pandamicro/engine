@@ -2,6 +2,11 @@
 
 var AssetLibrary = (function () {
 
+    var HostTypeToLoader = {
+        image: ImageLoader,
+        json: JsonLoader,
+    };
+
     // configs
 
     /**
@@ -109,21 +114,25 @@ var AssetLibrary = (function () {
                         // load depends host objects
                         var attrs = Fire.attr(asset.constructor, info.hostProp);
                         var hostType = attrs.hostType;
-                        if (hostType === 'image') {
+                        var loader = HostTypeToLoader[hostType];
+                        if (loader) {
                             ++pendingCount;
                             var extname = asset._hostext ? ('.' + asset._hostext) : '.host';
                             var hostUrl = url + extname;
-                            LoadManager.load(ImageLoader, hostUrl, function onHostObjLoaded (img, error) {
+                            LoadManager.load(loader, hostUrl, function onHostObjLoaded (host, error) {
                                 if (error) {
-                                    Fire.error('[AssetLibrary] Failed to load image of "' + uuid + '", ' + error);
+                                    Fire.error('[AssetLibrary] Failed to load %s of %s, %s', hostType, uuid, error);
                                 }
-                                asset[info.hostProp] = img;
+                                asset[info.hostProp] = host;
                                 --pendingCount;
                                 if (pendingCount === 0) {
                                     _uuidToAsset[uuid] = asset;
                                     _uuidToCallbacks.invokeAndRemove(uuid, asset);
                                 }
                             });
+                        }
+                        else {
+                            Fire.warn('[AssetLibrary] Unknown host type "%s" of %s', hostType, uuid);
                         }
                     }
                     if (pendingCount === 0) {
