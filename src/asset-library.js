@@ -230,6 +230,7 @@ var AssetLibrary = (function () {
             _uuidToUrl = uuidToUrl;
         },
 
+        // @ifdef EDITOR
         /**
          * Kill all references to assets so they can be garbage collected.
          * Fireball will reload the asset from disk or remote if loadAssetByUuid being called again.
@@ -253,11 +254,36 @@ var AssetLibrary = (function () {
         },
 
         /**
+         * Shadow copy all serializable properties from supplied asset to another indicated by uuid.
          * @param {string} uuid
+         * @param {Fire.Asset} newAsset
          */
-        _updateAsset: function (uuid) {
-            Fire.warn('NYI _updateAsset');
+        _updateAsset: function (uuid, newAsset) {
+            var asset = _uuidToAsset[uuid];
+            if ( !asset ) {
+                return;
+            }
+            var cls = asset.constructor;
+            if (cls !== newAsset.constructor) {
+                Fire.error('Not the same type');
+                return;
+            }
+            if (asset.shadowCopyFrom) {
+                asset.shadowCopyFrom(newAsset);
+                return;
+            }
+            var props = cls.__props__;
+            if (props) {
+                for (var p = 0; p < props.length; p++) {
+                    var propName = props[p];
+                    var attrs = Fire.attr(cls, propName);
+                    if (attrs.serializable !== false) {
+                        asset[propName] = obj[propName];
+                    }
+                }
+            }
         },
+        // @endif
 
         ///**
         // * temporary flag for deserializing assets
