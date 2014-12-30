@@ -2,9 +2,15 @@
 
 var AssetLibrary = (function () {
 
-    var HostTypeToLoader = {
-        image: ImageLoader,
-        json: JsonLoader,
+    var HostTypes = {
+        image: {
+            loader: ImageLoader,
+            defaultExtname: '.host',
+        },
+        json: {
+            loader: JsonLoader,
+            defaultExtname: '.json',
+        }
     };
 
     // configs
@@ -114,14 +120,14 @@ var AssetLibrary = (function () {
                         // load depends host objects
                         var attrs = Fire.attr(asset.constructor, info.hostProp);
                         var hostType = attrs.hostType;
-                        var loader = HostTypeToLoader[hostType];
-                        if (loader) {
+                        var typeInfo = HostTypes[hostType];
+                        if (typeInfo) {
                             ++pendingCount;
-                            var extname = asset._hostext ? ('.' + asset._hostext) : '.host';
+                            var extname = asset._hostext ? ('.' + asset._hostext) : typeInfo.defaultExtname;
                             var hostUrl = url + extname;
-                            LoadManager.load(loader, hostUrl, function onHostObjLoaded (host, error) {
+                            LoadManager.load(typeInfo.loader, hostUrl, function onHostObjLoaded (host, error) {
                                 if (error) {
-                                    Fire.error('[AssetLibrary] Failed to load %s of %s, %s', hostType, uuid, error);
+                                    Fire.error('[AssetLibrary] Failed to load %s of %s. %s', hostType, uuid, error);
                                 }
                                 asset[info.hostProp] = host;
                                 --pendingCount;
@@ -244,6 +250,13 @@ var AssetLibrary = (function () {
             if (uuid) {
                 _uuidToAsset[uuid] = newAsset;
             }
+        },
+
+        /**
+         * @param {string} uuid
+         */
+        _updateAsset: function (uuid) {
+            Fire.warn('NYI _updateAsset');
         },
 
         ///**
