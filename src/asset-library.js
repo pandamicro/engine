@@ -251,6 +251,9 @@ var AssetLibrary = (function () {
             if (uuid) {
                 _uuidToAsset[uuid] = newAsset;
             }
+            else {
+                Fire.error('[AssetLibrary] Not supplied uuid of asset to replace');
+            }
         },
 
         /**
@@ -260,7 +263,7 @@ var AssetLibrary = (function () {
          */
         _updateAsset: function (uuid, newAsset) {
             var asset = _uuidToAsset[uuid];
-            if ( !asset ) {
+            if ( !asset || !newAsset ) {
                 return;
             }
             var cls = asset.constructor;
