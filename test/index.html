@@ -18,9 +18,9 @@
         }
     </style>
 
-    <script src="../ext/pixi/bin/pixi.dev.js"></script>
-    <script src="../ext/fire-core/bin/core.dev.js"></script>
-    <script src="../bin/engine.dev.js"></script>
+    <script src="/ext/pixi/bin/pixi.dev.js"></script>
+    <script src="/ext/fire-core/bin/core.dev.js"></script>
+    <script src="/bin/engine.dev.js"></script>
 </head>
 <body>
     <script>
@@ -33,7 +33,7 @@
         document.body.appendChild(sceneView.canvas);
 
         Fire.Engine.play();
-        
+
         var s = new Fire.Entity();
         var spriteRenderer = s.addComponent(Fire.SpriteRenderer);
         s.transform.position = new Fire.Vec2(0, 10);
