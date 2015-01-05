@@ -1,6 +1,8 @@
 // init express
 var express = require('express');
 var app = express();
+var cwd = process.cwd();
+var port = 8500;
 
 // create an error with .status.
 function error(status, msg) {
@@ -11,14 +13,14 @@ function error(status, msg) {
 
 // routes
 app.get('/', function(req, res) {
-    res.sendFile('test/index.html');
+    res.sendFile( cwd + '/test/index.html');
 });
 
 // serves all the static files
 app.get(/^(.+)$/, function(req, res) {
     //console.log('static file request : ' + req.params);
     //console.log('send: ' + process.cwd() + req.params[0]);
-    res.sendFile( process.cwd() + req.params[0]); 
+    res.sendFile( cwd + req.params[0]);
 });
 
 app.use(function(err, req, res, next) {
@@ -32,6 +34,6 @@ app.use(function(req, res) {
 });
 
 // start the server
-var server = app.listen(8500, function() {
+var server = app.listen(port, function() {
     console.log('Listening on port %d', server.address().port);
 });
