@@ -37,6 +37,8 @@ var paths = {
         'src/component/sprite-renderer.js',
         'src/component/camera.js',
         'src/component/missing.js',
+        'src/sprite-animation/sprite-animation-state.js',
+        'src/sprite-animation/sprite-animation.js',
         'src/interaction-context.js',
         'src/entity.js',
         'src/scene.js',
