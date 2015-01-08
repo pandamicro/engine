@@ -172,7 +172,7 @@ gulp.task('js-dev', function() {
                ;
 });
 
-gulp.task('js', function() {
+gulp.task('js-min', function() {
     return gulp.src(paths.src)
                // .pipe(insertCoreShortcut('./ext/fire-core/bin/core.min.js', 'Fire'))
                .pipe(concat(paths.engine_min))
@@ -203,6 +203,8 @@ gulp.task('js-player', function() {
                ;
 });
 
+gulp.task('js-all', ['js-min', 'js-dev', 'js-player-dev', 'js-player']);
+
 /////////////////////////////////////////////////////////////////////////////
 // test
 /////////////////////////////////////////////////////////////////////////////
@@ -222,7 +224,7 @@ gulp.task('unit-runner', function() {
                ;
 });
 
-gulp.task('test', ['js', 'unit-runner'], function() {
+gulp.task('test', ['js-min', 'unit-runner'], function() {
     var timeOutInSeconds = 5;
     return gulp.src('test/unit/runner.html', { read: false })
                //.pipe(fb.callback(function () {
@@ -255,14 +257,14 @@ gulp.task('ref', ['cp-core'], function() {
 
 // watch
 gulp.task('watch-self', function() {
-    gulp.watch(paths.src.concat(paths.index), ['js', 'js-dev', 'js-player-dev', 'js-player']).on ( 'error', gutil.log );
+    gulp.watch(paths.src.concat(paths.index), ['default']).on ( 'error', gutil.log );
 });
 gulp.task('watch', ['watch-self'], function() {
     gulp.watch(paths.ext_core, ['cp-core']).on ( 'error', gutil.log );
 });
 
 // tasks
-gulp.task('default', ['js', 'js-dev', 'js-player-dev', 'js-player'] );
-gulp.task('dev', ['js-dev', 'js-player-dev'] );
+gulp.task('default', ['js-all']);
+gulp.task('dev', ['default'] );
 gulp.task('all', ['cp-core', 'default', 'test', 'ref'] );
-gulp.task('ci', ['js', 'test'] );
+gulp.task('ci', ['test'] );
