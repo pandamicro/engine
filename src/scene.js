@@ -53,6 +53,7 @@
 
     // jshint evil: true
     var updateRecursively = eval(visitFunctionTmpl.replace(/_FUNC_NAME_/g, 'update'));
+    var lateUpdateRecursively = eval(visitFunctionTmpl.replace(/_FUNC_NAME_/g, 'lateUpdate'));
     var onPreRenderRecursively = eval(visitFunctionTmpl.replace(/_FUNC_NAME_/g, 'onPreRender'));
     // jshint evil: false
 
@@ -60,8 +61,12 @@
         // call update
         var self = this;
         var entities = self.entities;
-        for (var i = 0, len = entities.length; i < len; ++i) {
+        var i, len;
+        for (i = 0, len = entities.length; i < len; ++i) {
             updateRecursively(entities[i]);
+        }
+        for (i = 0, len = entities.length; i < len; ++i) {
+            lateUpdateRecursively(entities[i]);
         }
     };
 

@@ -53,6 +53,7 @@
 
     // callback functions
     Component.prototype.update = null;
+    Component.prototype.lateUpdate = null;
     //(NYI) Component.prototype.onCreate = null;  // customized constructor for template
     Component.prototype.onLoad = null;    // when attaching to an active entity or its entity first activated
     //(NYI) Component.prototype.onStart = null;   // called just before first update, but after onEnable
