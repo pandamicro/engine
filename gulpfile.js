@@ -21,6 +21,7 @@ var paths = {
     src: [
         // runtime pre-defines
         'src/platform/editor/pre-define.js',
+        'src/platform/editor/asset-watcher.js',
         // runtime engine
         'src/definition.js',
         'src/misc.js',
@@ -184,7 +185,7 @@ gulp.task('js-min', function() {
 });
 
 gulp.task('js-player-dev', function() {
-    return gulp.src(paths.src)
+    return gulp.src(paths.src.concat('!**/{Editor,editor}/**'))
                // .pipe(insertCoreShortcut('./ext/fire-core/bin/core.min.js', 'Fire'))
                .pipe(concat(paths.engine_player_dev))
                .pipe(embedIntoModule(paths.index))
@@ -194,7 +195,7 @@ gulp.task('js-player-dev', function() {
 });
 
 gulp.task('js-player', function() {
-    return gulp.src(paths.src)
+    return gulp.src(paths.src.concat('!**/{Editor,editor}/**'))
                // .pipe(insertCoreShortcut('./ext/fire-core/bin/core.min.js', 'Fire'))
                .pipe(concat(paths.engine_player))
                .pipe(embedIntoModule(paths.index))

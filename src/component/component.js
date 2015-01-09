@@ -15,6 +15,11 @@
             // 这时如果又有addComponent，Entity需要对这些新来的Component特殊处理。将来调度器做了之后可以尝试去掉这个标记。
 
         this._isOnLoadCalled = false;   // TODO: use flag
+
+// @ifdef EDITOR
+        AssetsWatcher.initComponent(this);
+// @endif
+
     });
 
     Component.prop('entity', null, Fire.HideInInspector);
@@ -113,6 +118,9 @@
             if (this.onLoad) {
                 this.onLoad();
             }
+// @ifdef EDITOR
+            AssetsWatcher.start(this);
+// @endif
             //if (this.onHierarchyChanged) {
             //    this.entity.transform._addListener(this);
             //}
@@ -125,6 +133,9 @@
     Component.prototype._onPreDestroy = function () {
         // ensure onDisable called
         _callOnEnable(this, false);
+// @ifdef EDITOR
+        AssetsWatcher.stop(this);
+// @endif
         // onDestroy
         if (this.onDestroy) {
             this.onDestroy();

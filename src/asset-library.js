@@ -257,6 +257,14 @@ var AssetLibrary = (function () {
             }
         },
 
+        // the asset changed listener
+        // 这里的回调需要完全由使用者自己维护，AssetLibrary只负责调用。
+        assetListener: new Fire.CallbacksInvoker(),
+
+        _onAssetChanged: function (uuid, asset) {
+            this.assetListener.invoke(uuid, asset);
+        },
+
         /**
          * Shadow copy all serializable properties from supplied asset to another indicated by uuid.
          * @param {string} uuid
@@ -287,6 +295,7 @@ var AssetLibrary = (function () {
                     }
                 }
             }
+            this._onAssetChanged(uuid, asset);
         },
 
         /**
