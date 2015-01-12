@@ -231,6 +231,7 @@ var AssetLibrary = (function () {
         },
 
         // @ifdef EDITOR
+
         /**
          * Kill all references to assets so they can be garbage collected.
          * Fireball will reload the asset from disk or remote if loadAssetByUuid being called again.
@@ -238,7 +239,7 @@ var AssetLibrary = (function () {
          *
          * @private
          */
-        _clearAllCache: function () {
+        clearAllCache: function () {
             _uuidToAsset = {};
         },
 
@@ -246,7 +247,7 @@ var AssetLibrary = (function () {
          * @param {Fire.Asset} newAsset
          * @param {string} [uuid]
          */
-        _replaceAsset: function (newAsset, uuid) {
+        replaceAsset: function (newAsset, uuid) {
             uuid = uuid || newAsset._uuid;
             if (uuid) {
                 _uuidToAsset[uuid] = newAsset;
@@ -254,6 +255,14 @@ var AssetLibrary = (function () {
             else {
                 Fire.error('[AssetLibrary] Not supplied uuid of asset to replace');
             }
+        },
+
+        // the asset changed listener
+        // 这里的回调需要完全由使用者自己维护，AssetLibrary只负责调用。
+        assetListener: new Fire.CallbacksInvoker(),
+
+        _onAssetChanged: function (uuid, asset) {
+            this.assetListener.invoke(uuid, asset);
         },
 
         /**
@@ -273,20 +282,47 @@ var AssetLibrary = (function () {
             }
             if (asset.shadowCopyFrom) {
                 asset.shadowCopyFrom(newAsset);
-                return;
             }
-            var props = cls.__props__;
-            if (props) {
-                for (var p = 0; p < props.length; p++) {
-                    var propName = props[p];
-                    var attrs = Fire.attr(cls, propName);
-                    if (attrs.serializable !== false) {
-                        asset[propName] = obj[propName];
+            else {
+                var props = cls.__props__;
+                if (props) {
+                    for (var p = 0; p < props.length; p++) {
+                        var propName = props[p];
+                        var attrs = Fire.attr(cls, propName);
+                        if (attrs.serializable !== false) {
+                            asset[propName] = newAsset[propName];
+                        }
                     }
                 }
             }
+            this._onAssetChanged(uuid, asset);
         },
-        // @endif
+
+        /**
+         * If asset is cached, reload and update it.
+         * @param {string} uuid
+         */
+        onAssetReimported: function (uuid) {
+            var loaded = _uuidToAsset[uuid];
+            if ( !loaded ) {
+                return;
+            }
+
+            // reload
+
+            delete _uuidToAsset[uuid];  // force reload
+            this.loadAssetByUuid(uuid, function (asset) {
+                var notUnloaded = uuid in _uuidToAsset;
+                if (asset && notUnloaded) {
+                    this._updateAsset(uuid, asset);
+                }
+            }.bind(this));
+            // 防止 reload 过程中还有人调用 this.loadAssetByUuid。
+            // 我们会保留旧的 asset，因此不允许别的地方获得这个新load进来的 asset 的引用，否则引用不唯一。
+            _uuidToAsset[uuid] = loaded;
+        },
+
+        // @endif // EDITOR
 
         ///**
         // * temporary flag for deserializing assets

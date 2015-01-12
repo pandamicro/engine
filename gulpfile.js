@@ -21,6 +21,7 @@ var paths = {
     src: [
         // runtime pre-defines
         'src/platform/editor/pre-define.js',
+        'src/platform/editor/asset-watcher.js',
         // runtime engine
         'src/definition.js',
         'src/misc.js',
@@ -174,7 +175,7 @@ gulp.task('js-dev', function() {
                ;
 });
 
-gulp.task('js', function() {
+gulp.task('js-min', function() {
     return gulp.src(paths.src)
                // .pipe(insertCoreShortcut('./ext/fire-core/bin/core.min.js', 'Fire'))
                .pipe(concat(paths.engine_min))
@@ -186,7 +187,7 @@ gulp.task('js', function() {
 });
 
 gulp.task('js-player-dev', function() {
-    return gulp.src(paths.src)
+    return gulp.src(paths.src.concat('!**/{Editor,editor}/**'))
                // .pipe(insertCoreShortcut('./ext/fire-core/bin/core.min.js', 'Fire'))
                .pipe(concat(paths.engine_player_dev))
                .pipe(embedIntoModule(paths.index))
@@ -196,7 +197,7 @@ gulp.task('js-player-dev', function() {
 });
 
 gulp.task('js-player', function() {
-    return gulp.src(paths.src)
+    return gulp.src(paths.src.concat('!**/{Editor,editor}/**'))
                // .pipe(insertCoreShortcut('./ext/fire-core/bin/core.min.js', 'Fire'))
                .pipe(concat(paths.engine_player))
                .pipe(embedIntoModule(paths.index))
@@ -204,6 +205,8 @@ gulp.task('js-player', function() {
                .pipe(gulp.dest(paths.output))
                ;
 });
+
+gulp.task('js-all', ['js-min', 'js-dev', 'js-player-dev', 'js-player']);
 
 /////////////////////////////////////////////////////////////////////////////
 // test
@@ -224,7 +227,7 @@ gulp.task('unit-runner', function() {
                ;
 });
 
-gulp.task('test', ['js', 'unit-runner'], function() {
+gulp.task('test', ['js-min', 'unit-runner'], function() {
     var timeOutInSeconds = 5;
     return gulp.src('test/unit/runner.html', { read: false })
                //.pipe(fb.callback(function () {
@@ -257,14 +260,14 @@ gulp.task('ref', ['cp-core'], function() {
 
 // watch
 gulp.task('watch-self', function() {
-    gulp.watch(paths.src.concat(paths.index), ['js', 'js-dev', 'js-player-dev', 'js-player']).on ( 'error', gutil.log );
+    gulp.watch(paths.src.concat(paths.index), ['default']).on ( 'error', gutil.log );
 });
 gulp.task('watch', ['watch-self'], function() {
     gulp.watch(paths.ext_core, ['cp-core']).on ( 'error', gutil.log );
 });
 
 // tasks
-gulp.task('default', ['js', 'js-dev', 'js-player-dev', 'js-player'] );
-gulp.task('dev', ['js-dev', 'js-player-dev'] );
+gulp.task('default', ['js-all']);
+gulp.task('dev', ['default'] );
 gulp.task('all', ['cp-core', 'default', 'test', 'ref'] );
-gulp.task('ci', ['js', 'test'] );
+gulp.task('ci', ['test'] );
