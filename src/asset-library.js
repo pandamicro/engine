@@ -63,7 +63,7 @@ var AssetLibrary = (function () {
          * NOTE: loadAssetByUuid will always try to get the cached asset, no matter whether dontCache is indicated.
          * @param {Fire._DeserializeInfo} [info] - reused temp obj
          */
-        loadAssetByUuid: function (uuid, callback, dontCache, info) {
+        _loadAssetByUuid: function (uuid, callback, dontCache, info) {
             dontCache = (typeof dontCache !== 'undefined') ? dontCache : false;
             if (typeof uuid !== 'string') {
                 callback(null, '[AssetLibrary] uuid must be string');
@@ -175,17 +175,17 @@ var AssetLibrary = (function () {
                                 }
                             };
                         })( dependsUuid, info.uuidObjList[i], info.uuidPropList[i] );
-                        AssetLibrary.loadAssetByUuid(dependsUuid, onDependsAssetLoaded, dontCache, info);
+                        AssetLibrary._loadAssetByUuid(dependsUuid, onDependsAssetLoaded, dontCache, info);
                     }
                 });
             //loadAssetByUrl (url, callback, info);
         },
 
         /**
-         * Just the same as loadAssetByUuid, but will not cache the asset.
+         * Just the same as _loadAssetByUuid, but will not cache the asset.
          */
-        _loadVolatileAsset: function (uuid, callback) {
-            this.loadAssetByUuid(uuid, callback, true, null);
+        loadAsset: function (uuid, callback) {
+            this._loadAssetByUuid(uuid, callback, true, null);
         },
 
         /**
@@ -314,7 +314,11 @@ var AssetLibrary = (function () {
             this._onAssetChanged(uuid, asset);
         },
 
-        _cacheAsset: function (asset) {
+        /**
+         * In editor, if you load an asset from loadAsset, and then use the asset in the scene,
+         * you should call cacheAsset manually to ensure the asset's reference is unique.
+         */
+        cacheAsset: function (asset) {
             if (asset) {
                 if (asset._uuid) {
                     _uuidToAsset[asset._uuid] = asset;
@@ -341,7 +345,7 @@ var AssetLibrary = (function () {
             // reload
 
             delete _uuidToAsset[uuid];  // force reload
-            this.loadAssetByUuid(uuid, function (asset) {
+            this._loadAssetByUuid(uuid, function (asset) {
                 var notUnloaded = uuid in _uuidToAsset;
                 if (asset && notUnloaded) {
                     this._updateAsset(uuid, asset);

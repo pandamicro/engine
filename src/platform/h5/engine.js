@@ -306,7 +306,7 @@ var Engine = (function () {
     Engine.loadScene = function (uuid, onLaunched, onUnloaded) {
         // TODO: lookup uuid by name
         isLoadingScene = true;
-        AssetLibrary.loadAssetByUuid(uuid, function onSceneLoaded (scene, error) {
+        AssetLibrary._loadAssetByUuid(uuid, function onSceneLoaded (scene, error) {
             if (error) {
                 Fire.error('Failed to load scene: ' + error);
                 isLoadingScene = false;
