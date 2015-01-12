@@ -1,6 +1,8 @@
 ﻿
 var SpriteAnimationState = (function (name, animClip) {
-
+    if (typeof (animClip) == 'undefined') {
+        return;
+    }
     ///< the name of the sprite animation state
     this.name = name;
     ///< the referenced sprite sprite animation clip
