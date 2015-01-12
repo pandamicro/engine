@@ -331,7 +331,7 @@ var Engine = (function () {
             if (onLaunched) {
                 onLaunched(scene);
             }
-        });
+        }, true);
     };
 
     return Engine;
