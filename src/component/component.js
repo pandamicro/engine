@@ -161,3 +161,92 @@ Fire.Component = Component;
 Fire.addComponentMenu = Fire.addComponentMenu || function (constructor, menuPath, priority) {
     // implement only available in editor
 };
+
+
+
+var _requiringFrame = [];  // the requiring frame infos
+
+Fire._RFpush = function (uuid, script) {
+    _requiringFrame.push({
+        uuid: uuid,
+        script: script
+    });
+};
+Fire._RFpop = function () {
+    _requiringFrame.pop();
+};
+
+/**
+ * @param {function} [baseOrConstructor]
+ * @param {function} [constructor]
+ */
+Fire.defineComponent = function (baseOrConstructor, constructor) {
+    var args = [''];
+    // check args
+    if (arguments.length === 0) {
+        args.push(Component);
+    }
+    else {
+        if (arguments.length === 1) {
+            if (Fire.isChildClassOf(baseOrConstructor, Component)) {
+                // base
+                args.push(baseOrConstructor);
+            }
+            else {
+// @ifdef DEV
+                if (!Fire._isFireClass(baseOrConstructor)) {
+                    if (typeof baseOrConstructor !== 'function') {
+                        Fire.error('[Fire.defineComponent] Constructor must be function type');
+                        return;
+                    }
+// @endif
+                    // base
+                    args.push(Component);
+                    // constructor
+                    args.push(baseOrConstructor);
+// @ifdef DEV
+                }
+                else {
+                    Fire.error('[Fire.defineComponent] Base class must inherit from Component');
+                    return;
+                }
+// @endif
+            }
+        }
+        else {
+// @ifdef DEV
+            if (Fire.isChildClassOf(baseOrConstructor, Component)) {
+                // base
+                if (typeof constructor !== 'function') {
+                    Fire.error('[Fire.defineComponent] Constructor must be function type');
+                    return;
+                }
+// @endif
+                // base
+                args.push(baseOrConstructor);
+                // constructor
+                args.push(constructor);
+// @ifdef DEV
+            }
+            else {
+                Fire.error('[Fire.defineComponent] Base class must inherit from Component');
+                return;
+            }
+// @endif
+        }
+    }
+    //
+    var frame = _requiringFrame[_requiringFrame.length - 1];
+    if (frame) {
+        var className = frame.script;
+        args[0] = className;
+        var cls = Fire.define.apply(Fire, args);
+        Fire.registerClass(frame.uuid, cls);
+        return cls;
+    }
+// @ifdef DEV
+    else {
+        Fire.error('[Fire.defineComponent] Sorry, defining Component dynamically is not allowed, define during loading script please.');
+    }
+// @endif
+};

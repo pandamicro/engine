@@ -111,7 +111,16 @@ var AssetLibrary = (function () {
 
                     // deserialize asset
                     Engine._canModifyCurrentScene = false;
-                    var asset = Fire.deserialize(json, info);
+                    var asset = Fire.deserialize(json, info, {
+                        classFinder: function (id) {
+                            var cls = Fire.getClassById(id);
+                            if (cls) {
+                                return cls;
+                            }
+                            Fire.warn('Can not get class "%s"', id);
+                            return Object;
+                        }
+                    });
                     asset._uuid = uuid;
                     Engine._canModifyCurrentScene = true;
 
