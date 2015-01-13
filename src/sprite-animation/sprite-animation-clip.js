@@ -2,13 +2,13 @@
 // 动画剪辑
 var SpriteAnimationClip = (function () {
 
-    // ------------------------------------------------------------------ 
-    // Desc: 
-    // ------------------------------------------------------------------ 
+    // ------------------------------------------------------------------
+    // Desc:
+    // ------------------------------------------------------------------
 
     var SpriteAnimationClip = Fire.define('Fire.SpriteAnimationClip', Fire.CustomAsset, function () {
         Fire.CustomAsset.call(this);
-        this.frameInfos = [];                         ///< the list of frame info 
+        this.frameInfos = [];                         ///< the list of frame info
         this._frameInfoFrames = [];                   ///< the array of the end frame of each frame info
     });
 
@@ -31,17 +31,17 @@ var SpriteAnimationClip = (function () {
         return t;
     })({});
 
-    // ------------------------------------------------------------------ 
+    // ------------------------------------------------------------------
     /// The structure to descrip a frame in the sprite animation clip
-    // ------------------------------------------------------------------ 
+    // ------------------------------------------------------------------
 
     SpriteAnimationClip.FrameInfo = function (_sprite, _frames) {
         this.sprite = _sprite;     ///< the texture info used in this frame
         this.frames = _frames;        ///< frame count
     };
 
-    ///< the list of frame info  
-    // to do 
+    ///< the list of frame info
+    // to do
 
     ///< default wrap mode
     SpriteAnimationClip.prop('wrapMode', SpriteAnimationClip.WrapMode.Default, Fire.Enum(SpriteAnimationClip.WrapMode));
@@ -50,8 +50,8 @@ var SpriteAnimationClip = (function () {
     ///< the default speed of the animation clip
     SpriteAnimationClip.prop('speed', 1);
     // the sample rate used in this animation clip
-    SpriteAnimationClip.prop('_frameRate', 60, Fire.HideInInspector);   
-    SpriteRenderer.getset('frameRate',
+    SpriteAnimationClip.prop('_frameRate', 60, Fire.HideInInspector);
+    SpriteAnimationClip.getset('frameRate',
         function () {
             return this._frameRate;
         },
@@ -62,9 +62,9 @@ var SpriteAnimationClip = (function () {
         }
     );
 
-    // ------------------------------------------------------------------ 
-    // Desc: 
-    // ------------------------------------------------------------------ 
+    // ------------------------------------------------------------------
+    // Desc:
+    // ------------------------------------------------------------------
 
     SpriteAnimationClip.prototype.getTotalFrames = function () {
         var frames = 0;
@@ -74,9 +74,9 @@ var SpriteAnimationClip = (function () {
         return frames;
     };
 
-    // ------------------------------------------------------------------ 
-    // Desc: 
-    // ------------------------------------------------------------------ 
+    // ------------------------------------------------------------------
+    // Desc:
+    // ------------------------------------------------------------------
 
     SpriteAnimationClip.prototype.getFrameInfoFrames = function () {
         if (this._frameInfoFrames === null) {
