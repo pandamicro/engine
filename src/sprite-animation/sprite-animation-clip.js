@@ -8,9 +8,11 @@ var SpriteAnimationClip = (function () {
 
     var SpriteAnimationClip = Fire.define('Fire.SpriteAnimationClip', Fire.CustomAsset, function () {
         Fire.CustomAsset.call(this);
-        this.frameInfos = null;                         ///< the list of frame info 
-        this._frameInfoFrames = null;                   ///< the array of the end frame of each frame info
+        this.frameInfos = [];                         ///< the list of frame info 
+        this._frameInfoFrames = [];                   ///< the array of the end frame of each frame info
     });
+
+    Fire.addCustomAssetMenu(SpriteAnimationClip, "New Sprite Animation Clip", "NewSpriteAnimationClip");
 
     SpriteAnimationClip.WrapMode = (function (t) {
         t[t.Default = 0] = 'Default';
@@ -22,10 +24,10 @@ var SpriteAnimationClip = (function () {
     })({});
 
     SpriteAnimationClip.StopAction = (function (t) {
-        t[t.DoNothing = 0] = 'DoNothing';     ///< do nothing
+        t[t.DoNothing = 0] = 'DoNothing';         ///< do nothing
         t[t.DefaultSprite = 1] = 'DefaultSprite'; ///< set to default sprite when the sprite animation stopped
-        t[t.Hide = 2] = 'Hide';          ///< hide the sprite when the sprite animation stopped
-        t[t.PingPong = 3] = 'PingPong';      ///< destroy the GameObject the sprite belongs to when the sprite animation stopped
+        t[t.Hide = 2] = 'Hide';                   ///< hide the sprite when the sprite animation stopped
+        t[t.PingPong = 3] = 'PingPong';           ///< destroy the GameObject the sprite belongs to when the sprite animation stopped
         return t;
     })({});
 
@@ -38,19 +40,27 @@ var SpriteAnimationClip = (function () {
         this.frames = _frames;        ///< frame count
     };
 
-    SpriteAnimationClip.prop('wrapMode', SpriteAnimationClip.WrapMode.Default, Fire.Enum(SpriteAnimationClip.WrapMode)); ///< default wrap mode
-    SpriteAnimationClip.prop('stopAction', SpriteAnimationClip.StopAction.DoNothing, Fire.Enum(SpriteAnimationClip.StopAction));///< the default type of action used when the animation stopped
-    SpriteAnimationClip.prop('_frameRate', 60);   // the sample rate used in this animation clip
-    SpriteAnimationClip.prop('speed', 1);        ///< the default speed of the animation clip
+    ///< the list of frame info  
+    // to do 
 
-    Object.defineProperty(SpriteAnimationClip.prototype, 'frameRate', {
-        get: function () { return this._frameRate; },
-        set: function (value) {
-            if (value != this._frameRate) {
+    ///< default wrap mode
+    SpriteAnimationClip.prop('wrapMode', SpriteAnimationClip.WrapMode.Default, Fire.Enum(SpriteAnimationClip.WrapMode));
+    ///< the default type of action used when the animation stopped
+    SpriteAnimationClip.prop('stopAction', SpriteAnimationClip.StopAction.DoNothing, Fire.Enum(SpriteAnimationClip.StopAction));
+    ///< the default speed of the animation clip
+    SpriteAnimationClip.prop('speed', 1);
+    // the sample rate used in this animation clip
+    SpriteAnimationClip.prop('_frameRate', 60, Fire.HideInInspector);   
+    SpriteRenderer.getset('frameRate',
+        function () {
+            return this._frameRate;
+        },
+        function (value) {
+            if (value !== this._frameRate) {
                 this._frameRate = Math.round(Math.max(value, 1));
             }
         }
-    });
+    );
 
     // ------------------------------------------------------------------ 
     // Desc: 
@@ -58,8 +68,8 @@ var SpriteAnimationClip = (function () {
 
     SpriteAnimationClip.prototype.getTotalFrames = function () {
         var frames = 0;
-        for (var i = 0; i < frameInfos.length; ++i) {
-            frames += frameInfos[i].frames;
+        for (var i = 0; i < this.frameInfos.length; ++i) {
+            frames += this.frameInfos[i].frames;
         }
         return frames;
     };

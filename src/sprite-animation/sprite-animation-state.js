@@ -1,6 +1,6 @@
 ﻿
 var SpriteAnimationState = (function (name, animClip) {
-    if (typeof (animClip) == 'undefined') {
+    if (!animClip) {
         return;
     }
     ///< the name of the sprite animation state
@@ -34,20 +34,20 @@ var SpriteAnimationState = (function (name, animClip) {
     SpriteAnimationState.prototype.getCurrentIndex = function () {
         if (this.totalFrames > 1) {
             //int oldFrame = frame;
-            this.frame = parseInt(this.time * this.clip.frameRate);
+            this.frame = Math.floor(this.time * this.clip.frameRate);
             if (this.frame < 0) {
                 this.frame = -this.frame;
             }
 
             var wrappedIndex;
-            if (this.wrapMode != Fire.SpriteAnimationClip.WrapMode.PingPong) {
+            if (this.wrapMode !== Fire.SpriteAnimationClip.WrapMode.PingPong) {
                 wrappedIndex = _wrap(this.frame, this.totalFrames - 1, this.wrapMode);
             }
             else {
                 wrappedIndex = this.frame;
-                var cnt = parseInt(wrappedIndex / this.totalFrames);
+                var cnt = Math.floor(wrappedIndex / this.totalFrames);
                 wrappedIndex %= this.totalFrames;
-                if ((cnt & 0x1) == 1) {
+                if ((cnt & 0x1) === 1) {
                     wrappedIndex = this.totalFrames - 1 - wrappedIndex;
                 }
             }
@@ -67,7 +67,7 @@ var SpriteAnimationState = (function (name, animClip) {
             this._cachedIndex = frameInfoIndex;
             return frameInfoIndex;
         }
-        else if (this.totalFrames == 1) {
+        else if (this.totalFrames === 1) {
             return 0;
         }
         else {

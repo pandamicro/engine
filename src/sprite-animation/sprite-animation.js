@@ -1,18 +1,6 @@
 ﻿
 var SpriteAnimation = (function () {
 
-    // ------------------------------------------------------------------ 
-    /// \param _name the name of the animation
-    /// \return the animation state
-    /// Get the animation state by _name
-    // ------------------------------------------------------------------ 
-
-    var getSprteAnimationState = function (name) {
-        this.init();
-        var state = this._nameToState[name];
-        return state;
-    };
-
     // 定义一个名叫Sprite Animation 组件
     var SpriteAnimation = Fire.define('Fire.SpriteAnimation', Component, function () {
         Component.call(this);
@@ -59,9 +47,7 @@ var SpriteAnimation = (function () {
         },
         function (value) {
             this.playAutomatically_ = value;
-
             var animState = this.getAnimState();
-            
             if (value === true) {
                 this.play(animState, 0);
             }
@@ -72,7 +58,6 @@ var SpriteAnimation = (function () {
     );
 
     SpriteAnimation.prototype.getAnimState = function () {
-
         var animClip = this.defaultAnimation;
         animClip.frameInfos = [];
         var frameInfo = new Fire.SpriteAnimationClip.FrameInfo(this.sprite1, this.frames1);
@@ -95,10 +80,24 @@ var SpriteAnimation = (function () {
         return newAnimState;
     };
 
-    SpriteAnimation.prototype.lateUpdate = function () {
-        if (this._curAnimation !== null && Fire.Time.frameCount > this._playStartFrame) {
-            var delta = parseFloat(Fire.Time.deltaTime * this._curAnimation.speed);
-            this.step(delta);
+    SpriteAnimation.prototype.init = function () {
+        var initialized = (this.nameToState !== null);
+        if (initialized === false) {
+            this.sprite_ = this.entity.getComponent(Fire.Sprite);
+            this._defaultSprite = sprite_;
+
+            this.nameToState = {};
+            for (var i = 0; i < this.animations.length; ++i) {
+                var clip = this.animations[i];
+                if (clip !== null) {
+                    var state = new Fire.SpriteAnimationState(clip);
+                    this.nameToState[state.name] = state;
+                    if (this.defaultAnimation === clip) {
+                        this.curAnimation = state;
+                        this.lastFrameIndex = -1;
+                    }
+                }
+            }
         }
     };
 
@@ -112,48 +111,10 @@ var SpriteAnimation = (function () {
         }
     };
 
-    SpriteAnimation.prototype.stop = function (animState) {
-        if ( animState !== null ) {
-            if (animState === this._curAnimation) {
-                this._curAnimation = null;
-            }
-            animState.time = 0;
-
-            var stopAction = animState.stopAction;
-            if (stopAction === Fire.SpriteAnimationClip.StopAction.DoNothing) {
-                
-            }
-            else if (stopAction === Fire.SpriteAnimationClip.StopAction.DefaultSprite) {
-                this._spriteRenderer.sprite = this._defaultSprite;
-            }
-            else if (stopAction === Fire.SpriteAnimationClip.StopAction.Hide) {
-                this._spriteRenderer.enabled = false;
-            }
-            else if (stopAction === Fire.SpriteAnimationClip.StopAction.Destroy) {
-                
-            }
-            this._curAnimation = null;
-        }
-    };
-
-    SpriteAnimation.prototype.init = function () {
-        var initialized = (this.nameToState !== null);
-        if (initialized === false) {
-            this.sprite_ = this.entity.getComponent(Fire.Sprite);
-            this._defaultSprite = sprite_;
-
-            this.nameToState = {};
-            for (var i = 0; i < this.animations.length; ++i) {
-                var clip = this.animations[i];
-                if (clip !== null) {
-                    var state = new exSpriteAnimationState(clip);
-                    this.nameToState[state.name] = state;
-                    if (this.defaultAnimation === clip) {
-                        this.curAnimation = state;
-                        this.lastFrameIndex = -1;
-                    }
-                }
-            }
+    SpriteAnimation.prototype.lateUpdate = function () {
+        if (this._curAnimation !== null && Fire.Time.frameCount > this._playStartFrame) {
+            var delta = Math.floor(Fire.Time.deltaTime * this._curAnimation.speed);
+            this.step(delta);
         }
     };
 
@@ -169,7 +130,7 @@ var SpriteAnimation = (function () {
                     if (this._curAnimation.wrapMode === Fire.SpriteAnimationClip.WrapMode.ClampForever) {
                         stop = false;
                         this._curAnimation.frame = this._curAnimation.totalFrames;
-                        this._curAnimation.time = parseFloat(this._curAnimation.frame / this._curAnimation.clip.frameRate);
+                        this._curAnimation.time = Math.floor(this._curAnimation.frame / this._curAnimation.clip.frameRate);
                     }
                     else {
                         stop = true;
@@ -209,6 +170,33 @@ var SpriteAnimation = (function () {
         }
         else {
             this._curIndex = -1;
+        }
+    };
+
+    SpriteAnimation.prototype.stop = function (animState) {
+        if ( animState !== null ) {
+            if (animState === this._curAnimation) {
+                this._curAnimation = null;
+            }
+            animState.time = 0;
+
+            var stopAction = animState.stopAction;
+            switch (stopAction) {
+                case Fire.SpriteAnimationClip.StopAction.DoNothing:
+                    break;
+                case Fire.SpriteAnimationClip.StopAction.DefaultSprite:
+                    this._spriteRenderer.sprite = this._defaultSprite;
+                    break;
+                case Fire.SpriteAnimationClip.StopAction.Hide:
+                    this._spriteRenderer.enabled = false;
+                    break;
+                case Fire.SpriteAnimationClip.StopAction.Destroy:
+
+                    break;
+                default:
+                    break;
+            }
+            this._curAnimation = null;
         }
     };
 
