@@ -209,6 +209,7 @@ var AssetLibrary = (function () {
         /**
          * Kill references to the asset so it can be garbage collected.
          * Fireball will reload the asset from disk or remote if loadAssetByUuid being called again.
+         * This function will be called if the Asset was destroyed.
          * 如果还有地方引用到asset，除非destroyAsset为true，否则不应该执行这个方法，因为那样可能会导致 asset 被多次创建。
          *
          * @method Fire.AssetLibrary.unloadAsset
@@ -377,6 +378,19 @@ var AssetLibrary = (function () {
         }
     });
     // @endif
+
+    // unload asset if it is destoryed
+
+    // @ifdef DEV
+    if (Asset.prototype._onPreDestroy) {
+        Fire.error('_onPreDestroy of Asset has already defined');
+    }
+    // @endif
+    Asset.prototype._onPreDestroy = function () {
+        if (_uuidToAsset[this._uuid] === this) {
+            AssetLibrary.unloadAsset(this, false);
+        }
+    };
 
     return AssetLibrary;
 })();

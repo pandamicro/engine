@@ -166,12 +166,12 @@
     };
 
     Camera.prototype._applyRenderSettings = function () {
-        // if editor
+        // @ifdef EDITOR
         if (!this._renderContext) {
             Fire.error('No corresponding render context for camera ' + this.entity.name);
             return;
         }
-        // endif
+        // @endif
         this._renderContext.background = this._background;
     };
 
