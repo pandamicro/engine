@@ -12,7 +12,7 @@ var SpriteAnimationClip = (function () {
         this._frameInfoFrames = [];                   ///< the array of the end frame of each frame info
     });
 
-    Fire.addCustomAssetMenu(SpriteAnimationClip, "New Sprite Animation Clip", "NewSpriteAnimationClip");
+    Fire.addCustomAssetMenu(SpriteAnimationClip, "New Sprite Animation");
 
     SpriteAnimationClip.WrapMode = (function (t) {
         t[t.Default = 0] = 'Default';
