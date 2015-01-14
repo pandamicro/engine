@@ -1,8 +1,16 @@
-
+// @ifdef EDITOR
+var FireUrl = Fire.isNode ? require('fire-url') : null;
+// @endif
 /**
  *
  */
 function ImageLoader(url, callback, onProgress) {
+// @ifdef EDITOR
+    if (FireUrl) {
+        url = FireUrl.addRandomQuery(url);
+    }
+// @endif
+
     var image = document.createElement('img');
     image.crossOrigin = 'Anonymous';
 

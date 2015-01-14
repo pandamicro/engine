@@ -228,7 +228,7 @@ gulp.task('unit-runner', function() {
                ;
 });
 
-gulp.task('test', ['js-min', 'unit-runner'], function() {
+gulp.task('test', ['cp-core', 'js-min', 'unit-runner'], function() {
     var timeOutInSeconds = 5;
     return gulp.src('test/unit/runner.html', { read: false })
                //.pipe(fb.callback(function () {
@@ -270,5 +270,5 @@ gulp.task('watch', ['watch-self'], function() {
 // tasks
 gulp.task('default', ['js-all']);
 gulp.task('dev', ['default'] );
-gulp.task('all', ['cp-core', 'default', 'test', 'ref'] );
+gulp.task('all', ['default', 'test', 'ref'] );
 gulp.task('ci', ['test'] );
