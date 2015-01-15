@@ -51,8 +51,6 @@ var paths = {
         'src/platform/h5/input-context.js',
         'src/event/event-register.js',
         'src/input.js',
-        // debug
-        'src/platform/debug/render-context.js',
     ],
     index: 'src/index.js',
 
