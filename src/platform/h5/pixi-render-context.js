@@ -179,9 +179,23 @@ var RenderContext = (function () {
         if (entityParent) {
             var pixiParent = inSceneView ? entityParent._pixiObjInScene : entityParent._pixiObj;
             var firstChildEntity = customFirstChildEntity || entityParent._children[0];
-            var firstChild = firstChildEntity && (inSceneView ? firstChildEntity._pixiObjInScene : firstChildEntity._pixiObj);
-            var offset = pixiParent.children.indexOf(firstChild);
-            return offset !== -1 ? offset : pixiParent.children.length;
+            if (firstChildEntity) {
+                var firstChildPixi = inSceneView ? firstChildEntity._pixiObjInScene : firstChildEntity._pixiObj;
+                var offset = pixiParent.children.indexOf(firstChildPixi);
+                if (offset !== -1) {
+                    return offset;
+                }
+                else if (customFirstChildEntity) {
+                    return pixiParent.children.length;
+                }
+                else {
+                    Fire.error("%s's pixi object not contains in its pixi parent's children", firstChildEntity.name);
+                    return -1;
+                }
+            }
+            else {
+                return pixiParent.children.length;
+            }
         }
         else {
             return 0;   // the root of hierarchy
@@ -198,8 +212,12 @@ var RenderContext = (function () {
         var siblingOffset;  // skip renderers of entity
         var lastFirstSibling = null;
         if (newIndex === 0 && oldIndex > 0) {
-            // unshift first sibling
+            // insert to first
             lastFirstSibling = entity.getSibling(1);
+        }
+        else if (oldIndex === 0 && newIndex > 0) {
+            // move first to elsewhere
+            lastFirstSibling = entity;
         }
         // game view
         var item = entity._pixiObj;
@@ -486,12 +504,15 @@ RenderContext.prototype.checkMatchCurrentScene = function () {
         if (sceneNode) {
             sceneChildrenOffset = RenderContext._getChildrenOffset(ent, true);
             if (sceneNode.children.length !== childCount + sceneChildrenOffset) {
-                throw new Error('Mismatched list of child elements in scene view, entity: ' + ent.name);
+                console.error('Mismatched list of child elements in Scene view, entity: %s,\n' +
+                    'pixi childCount: %s, entity childCount: %s, rcOffset: %s',
+                    ent.name, sceneNode.children.length, childCount, sceneChildrenOffset);
+                throw new Error('(see above error)');
             }
         }
         var gameChildrenOffset = RenderContext._getChildrenOffset(ent, false);
         if (gameNode.children.length !== childCount + gameChildrenOffset) {
-            throw new Error('Mismatched list of child elements in game view, entity: ' + ent.name);
+            throw new Error('Mismatched list of child elements in Game view, entity: ' + ent.name);
         }
         for (var i = 0; i < childCount; i++) {
             checkMatch(ent._children[i], gameNode.children[gameChildrenOffset + i], sceneNode && sceneNode.children[i + sceneChildrenOffset]);
