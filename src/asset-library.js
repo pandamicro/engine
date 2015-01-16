@@ -94,100 +94,107 @@ var AssetLibrary = (function () {
 
             // step 5
             LoadManager.load(TextLoader, url,
-                function onFileLoaded(json, error) {
+                function (json, error) {
                     if (error) {
                         _uuidToCallbacks.invokeAndRemove(uuid, null, error);
                         return;
                     }
-                    // prepare
-                    if (info) {
-                        // info我们只是用来重用临时对象，所以每次使用前要重设
-                        info.reset();
-                    }
-                    else {
-                        info = new Fire._DeserializeInfo();
-                    }
-
-
-                    // deserialize asset
-                    Engine._canModifyCurrentScene = false;
-                    var asset = Fire.deserialize(json, info, {
-                        classFinder: function (id) {
-                            var cls = Fire.getClassById(id);
-                            if (cls) {
-                                return cls;
-                            }
-                            Fire.warn('Can not get class "%s"', id);
-                            return Object;
-                        }
-                    });
-                    asset._uuid = uuid;
-                    Engine._canModifyCurrentScene = true;
-
-                    // load depends
-                    var pendingCount = info.uuidList.length;
-
-                    // load host
-                    if (info.hostProp) {
-                        // load depends host objects
-                        var attrs = Fire.attr(asset.constructor, info.hostProp);
-                        var hostType = attrs.hostType;
-                        var typeInfo = HostTypes[hostType];
-                        if (typeInfo) {
-                            ++pendingCount;
-                            var extname = asset._hostext ? ('.' + asset._hostext) : typeInfo.defaultExtname;
-                            var hostUrl = url + extname;
-                            LoadManager.load(typeInfo.loader, hostUrl, function onHostObjLoaded (host, error) {
-                                if (error) {
-                                    Fire.error('[AssetLibrary] Failed to load %s of %s. %s', hostType, uuid, error);
-                                }
-                                asset[info.hostProp] = host;
-                                --pendingCount;
-                                if (pendingCount === 0) {
-                                    if ( !dontCache ) {
-                                        _uuidToAsset[uuid] = asset;
-                                    }
-                                    _uuidToCallbacks.invokeAndRemove(uuid, asset);
-                                }
-                            });
-                        }
-                        else {
-                            Fire.warn('[AssetLibrary] Unknown host type "%s" of %s', hostType, uuid);
-                        }
-                    }
-                    if (pendingCount === 0) {
+                    AssetLibrary._deserializeWithDepends(json, url, function (asset) {
+                        asset._uuid = uuid;
                         if ( !dontCache ) {
                             _uuidToAsset[uuid] = asset;
                         }
                         _uuidToCallbacks.invokeAndRemove(uuid, asset);
-                        return;
-                    }
-
-                    // load depends assets
-                    for (var i = 0, len = info.uuidList.length; i < len; i++) {
-                        var dependsUuid = info.uuidList[i];
-                        var onDependsAssetLoaded = (function (dependsUuid, obj, prop) {
-                            // create closure manually because its extremely faster than bind
-                            return function (dependsAsset, error) {
-                                if (error) {
-                                    Fire.error('[AssetLibrary] Failed to load "' + dependsUuid + '", ' + error);
-                                }
-                                // update reference
-                                obj[prop] = dependsAsset;
-                                // check all finished
-                                --pendingCount;
-                                if (pendingCount === 0) {
-                                    if ( !dontCache ) {
-                                        _uuidToAsset[uuid] = asset;
-                                    }
-                                    _uuidToCallbacks.invokeAndRemove(uuid, asset);
-                                }
-                            };
-                        })( dependsUuid, info.uuidObjList[i], info.uuidPropList[i] );
-                        AssetLibrary._loadAssetByUuid(dependsUuid, onDependsAssetLoaded, dontCache, info);
-                    }
+                    }, dontCache, info);
                 });
             //loadAssetByUrl (url, callback, info);
+        },
+
+        /**
+         * @param {string|object} json
+         * @param {string} url
+         * @param {function} callback
+         * @param {boolean} [dontCache=false] - If false, the result will cache to AssetLibrary, and MUST be unload by user manually.
+         * NOTE: loadAssetByUuid will always try to get the cached asset, no matter whether dontCache is indicated.
+         * @param {Fire._DeserializeInfo} [info] - reused temp obj
+         */
+        _deserializeWithDepends: function (json, url, callback, dontCache, info) {
+            // prepare
+            if (info) {
+                // info我们只是用来重用临时对象，所以每次使用前要重设
+                info.reset();
+            }
+            else {
+                info = new Fire._DeserializeInfo();
+            }
+
+            // deserialize asset
+            Engine._canModifyCurrentScene = false;
+            var asset = Fire.deserialize(json, info, {
+                classFinder: function (id) {
+                    var cls = Fire.getClassById(id);
+                    if (cls) {
+                        return cls;
+                    }
+                    Fire.warn('Can not get class "%s"', id);
+                    return Object;
+                }
+            });
+            Engine._canModifyCurrentScene = true;
+
+            // load depends
+            var pendingCount = info.uuidList.length;
+
+            // load host
+            if (info.hostProp) {
+                // load depends host objects
+                var attrs = Fire.attr(asset.constructor, info.hostProp);
+                var hostType = attrs.hostType;
+                var typeInfo = HostTypes[hostType];
+                if (typeInfo) {
+                    ++pendingCount;
+                    var extname = asset._hostext ? ('.' + asset._hostext) : typeInfo.defaultExtname;
+                    var hostUrl = url + extname;
+                    LoadManager.load(typeInfo.loader, hostUrl, function onHostObjLoaded (host, error) {
+                        if (error) {
+                            Fire.error('[AssetLibrary] Failed to load %s of %s. %s', hostType, url, error);
+                        }
+                        asset[info.hostProp] = host;
+                        --pendingCount;
+                        if (pendingCount === 0) {
+                            callback(asset);
+                        }
+                    });
+                }
+                else {
+                    Fire.warn('[AssetLibrary] Unknown host type "%s" of %s', hostType, url);
+                }
+            }
+            if (pendingCount === 0) {
+                callback(asset);
+                return;
+            }
+
+            // load depends assets
+            for (var i = 0, len = info.uuidList.length; i < len; i++) {
+                var dependsUuid = info.uuidList[i];
+                var onDependsAssetLoaded = (function (dependsUuid, obj, prop) {
+                    // create closure manually because its extremely faster than bind
+                    return function (dependsAsset, error) {
+                        if (error) {
+                            Fire.error('[AssetLibrary] Failed to load "' + dependsUuid + '", ' + error);
+                        }
+                        // update reference
+                        obj[prop] = dependsAsset;
+                        // check all finished
+                        --pendingCount;
+                        if (pendingCount === 0) {
+                            callback(asset);
+                        }
+                    };
+                })( dependsUuid, info.uuidObjList[i], info.uuidPropList[i] );
+                AssetLibrary._loadAssetByUuid(dependsUuid, onDependsAssetLoaded, dontCache, info);
+            }
         },
 
         /**
@@ -196,6 +203,15 @@ var AssetLibrary = (function () {
         loadAsset: function (uuid, callback) {
             this._loadAssetByUuid(uuid, callback, true, null);
         },
+
+        // @ifdef EDITOR
+        /**
+         * @param {object} meta
+         */
+        loadMeta: function (meta, callback) {
+            this._deserializeWithDepends(meta, '', callback, true);
+        },
+        // @endif
 
         /**
          * Get the exists asset by uuid.
