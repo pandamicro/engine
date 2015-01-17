@@ -209,7 +209,7 @@ var RenderContext = (function () {
      */
     RenderContext.prototype.onEntityIndexChanged = function (entity, oldIndex, newIndex) {
         var array = null;
-        var siblingOffset;  // skip renderers of entity
+        var siblingOffset = 0;  // skip renderers of entity
         var lastFirstSibling = null;
         if (newIndex === 0 && oldIndex > 0) {
             // insert to first
@@ -219,14 +219,16 @@ var RenderContext = (function () {
             // move first to elsewhere
             lastFirstSibling = entity;
         }
+        var newPixiIndex = 0;
         // game view
         var item = entity._pixiObj;
         if (item) {
             siblingOffset = RenderContext._getChildrenOffset(entity._parent, false, lastFirstSibling);
             array = item.parent.children;
             array.splice(oldIndex + siblingOffset, 1);
-            if (newIndex + siblingOffset < array.length) {
-                array.splice(newIndex + siblingOffset, 0, item);
+            newPixiIndex = newIndex + siblingOffset;
+            if (newPixiIndex < array.length) {
+                array.splice(newPixiIndex, 0, item);
             }
             else {
                 array.push(item);
@@ -238,8 +240,9 @@ var RenderContext = (function () {
             item = entity._pixiObjInScene;
             array = item.parent.children;
             array.splice(oldIndex + siblingOffset, 1);
-            if (newIndex + siblingOffset < array.length) {
-                array.splice(newIndex + siblingOffset, 0, item);
+            newPixiIndex = newIndex + siblingOffset;
+            if (newPixiIndex < array.length) {
+                array.splice(newPixiIndex, 0, item);
             }
             else {
                 array.push(item);
