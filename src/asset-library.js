@@ -132,7 +132,7 @@ var AssetLibrary = (function () {
             Engine._canModifyCurrentScene = false;
             var asset = Fire.deserialize(json, info, {
                 classFinder: function (id) {
-                    var cls = Fire.getClassById(id);
+                    var cls = Fire._getClassById(id);
                     if (cls) {
                         return cls;
                     }

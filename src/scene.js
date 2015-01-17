@@ -21,7 +21,7 @@
         this.camera = null;
     }
     Fire.extend(Scene, _super);
-    Fire.registerClass("Fire.Scene", Scene);
+    Fire.setClassName("Fire.Scene", Scene);
 
     ////////////////////////////////////////////////////////////////////
     // static

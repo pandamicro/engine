@@ -201,7 +201,7 @@ Fire._RFpop = function () {
  * @param {function} [constructor]
  */
 Fire.defineComponent = function (baseOrConstructor, constructor) {
-    var args = [''];
+    var args = [''];    // class name will be defined later
     // check args
     if (arguments.length === 0) {
         args.push(Component);
@@ -261,7 +261,7 @@ Fire.defineComponent = function (baseOrConstructor, constructor) {
         var className = frame.script;
         args[0] = className;
         var cls = Fire.define.apply(Fire, args);
-        Fire.registerClass(frame.uuid, cls);
+        Fire._setClassId(frame.uuid, cls);
         return cls;
     }
 // @ifdef DEV
