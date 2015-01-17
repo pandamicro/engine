@@ -203,7 +203,10 @@
     };
 
     Scene.prototype._instantiate = function () {
-        return Fire._doInstantiate(this);
+        var uuid = this._uuid;
+        var result = Fire._doInstantiate(this);
+        result._uuid = uuid;
+        return result;
     };
 
     return Scene;
