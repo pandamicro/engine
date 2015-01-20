@@ -2,7 +2,9 @@
 var Engine = (function () {
 
     var Engine = {
+// @ifdef EDITOR
         _editorCallback: editorCallback,
+// @endif
     };
 
     var isPlaying = false;
@@ -129,7 +131,9 @@ var Engine = (function () {
         Engine._renderContext = new RenderContext( w, h, canvas );
         Engine._interactionContext = new InteractionContext();
 
+// @ifdef EDITOR
         if (Fire.isEditor === false) {
+            // test in other platform
             Engine._scene = new Scene();
             //if (editorCallback.onSceneLoaded) {
             //    editorCallback.onSceneLoaded(Engine._scene);
@@ -138,6 +142,7 @@ var Engine = (function () {
                 editorCallback.onSceneLaunched(Engine._scene);
             }
         }
+// @endif
 
         return Engine._renderContext;
     };
@@ -149,9 +154,11 @@ var Engine = (function () {
         }
         if (isPlaying && isPaused) {
             isPaused = false;
+// @ifdef EDITOR
             if (editorCallback.onEnginePlayed) {
                 editorCallback.onEnginePlayed(true);
             }
+// @endif
             return;
         }
         isPlaying = true;
@@ -161,9 +168,11 @@ var Engine = (function () {
         Time._restart(now);
         update();
 
+// @ifdef EDITOR
         if (editorCallback.onEnginePlayed) {
             editorCallback.onEnginePlayed(false);
         }
+// @endif
     };
 
     Engine.stop = function () {
@@ -182,16 +191,20 @@ var Engine = (function () {
             requestId = -1;
         }
 
+// @ifdef EDITOR
         if (editorCallback.onEngineStopped) {
             editorCallback.onEngineStopped();
         }
+// @endif
     };
 
     Engine.pause = function () {
         isPaused = true;
+// @ifdef EDITOR
         if (editorCallback.onEnginePaused) {
             editorCallback.onEnginePaused();
         }
+// @endif
     };
 
     Engine.step = function () {
@@ -254,7 +267,7 @@ var Engine = (function () {
     Engine.update = update;
 
     /**
-     * Set current scene directly, only used in Editor
+     * Set current scene directly
      * @method Fire.Engine._setCurrentScene
      * @param {Scene} scene
      * @param {function} [onUnloaded]
@@ -282,16 +295,20 @@ var Engine = (function () {
         // init scene
         //scene.onReady();
         Engine._renderContext.onSceneLoaded(scene);
+// @ifdef EDITOR
         //if (editorCallback.onSceneLoaded) {
         //    editorCallback.onSceneLoaded(scene);
         //}
+// @endif
 
         // launch scene
         Engine._scene = scene;
         Engine._renderContext.onSceneLaunched(scene);
+// @ifdef EDITOR
         if (editorCallback.onSceneLaunched) {
             editorCallback.onSceneLaunched(scene);
         }
+// @endif
 
         scene.activate();
     };

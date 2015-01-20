@@ -28,9 +28,11 @@
             }
             // invoke callbacks
             Engine._renderContext.onEntityCreated(this);
+// @ifdef EDITOR
             if (editorCallback.onEntityCreated) {
                 editorCallback.onEntityCreated(this);
             }
+// @endif
             // activate componet
             transform._onEntityActivated(true);     // 因为是刚刚创建，所以 activeInHierarchy 肯定为 true
         }
@@ -47,9 +49,11 @@
         },
         function (value) {
             this._name = value;
+// @ifdef EDITOR
             if (editorCallback.onEntityRenamed) {
                 editorCallback.onEntityRenamed(this);
             }
+// @endif
         }
     );
     Entity.getset('active',
@@ -119,9 +123,11 @@
                     this._onHierarchyChanged(oldParent);
                 }
                 Engine._renderContext.onEntityParentChanged(this, oldParent);
+// @ifdef EDITOR
                 if (editorCallback.onEntityParentChanged) {
                     editorCallback.onEntityParentChanged(this);
                 }
+// @endif
                 //this._onHierarchyChanged(this, oldParent);
             }
         }
@@ -200,9 +206,11 @@
         var isTopMost = !(parent && (parent._objFlags & Destroying));
         if (isTopMost) {
             Engine._renderContext.onEntityRemoved(this);
+// @ifdef EDITOR
             if (editorCallback.onEntityRemoved) {
                 editorCallback.onEntityRemoved(this/*, isTopMost*/);
             }
+// @endif
         }
         // destroy components
         for (var c = 0; c < this._components.length; ++c) {
@@ -407,9 +415,11 @@
             }
             // callback
             Engine._renderContext.onEntityIndexChanged(this, oldIndex, index);
+// @ifdef EDITOR
             if (editorCallback.onEntityIndexChanged) {
                 editorCallback.onEntityIndexChanged(this, oldIndex, index);
             }
+// @endif
             //this._onHierarchyChanged(this, this.parent);
         }
     };
@@ -501,9 +511,11 @@
 
         // invoke callbacks
         Engine._renderContext.onEntityLoaded(clone);
+// @ifdef EDITOR
         if (editorCallback.onEntityCreated) {
             editorCallback.onEntityCreated(clone);
         }
+// @endif
         // activate components
         if (clone._active) {
             clone._onActivatedInHierarchy(true);

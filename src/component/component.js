@@ -87,9 +87,11 @@
                 if ( self.onEnable ) {
                     self.onEnable();
                 }
+// @ifdef EDITOR
                 if ( editorCallback.onComponentEnabled ) {
                     editorCallback.onComponentEnabled(self);
                 }
+// @endif
             }
         }
         else {
@@ -98,9 +100,11 @@
                 if ( self.onDisable ) {
                     self.onDisable();
                 }
+// @ifdef EDITOR
                 if ( editorCallback.onComponentDisabled ) {
                     editorCallback.onComponentDisabled(self);
                 }
+// @endif
             }
         }
     };

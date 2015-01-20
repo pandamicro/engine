@@ -1,5 +1,6 @@
 ﻿//
 
+// @ifdef EDITOR
 /**
  * overridable callbacks for editor
  * @property {object} Fire.Engine._editorCallback
@@ -97,3 +98,4 @@ var editorCallback = {
      */
     onComponentDisabled: null,
 };
+// @endif
