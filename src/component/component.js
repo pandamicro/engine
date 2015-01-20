@@ -8,14 +8,6 @@
     var Component = Fire.define('Fire.Component', HashObject, function () {
         HashObject.call(this);
 
-        // used in _callOnEnable to ensure onEnable and onDisable will be called alternately
-        this._isOnEnableCalled = false;     // TODO: use flag
-            // 从逻辑上来说OnEnable和OnDisable的交替调用不需要由额外的变量进行保护，但那样会使设计变得复杂
-            // 例如Entity.destory调用后但还未真正销毁时，会调用所有Component的OnDisable。
-            // 这时如果又有addComponent，Entity需要对这些新来的Component特殊处理。将来调度器做了之后可以尝试去掉这个标记。
-
-        this._isOnLoadCalled = false;   // TODO: use flag
-
 // @ifdef EDITOR
         AssetsWatcher.initComponent(this);
 // @endif
@@ -90,8 +82,8 @@
     // Should not call onEnable/onDisable in other place
     var _callOnEnable = function (self, enable) {
         if ( enable ) {
-            if ( !self._isOnEnableCalled ) {
-                self._isOnEnableCalled = true;
+            if ( !(self._objFlags & IsOnEnableCalled) ) {
+                self._objFlags |= IsOnEnableCalled;
                 if ( self.onEnable ) {
                     self.onEnable();
                 }
@@ -101,8 +93,8 @@
             }
         }
         else {
-            if ( self._isOnEnableCalled ) {
-                self._isOnEnableCalled = false;
+            if ( self._objFlags & IsOnEnableCalled ) {
+                self._objFlags &= ~IsOnEnableCalled;
                 if ( self.onDisable ) {
                     self.onDisable();
                 }
@@ -114,8 +106,8 @@
     };
 
     Component.prototype._onEntityActivated = function (active) {
-        if (!this._isOnLoadCalled) {
-            this._isOnLoadCalled = true;
+        if ( !(this._objFlags & IsOnLoadCalled) ) {
+            this._objFlags |= IsOnLoadCalled;
             if (this.onLoad) {
                 this.onLoad();
             }

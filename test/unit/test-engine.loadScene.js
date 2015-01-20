@@ -20,8 +20,8 @@ asyncTest('load scene 1', function () {
         ok(sr, 'can load component');
         ok(sr.sprite.texture.image, 'can load asset');
 
-        ok(sr._isOnEnableCalled, 'should trigger onEnable');
-        ok(sr._isOnLoadCalled, 'should trigger onLoad');
+        ok(sr._objFlags & Fire._ObjectFlags.IsOnEnableCalled, 'should trigger onEnable');
+        ok(sr._objFlags & Fire._ObjectFlags.IsOnLoadCalled, 'should trigger onLoad');
 
         // check render context
         Engine._renderContext.checkMatchCurrentScene();

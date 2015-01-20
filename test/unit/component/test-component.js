@@ -1,6 +1,6 @@
 ﻿// jshint ignore: start
 
-largeModule('Component', TestEnv);
+//largeModule('Component', TestEnv);
 
 /*
 test('onHierarchyChanged invoked by setting parent', function () {
