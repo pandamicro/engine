@@ -59,12 +59,18 @@
 
     Scene.prototype.update = function () {
         // call update
-        var self = this;
-        var entities = self.entities;
-        var i, len;
+        var entities = this.entities;
+        var i = 0, len = entities.length;
+        // invoke onStart
+        // TODO: 使用一个数组将需要调用的 onStart 存起来，避免递归遍历
+        for (; i < len; ++i) {
+            Component._invokeStarts(entities[i]);
+        }
+        // invoke update
         for (i = 0, len = entities.length; i < len; ++i) {
             updateRecursively(entities[i]);
         }
+        // invoke lateUpdate
         for (i = 0, len = entities.length; i < len; ++i) {
             lateUpdateRecursively(entities[i]);
         }
@@ -77,8 +83,7 @@
         this.updateTransform(renderContext.camera || this.camera);
 
         // call onPreRender
-        var self = this;
-        var entities = self.entities;
+        var entities = this.entities;
         for (var i = 0, len = entities.length; i < len; ++i) {
             onPreRenderRecursively(entities[i]);
         }
@@ -182,12 +187,18 @@
     };
 
     Scene.prototype.activate = function () {
+        // active entities, invoke onLoad and onEnable
         var entities = this.entities;
-        for (var i = 0, len = entities.length; i < len; ++i) {
+        var i = 0;
+        for (len = entities.length; i < len; ++i) {
             var entity = entities[i];
             if (entity._active) {
                 entity._onActivatedInHierarchy(true);
             }
+        }
+        // invoke onStart
+        for (i = 0, len = entities.length; i < len; ++i) {
+            Component._invokeStarts(entities[i]);
         }
     };
 

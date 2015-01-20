@@ -61,7 +61,7 @@
     Component.prototype.lateUpdate = null;
     //(NYI) Component.prototype.onCreate = null;  // customized constructor for template
     Component.prototype.onLoad = null;    // when attaching to an active entity or its entity first activated
-    //(NYI) Component.prototype.onStart = null;   // called just before first update, but after onEnable
+    Component.prototype.onStart = null;   // called before all scripts' update if the Component is enabled
     Component.prototype.onEnable = null;
     Component.prototype.onDisable = null;
     Component.prototype.onDestroy = null;
@@ -128,6 +128,30 @@
         }
         if (this._enabled) {
             _callOnEnable(this, active);
+        }
+    };
+
+    /**
+     * invoke starts on entities
+     * @param {Fire.Entity} entity
+     */
+    Component._invokeStarts = function (entity) {
+        var countBefore = entity._components.length;
+        for (var c = 0; c < countBefore; ++c) {
+            var comp = entity._components[c];
+            if ( !(comp._objFlags & IsOnStartCalled) ) {
+                comp._objFlags |= IsOnStartCalled;
+                if (comp.onStart) {
+                    comp.onStart();
+                }
+            }
+        }
+        // activate its children recursively
+        for (var i = 0, len = entity.childCount; i < len; ++i) {
+            var child = entity._children[i];
+            if (child._active) {
+                Component._invokeStarts(child);
+            }
         }
     };
 
