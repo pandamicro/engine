@@ -189,8 +189,8 @@
     Scene.prototype.activate = function () {
         // active entities, invoke onLoad and onEnable
         var entities = this.entities;
-        var i = 0;
-        for (len = entities.length; i < len; ++i) {
+        var i = 0, len = entities.length;
+        for (; i < len; ++i) {
             var entity = entities[i];
             if (entity._active) {
                 entity._onActivatedInHierarchy(true);
