@@ -159,7 +159,7 @@ var AssetLibrary = (function () {
                     ++pendingCount;
                     var extname = asset._rawext ? ('.' + asset._rawext) : typeInfo.defaultExtname;
                     var rawUrl = url + extname;
-                    LoadManager.load(typeInfo.loader, rawUrl, function onRawRawObjLoaded (raw, error) {
+                    LoadManager.load(typeInfo.loader, rawUrl, function onRawObjLoaded (raw, error) {
                         if (error) {
                             Fire.error('[AssetLibrary] Failed to load %s of %s. %s', rawType, url, error);
                         }
