@@ -97,7 +97,7 @@ var BitmapText = (function () {
     BitmapText.prototype.onEnable = function () {
         Engine._renderContext.show(this, true);
     };
-    
+
     BitmapText.prototype.onDisable = function () {
         Engine._renderContext.show(this, false);
     };
@@ -120,7 +120,7 @@ var BitmapText = (function () {
         tempMatrix.prepend(this.transform._worldTransform);
         PixiBitmapFontUtil.updateTransform(this, tempMatrix);
     };
-    
+
     BitmapText.prototype.getSelfMatrix = function (out) {
         var w = this._renderObj ? this._renderObj.textWidth : 0;
         var h = this._renderObj ? this._renderObj.textHeight : 0;
