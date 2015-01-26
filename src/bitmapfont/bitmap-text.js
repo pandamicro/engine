@@ -12,12 +12,12 @@ var BitmapText = (function () {
         t[t.topLeft = 0] = 'topLeft';
         t[t.topCenter = 1] = 'topCenter';
         t[t.topRight = 2] = 'topRight';
-        t[t.midLeft = 3] = 'midLeft';
-        t[t.midCenter = 4] = 'midCenter';
-        t[t.midRight = 5] = 'midRight';
-        t[t.botLeft = 6] = 'botLeft';
-        t[t.botCenter = 7] = 'botCenter';
-        t[t.botRight = 8] = 'botRight';
+        t[t.middleLeft = 3] = 'middleLeft';
+        t[t.middleCenter = 4] = 'middleCenter';
+        t[t.middleRight = 5] = 'middleRight';
+        t[t.bottomLeft = 6] = 'bottomLeft';
+        t[t.bottomCenter = 7] = 'bottomCenter';
+        t[t.bottomRight = 8] = 'bottomRight';
         return t;
     })({});
 
@@ -62,7 +62,7 @@ var BitmapText = (function () {
         Fire.ObjectType(Fire.BitmapFont)
     );
 
-    BitmapText.prop('_anchor', BitmapText.TextAnchor.midCenter, Fire.HideInInspector);
+    BitmapText.prop('_anchor', BitmapText.TextAnchor.middleCenter, Fire.HideInInspector);
     BitmapText.getset('anchor',
         function () {
             return this._anchor;
@@ -107,8 +107,8 @@ var BitmapText = (function () {
 
     BitmapText.prototype.getWorldSize = function () {
         var size = new Fire.Vec2(0, 0);
-        size.x = this._renderObj ? this._renderObj.width : 0;
-        size.y = this._renderObj ? this._renderObj.height : 0;
+        size.x = this._renderObj ? this._renderObj.textWidth : 0;
+        size.y = this._renderObj ? this._renderObj.textHeight : 0;
         return size;
     };
 
@@ -142,27 +142,27 @@ var BitmapText = (function () {
                 anchorOffset.tx -= w;
                 anchorOffset.ty = 0;
                 break;
-            case BitmapText.TextAnchor.midLeft:
+            case BitmapText.TextAnchor.middleLeft:
                 anchorOffset.tx = 0;
                 anchorOffset.ty = h * (1.0 - 0.5);
                 break;
-            case BitmapText.TextAnchor.midCenter:
+            case BitmapText.TextAnchor.middleCenter:
                 anchorOffset.tx -= w * 0.5;
                 anchorOffset.ty = h * (1.0 - 0.5);
                 break;
-            case BitmapText.TextAnchor.midRight:
+            case BitmapText.TextAnchor.middleRight:
                 anchorOffset.tx -= w;
                 anchorOffset.ty = h * (1.0 - 0.5) ;
                 break;
-            case BitmapText.TextAnchor.botLeft:
+            case BitmapText.TextAnchor.bottomLeft:
                 anchorOffset.tx = 0;
                 anchorOffset.ty = h;
                 break;
-            case BitmapText.TextAnchor.botCenter:
+            case BitmapText.TextAnchor.bottomCenter:
                 anchorOffset.tx -= w * 0.5;
                 anchorOffset.ty = h;
                 break;
-            case BitmapText.TextAnchor.botRight:
+            case BitmapText.TextAnchor.bottomRight:
                 anchorOffset.tx -= w;
                 anchorOffset.ty = h;
                 break;
