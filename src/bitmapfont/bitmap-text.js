@@ -59,7 +59,8 @@ var BitmapText = (function () {
                 this._text = value;
                 Engine._renderContext.setText(this, value);
             }
-        }
+        },
+        Fire.MultiText
     );
 
     BitmapText.prop('_anchor', BitmapText.TextAnchor.midCenter, Fire.HideInInspector);
