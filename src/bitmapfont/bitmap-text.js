@@ -2,22 +2,22 @@
 var BitmapText = (function () {
 
     var TextAlign = (function (t) {
-        t[t.left = 0] = 'left';
-        t[t.center = 1] = 'center';
-        t[t.right = 2] = 'right';
+        t[t.left = 0] = 'Left';
+        t[t.center = 1] = 'Center';
+        t[t.right = 2] = 'Right';
         return t;
     })({});
 
     var TextAnchor = (function (t) {
-        t[t.topLeft = 0] = 'topLeft';
-        t[t.topCenter = 1] = 'topCenter';
-        t[t.topRight = 2] = 'topRight';
-        t[t.middleLeft = 3] = 'middleLeft';
-        t[t.middleCenter = 4] = 'middleCenter';
-        t[t.middleRight = 5] = 'middleRight';
-        t[t.bottomLeft = 6] = 'bottomLeft';
-        t[t.bottomCenter = 7] = 'bottomCenter';
-        t[t.bottomRight = 8] = 'bottomRight';
+        t[t.topLeft = 0] = 'Top Left';
+        t[t.topCenter = 1] = 'Top Center';
+        t[t.topRight = 2] = 'Top Right';
+        t[t.midLeft = 3] = 'Middle Left';
+        t[t.midCenter = 4] = 'Middle Center';
+        t[t.midRight = 5] = 'Middle Right';
+        t[t.botLeft = 6] = 'Bottom Left';
+        t[t.botCenter = 7] = 'Bottom Center';
+        t[t.botRight = 8] = 'Bottom Right';
         return t;
     })({});
 
@@ -34,19 +34,6 @@ var BitmapText = (function () {
     //-- 增加 Bitmap Text 到 组件菜单上
     Fire.addComponentMenu(BitmapText, 'BitmapText');
 
-    BitmapText.prop('_text', 'hello\nworld!', Fire.HideInInspector);
-    BitmapText.getset('text',
-        function () {
-            return this._text;
-        },
-        function (value) {
-            if (this._text !== value) {
-                this._text = value;
-                Engine._renderContext.setText(this, value);
-            }
-        }
-    );
-
     BitmapText.prop('_bitmapFont', null, Fire.HideInInspector);
     BitmapText.getset('bitmapFont',
         function () {
@@ -62,7 +49,20 @@ var BitmapText = (function () {
         Fire.ObjectType(Fire.BitmapFont)
     );
 
-    BitmapText.prop('_anchor', BitmapText.TextAnchor.middleCenter, Fire.HideInInspector);
+    BitmapText.prop('_text', 'hello\nworld!', Fire.HideInInspector);
+    BitmapText.getset('text',
+        function () {
+            return this._text;
+        },
+        function (value) {
+            if (this._text !== value) {
+                this._text = value;
+                Engine._renderContext.setText(this, value);
+            }
+        }
+    );
+
+    BitmapText.prop('_anchor', BitmapText.TextAnchor.midCenter, Fire.HideInInspector);
     BitmapText.getset('anchor',
         function () {
             return this._anchor;
@@ -142,27 +142,27 @@ var BitmapText = (function () {
                 anchorOffset.tx -= w;
                 anchorOffset.ty = 0;
                 break;
-            case BitmapText.TextAnchor.middleLeft:
+            case BitmapText.TextAnchor.midLeft:
                 anchorOffset.tx = 0;
                 anchorOffset.ty = h * (1.0 - 0.5);
                 break;
-            case BitmapText.TextAnchor.middleCenter:
+            case BitmapText.TextAnchor.midCenter:
                 anchorOffset.tx -= w * 0.5;
                 anchorOffset.ty = h * (1.0 - 0.5);
                 break;
-            case BitmapText.TextAnchor.middleRight:
+            case BitmapText.TextAnchor.midRight:
                 anchorOffset.tx -= w;
                 anchorOffset.ty = h * (1.0 - 0.5) ;
                 break;
-            case BitmapText.TextAnchor.bottomLeft:
+            case BitmapText.TextAnchor.botLeft:
                 anchorOffset.tx = 0;
                 anchorOffset.ty = h;
                 break;
-            case BitmapText.TextAnchor.bottomCenter:
+            case BitmapText.TextAnchor.botCenter:
                 anchorOffset.tx -= w * 0.5;
                 anchorOffset.ty = h;
                 break;
-            case BitmapText.TextAnchor.bottomRight:
+            case BitmapText.TextAnchor.botRight:
                 anchorOffset.tx -= w;
                 anchorOffset.ty = h;
                 break;
