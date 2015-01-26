@@ -187,6 +187,10 @@ Fire.addComponentMenu = Fire.addComponentMenu || function (constructor, menuPath
 var _requiringFrame = [];  // the requiring frame infos
 
 Fire._RFpush = function (uuid, script) {
+    if (arguments.length === 1) {
+        script = uuid;
+        uuid = '';
+    }
     _requiringFrame.push({
         uuid: uuid,
         script: script
@@ -261,7 +265,9 @@ Fire.defineComponent = function (baseOrConstructor, constructor) {
         var className = frame.script;
         args[0] = className;
         var cls = Fire.define.apply(Fire, args);
-        Fire._setClassId(frame.uuid, cls);
+        if (frame.uuid) {
+            Fire._setClassId(frame.uuid, cls);
+        }
         return cls;
     }
 // @ifdef DEV
