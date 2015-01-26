@@ -125,7 +125,8 @@ var AssetLibrary = (function () {
         _deserializeWithDepends: function (json, url, callback, dontCache, info) {
             // prepare
             if (info) {
-                // info我们只是用来重用临时对象，所以每次使用前要重设
+                // info我们只是用来重用临时对象，所以每次使用前要重设。
+                // 所以只能在当帧使用，不能用在回调里！
                 info.reset();
             }
             else {
@@ -150,7 +151,8 @@ var AssetLibrary = (function () {
             var pendingCount = info.uuidList.length;
 
             // load raw
-            if (info.rawProp) {
+            var rawProp = info.rawProp;
+            if (rawProp) {
                 // load depends raw objects
                 var attrs = Fire.attr(asset.constructor, info.rawProp);
                 var rawType = attrs.rawType;
@@ -163,7 +165,7 @@ var AssetLibrary = (function () {
                         if (error) {
                             Fire.error('[AssetLibrary] Failed to load %s of %s. %s', rawType, url, error);
                         }
-                        asset[info.rawProp] = raw;
+                        asset[rawProp] = raw;
                         --pendingCount;
                         if (pendingCount === 0) {
                             callback(asset);
