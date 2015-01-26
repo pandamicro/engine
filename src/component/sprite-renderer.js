@@ -78,6 +78,13 @@
         Engine._renderContext.show(this, false);
     };
 
+    SpriteRenderer.prototype.getWorldSize = function () {
+        var size = new Fire.Vec2(0, 0);
+        size.x = this._sprite ? this._sprite.width : 0;
+        size.y = this._sprite ? this._sprite.height : 0;
+        return size;
+    };
+
     var tempMatrix = new Fire.Matrix23();
 
     SpriteRenderer.prototype.onPreRender = function () {
@@ -88,41 +95,6 @@
     SpriteRenderer.prototype.onDestroy = function () {
         Engine._renderContext.remove(this);
     };
-    //SpriteRenderer.prototype.onHierarchyChanged = function (transform, oldParent) {
-    //    return Engine._renderContext.updateHierarchy(this, transform, oldParent);
-    //};
-
-    // override
-    function _doGetOrientedBounds(mat, bl, tl, tr, br) {
-        var width = this._sprite ? this._sprite.width : 0;
-        var height = this._sprite ? this._sprite.height : 0;
-
-        this.getSelfMatrix(tempMatrix);
-        mat = tempMatrix.prepend(mat);
-
-        // transform rect(0, 0, width, height) by matrix
-        var tx = mat.tx;
-        var ty = mat.ty;
-        var xa = mat.a * width;
-        var xb = mat.b * width;
-        var yc = mat.c * - height;
-        var yd = mat.d * - height;
-
-        tl.x = tx;
-        tl.y = ty;
-        tr.x = xa + tx;
-        tr.y = xb + ty;
-        bl.x = yc + tx;
-        bl.y = yd + ty;
-        br.x = xa + yc + tx;
-        br.y = xb + yd + ty;
-
-        // above scripts should equivalent to:
-        //tl.set(mat.transformPoint(new Vec2(0, 0)));
-        //tr.set(mat.transformPoint(new Vec2(width, 0)));
-        //bl.set(mat.transformPoint(new Vec2(0, -height)));
-        //br.set(mat.transformPoint(new Vec2(width, -height)));
-    }
 
     // 返回表示 sprite 的 width/height/pivot/skew/shear 等变换的 matrix，
     // 由于这些变换不影响子物体，所以不能放到 getLocalToWorldMatrix
@@ -148,40 +120,6 @@
         out.c = 0;
         out.d = scaleY;
     };
-
-    SpriteRenderer.prototype.getWorldBounds = function (out) {
-        var worldMatrix = this.entity.transform.getLocalToWorldMatrix();
-        var bl = new Vec2(0, 0);
-        var tl = new Vec2(0, 0);
-        var tr = new Vec2(0, 0);
-        var br = new Vec2(0, 0);
-        _doGetOrientedBounds.call(this, worldMatrix, bl, tl, tr, br);
-        out = out || new Rect();
-        Math.calculateMaxRect(out, bl, tl, tr, br);
-        return out;
-    };
-
-    /**
-     * Returns a "world" oriented bounding box(OBB) of the renderer.
-     *
-     * @function Fire.SpriteRenderer#getWorldOrientedBounds
-     * @param {Fire.Vec2} [out1] - optional, the vector to receive the 1st world position
-     * @param {Fire.Vec2} [out2] - optional, the vector to receive the 2nd world position
-     * @param {Fire.Vec2} [out3] - optional, the vector to receive the 3rd world position
-     * @param {Fire.Vec2} [out4] - optional, the vector to receive the 4th world position
-     * @returns {Fire.Vec2[]} - the array contains four vectors represented in world position
-     */
-    SpriteRenderer.prototype.getWorldOrientedBounds = function (out1, out2, out3, out4) {
-        out1 = out1 || new Vec2(0, 0);
-        out2 = out2 || new Vec2(0, 0);
-        out3 = out3 || new Vec2(0, 0);
-        out4 = out4 || new Vec2(0, 0);
-        var worldMatrix = this.entity.transform.getLocalToWorldMatrix();
-        _doGetOrientedBounds.call(this, worldMatrix, out1, out2, out3, out4);
-        return [out1, out2, out3, out4];
-    };
-
-    // other functions
 
     return SpriteRenderer;
 })();
