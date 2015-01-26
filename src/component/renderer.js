@@ -18,6 +18,8 @@
     //    return new Fire.Rect();
     //};
 
+    var tempMatrix = new Fire.Matrix23();
+
     /**
      * Returns a "world" axis aligned bounding box(AABB) of the renderer.
      *
@@ -26,8 +28,15 @@
      * @returns {Fire.Rect} - the rect represented in world position
      */
     Renderer.prototype.getWorldBounds = function (out) {
-        Fire.warn('interface not yet implemented');
-        return new Fire.Rect();
+        var worldMatrix = this.entity.transform.getLocalToWorldMatrix();
+        var bl = new Vec2(0, 0);
+        var tl = new Vec2(0, 0);
+        var tr = new Vec2(0, 0);
+        var br = new Vec2(0, 0);
+        _doGetOrientedBounds.call(this, worldMatrix, bl, tl, tr, br);
+        out = out || new Rect();
+        Math.calculateMaxRect(out, bl, tl, tr, br);
+        return out;
     };
 
     /**
@@ -37,9 +46,48 @@
      * @param {...Fire.Vec2} [out] - optional, the vector to receive the world position
      * @returns {Fire.Vec2[]} - the array contains vectors represented in world position
      */
-    Renderer.prototype.getWorldOrientedBounds = function (out) {
-        Fire.error('interface not yet implemented');
+    Renderer.prototype.getWorldOrientedBounds = function (out1, out2, out3, out4){
+        out1 = out1 || new Vec2(0, 0);
+        out2 = out2 || new Vec2(0, 0);
+        out3 = out3 || new Vec2(0, 0);
+        out4 = out4 || new Vec2(0, 0);
+        var worldMatrix = this.entity.transform.getLocalToWorldMatrix();
+        _doGetOrientedBounds.call(this, worldMatrix, out1, out2, out3, out4);
+        return [out1, out2, out3, out4];
     };
+
+    Renderer.prototype.getSelfMatrix = function (out) {
+    };
+
+    Renderer.prototype.getWorldSize = function () {
+        return new Vec2(0, 0);
+    };
+
+    function _doGetOrientedBounds(mat, bl, tl, tr, br) {
+        var size = this.getWorldSize();
+        var width = size.x;
+        var height = size.y;
+
+        this.getSelfMatrix(tempMatrix);
+        mat = tempMatrix.prepend(mat);
+
+        // transform rect(0, 0, width, height) by matrix
+        var tx = mat.tx;
+        var ty = mat.ty;
+        var xa = mat.a * width;
+        var xb = mat.b * width;
+        var yc = mat.c * -height;
+        var yd = mat.d * -height;
+
+        tl.x = tx;
+        tl.y = ty;
+        tr.x = xa + tx;
+        tr.y = xb + ty;
+        bl.x = yc + tx;
+        bl.y = yd + ty;
+        br.x = xa + yc + tx;
+        br.y = xb + yd + ty;
+    }
 
     return Renderer;
 })();

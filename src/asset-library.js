@@ -10,7 +10,11 @@ var AssetLibrary = (function () {
         json: {
             loader: JsonLoader,
             defaultExtname: '.json',
-        }
+        },
+        text: {
+            loader: TextLoader,
+            defaultExtname: '.txt',
+        },
     };
 
     // configs
