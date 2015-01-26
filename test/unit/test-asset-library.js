@@ -13,7 +13,7 @@ largeModule('AssetLibrary', {
     }
 });
 
-asyncTest('load asset with host', function () {
+asyncTest('load asset with raw', function () {
     //var texture = new Fire.Texture();
     //texture.height = 123;
     //texture.width = 321;

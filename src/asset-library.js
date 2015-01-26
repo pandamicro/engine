@@ -2,7 +2,7 @@
 
 var AssetLibrary = (function () {
 
-    var HostTypes = {
+    var RawTypes = {
         image: {
             loader: ImageLoader,
             defaultExtname: '.host',
@@ -149,21 +149,21 @@ var AssetLibrary = (function () {
             // load depends
             var pendingCount = info.uuidList.length;
 
-            // load host
-            if (info.hostProp) {
-                // load depends host objects
-                var attrs = Fire.attr(asset.constructor, info.hostProp);
-                var hostType = attrs.hostType;
-                var typeInfo = HostTypes[hostType];
+            // load raw
+            if (info.rawProp) {
+                // load depends raw objects
+                var attrs = Fire.attr(asset.constructor, info.rawProp);
+                var rawType = attrs.rawType;
+                var typeInfo = RawTypes[rawType];
                 if (typeInfo) {
                     ++pendingCount;
-                    var extname = asset._hostext ? ('.' + asset._hostext) : typeInfo.defaultExtname;
-                    var hostUrl = url + extname;
-                    LoadManager.load(typeInfo.loader, hostUrl, function onHostObjLoaded (host, error) {
+                    var extname = asset._rawext ? ('.' + asset._rawext) : typeInfo.defaultExtname;
+                    var rawUrl = url + extname;
+                    LoadManager.load(typeInfo.loader, rawUrl, function onRawObjLoaded (raw, error) {
                         if (error) {
-                            Fire.error('[AssetLibrary] Failed to load %s of %s. %s', hostType, url, error);
+                            Fire.error('[AssetLibrary] Failed to load %s of %s. %s', rawType, url, error);
                         }
-                        asset[info.hostProp] = host;
+                        asset[info.rawProp] = raw;
                         --pendingCount;
                         if (pendingCount === 0) {
                             callback(asset);
@@ -171,7 +171,7 @@ var AssetLibrary = (function () {
                     });
                 }
                 else {
-                    Fire.warn('[AssetLibrary] Unknown host type "%s" of %s', hostType, url);
+                    Fire.warn('[AssetLibrary] Unknown raw type "%s" of %s', rawType, url);
                 }
             }
             if (pendingCount === 0) {
