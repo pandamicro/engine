@@ -49,7 +49,7 @@ var BitmapText = (function () {
         Fire.ObjectType(Fire.BitmapFont)
     );
 
-    BitmapText.prop('_text', 'hello\nworld!', Fire.HideInInspector);
+    BitmapText.prop('_text', 'Text', Fire.HideInInspector);
     BitmapText.getset('text',
         function () {
             return this._text;
