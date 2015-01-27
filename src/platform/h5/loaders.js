@@ -73,11 +73,6 @@ function _LoadFromXHR(url, callback, onProgress, responseType) {
             total = xhr.getResponseHeader('Content-Length');
         }
     };
-// @ifdef EDITOR
-    if (FireUrl) {
-        url = FireUrl.addRandomQuery(url);
-    }
-// @endif
     xhr.open('GET', url, true);
     if (responseType) {
         xhr.responseType = responseType;
