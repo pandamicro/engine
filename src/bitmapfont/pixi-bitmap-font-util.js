@@ -9,7 +9,7 @@ var emptyFont = {
 
 function _getStyle(target) {
     var font = emptyFont;
-    if (target.bitmapFont) {
+    if (target.bitmapFont && target.bitmapFont.face) {
         font = {
             face: target.bitmapFont.face,
             size: target.bitmapFont.size,
@@ -50,7 +50,7 @@ function _getNewMatrix23(child, tempMatrix) {
 
 function _registerFont(bitmapFont) {
     var data = {};
-    if (!bitmapFont) {
+    if (!bitmapFont || (bitmapFont && !bitmapFont.face)) {
         data.font = 'None';
         data.size = 1;
         data.lineHeight = 1;
