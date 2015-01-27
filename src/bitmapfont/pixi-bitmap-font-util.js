@@ -50,7 +50,7 @@ function _getNewMatrix23(child, tempMatrix) {
 
 function _registerFont(bitmapFont) {
     var data = {};
-    if (!bitmapFont || (bitmapFont && !bitmapFont.face)) {
+    if (!bitmapFont || !bitmapFont.face) {
         data.font = 'None';
         data.size = 1;
         data.lineHeight = 1;
