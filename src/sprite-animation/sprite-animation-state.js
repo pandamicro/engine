@@ -1,32 +1,35 @@
 ﻿
-var SpriteAnimationState = (function (name, animClip) {
-    if (!animClip) {
-        return;
-    }
-    ///< the name of the sprite animation state
-    this.name = name;
-    ///< the referenced sprite sprite animation clip
-    this.clip = animClip;
-    ///< the wrap mode
-    this.wrapMode = animClip.wrapMode;
-    ///< the stop action
-    this.stopAction = animClip.stopAction;
-    ///< the speed to play the sprite animation clip
-    this.speed = animClip.speed;
-    ///< the array of the end frame of each frame info in the sprite animation clip
-    this._frameInfoFrames = animClip.getFrameInfoFrames();
-    ///< the total frame count of the sprite animation clip
-    this.totalFrames = this._frameInfoFrames.length > 0 ? this._frameInfoFrames[this._frameInfoFrames.length - 1] : 0;
-    ///< the length of the sprite animation in seconds with speed = 1.0f
-    this.length = this.totalFrames / animClip.frameRate;
-    /// The current index of frame. The value can be larger than totalFrames.
-    /// If the frame is larger than totalFrames it will be wrapped according to wrapMode. 
-    this.frame = -1;
-    ///< the current time in seoncds
-    this.time = 0;
-    ///< cache result of GetCurrentIndex
-    this._cachedIndex = -1;
+var SpriteAnimationState = (function () {
 
+    var SpriteAnimationState = function (name, animClip) {
+        if (!animClip) {
+            return;
+        }
+        ///< the name of the sprite animation state
+        this.name = name;
+        ///< the referenced sprite sprite animation clip
+        this.clip = animClip;
+        ///< the wrap mode
+        this.wrapMode = animClip.wrapMode;
+        ///< the stop action
+        this.stopAction = animClip.stopAction;
+        ///< the speed to play the sprite animation clip
+        this.speed = animClip.speed;
+        ///< the array of the end frame of each frame info in the sprite animation clip
+        this._frameInfoFrames = animClip.getFrameInfoFrames();
+        ///< the total frame count of the sprite animation clip
+        this.totalFrames = this._frameInfoFrames.length > 0 ? this._frameInfoFrames[this._frameInfoFrames.length - 1] : 0;
+        ///< the length of the sprite animation in seconds with speed = 1.0f
+        this.length = this.totalFrames / animClip.frameRate;
+        /// The current index of frame. The value can be larger than totalFrames.
+        /// If the frame is larger than totalFrames it will be wrapped according to wrapMode. 
+        this.frame = -1;
+        ///< the current time in seoncds
+        this.time = 0;
+        ///< cache result of GetCurrentIndex
+        this._cachedIndex = -1;
+    };
+    
     // ------------------------------------------------------------------ 
     /// \return Get current frame info index.
     // ------------------------------------------------------------------ 
