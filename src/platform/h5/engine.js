@@ -259,10 +259,11 @@ var Engine = (function () {
         Time._update(now, !updateLogic);
         doUpdate(updateLogic);
 
-        // for test
+// @ifdef DEV
         if (__TESTONLY__.update) {
             __TESTONLY__.update(updateLogic);
         }
+// @endif
     };
     Engine.update = update;
 
@@ -348,7 +349,7 @@ var Engine = (function () {
             if (onLaunched) {
                 onLaunched(scene);
             }
-        }, true);
+        });
     };
 
     return Engine;

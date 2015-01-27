@@ -55,4 +55,6 @@
     return Ticker;
 })();
 
+// @ifdef DEV
 __TESTONLY__.Ticker = Ticker;
+// @endif

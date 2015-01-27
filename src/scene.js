@@ -196,9 +196,11 @@
                 entity._onActivatedInHierarchy(true);
             }
         }
-        // invoke onStart
-        for (i = 0, len = entities.length; i < len; ++i) {
-            Component._invokeStarts(entities[i]);
+        if (Engine.isPlaying) {
+            // invoke onStart
+            for (i = 0, len = entities.length; i < len; ++i) {
+                Component._invokeStarts(entities[i]);
+            }
         }
     };
 
