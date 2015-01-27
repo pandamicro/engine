@@ -40,25 +40,17 @@ var SpriteAnimation = (function () {
     SpriteAnimation.prop('sprite6', null, Fire.ObjectType(Fire.Sprite));
     SpriteAnimation.prop('frames6', 4);
 
-    SpriteAnimation.prop('playAutomatically_', false, Fire.HideInInspector);
+    SpriteAnimation.prop('playAutomatically_', true, Fire.HideInInspector);
     SpriteAnimation.getset('playAutomatically',
         function () {
             return this.playAutomatically_;
         },
         function (value) {
             this.playAutomatically_ = value;
-            var animState = this.getAnimState();
-            if (value === true) {
-                this.play(animState, 0);
-            }
-            else {
-                this.stop(animState);
-            }
         }
     );
 
-    SpriteAnimation.prototype.getAnimState = function () {
-        var animClip = this.defaultAnimation;
+    SpriteAnimation.prototype.getAnimState = function (animClip) {
         animClip.frameInfos = [];
         var frameInfo = new Fire.SpriteAnimationClip.FrameInfo(this.sprite1, this.frames1);
         animClip.frameInfos.push(frameInfo);
@@ -111,9 +103,18 @@ var SpriteAnimation = (function () {
         }
     };
 
+    SpriteAnimation.prototype.onLoad = function () {
+        if (this.enabled) {
+            if (this.playAutomatically_ && this.defaultAnimation) {
+                var animState = this.getAnimState(this.defaultAnimation);
+                this.play(animState, 0);
+            }
+        }
+    };
+
     SpriteAnimation.prototype.lateUpdate = function () {
         if (this._curAnimation !== null && Fire.Time.frameCount > this._playStartFrame) {
-            var delta = Math.floor(Fire.Time.deltaTime * this._curAnimation.speed);
+            var delta = Fire.Time.deltaTime * this._curAnimation.speed;
             this.step(delta);
         }
     };
@@ -130,7 +131,7 @@ var SpriteAnimation = (function () {
                     if (this._curAnimation.wrapMode === Fire.SpriteAnimationClip.WrapMode.ClampForever) {
                         stop = false;
                         this._curAnimation.frame = this._curAnimation.totalFrames;
-                        this._curAnimation.time = Math.floor(this._curAnimation.frame / this._curAnimation.clip.frameRate);
+                        this._curAnimation.time = this._curAnimation.frame / this._curAnimation.clip.frameRate;
                     }
                     else {
                         stop = true;

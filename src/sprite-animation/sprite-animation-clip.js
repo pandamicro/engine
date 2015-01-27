@@ -8,8 +8,8 @@ var SpriteAnimationClip = (function () {
 
     var SpriteAnimationClip = Fire.define('Fire.SpriteAnimationClip', Fire.CustomAsset, function () {
         Fire.CustomAsset.call(this);
-        this.frameInfos = [];                         ///< the list of frame info
-        this._frameInfoFrames = [];                   ///< the array of the end frame of each frame info
+        this.frameInfos = null;                         ///< the list of frame info
+        this._frameInfoFrames = null;                   ///< the array of the end frame of each frame info
     });
 
     Fire.addCustomAssetMenu(SpriteAnimationClip, "New Sprite Animation");

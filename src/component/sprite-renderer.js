@@ -3,6 +3,7 @@
     var SpriteRenderer = Fire.define('Fire.SpriteRenderer', Renderer, function () {
         Renderer.call(this);
         RenderContext.initRenderer(this);
+        this._hasRenderObj = false;
     });
     Fire.addComponentMenu(SpriteRenderer, 'SpriteRenderer');
 
@@ -13,7 +14,9 @@
         },
         function (value) {
             this._sprite = value;
-            Engine._renderContext.updateMaterial(this);
+            if (this._hasRenderObj) {
+                Engine._renderContext.updateMaterial(this);
+            }
         },
         Fire.ObjectType(Fire.Sprite)
     );
@@ -70,6 +73,7 @@
 
     SpriteRenderer.prototype.onLoad = function () {
         Engine._renderContext.addSprite(this);
+        this._hasRenderObj = true;
     };
     SpriteRenderer.prototype.onEnable = function () {
         Engine._renderContext.show(this, true);
