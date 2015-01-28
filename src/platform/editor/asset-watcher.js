@@ -126,6 +126,9 @@ var AssetsWatcher = (function () {
         // deregister old
         var info = this.watchingInfos[propName];
         if (info) {
+            if (info.uuid === newAsset._uuid) {
+                return;
+            }
             // if watching, remove
             AssetLibrary.assetListener.remove(info.uuid, info.callback);
         }

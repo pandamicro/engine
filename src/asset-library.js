@@ -375,6 +375,8 @@ var AssetLibrary = (function () {
 
             // reload
 
+            // 删除旧的引用，所有用到 asset 的地方必须通过 assetListener 监听资源的更新
+            // 否则资源将出现新旧两份引用。
             delete _uuidToAsset[uuid];  // force reload
             this._loadAssetByUuid(uuid, function (asset) {
                 var notUnloaded = uuid in _uuidToAsset;
@@ -382,9 +384,6 @@ var AssetLibrary = (function () {
                     this._updateAsset(uuid, asset);
                 }
             }.bind(this));
-            // 防止 reload 过程中还有人调用 this.loadAssetByUuid。
-            // 我们会保留旧的 asset，因此不允许别的地方获得这个新load进来的 asset 的引用，否则引用不唯一。
-            _uuidToAsset[uuid] = loaded;
         },
 
         // @endif // EDITOR
