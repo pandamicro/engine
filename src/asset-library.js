@@ -157,23 +157,32 @@ var AssetLibrary = (function () {
                 var rawType = attrs.rawType;
                 var typeInfo = RawTypes[rawType];
                 if (typeInfo) {
-                    ++pendingCount;
                     var extname = asset._rawext ? ('.' + asset._rawext) : typeInfo.defaultExtname;
-                    var rawUrl = url + extname;
-                    LoadManager.load(typeInfo.loader, rawUrl, function onRawObjLoaded (raw, error) {
-                        if (error) {
-                            Fire.error('[AssetLibrary] Failed to load %s of %s. %s', rawType, url, error);
-                        }
-                        asset[rawProp] = raw;
-                        --pendingCount;
-                        if (pendingCount === 0) {
-                            callback(asset);
-                        }
-                    });
+                    if (extname) {
+                        ++pendingCount;
+                        var rawUrl = url + extname;
+                        LoadManager.load(typeInfo.loader, rawUrl, function onRawObjLoaded (raw, error) {
+                            if (error) {
+                                Fire.error('[AssetLibrary] Failed to load %s of %s. %s', rawType, url, error);
+                            }
+                            asset[rawProp] = raw;
+                            --pendingCount;
+                            if (pendingCount === 0) {
+                                callback(asset);
+                            }
+                        });
+                    }
+// @ifdef DEV
+                    else {
+                        Fire.error('[AssetLibrary] Undefined extname for the raw %s file of %s', rawType, url);
+                    }
+// @endif
                 }
+// @ifdef DEV
                 else {
                     Fire.warn('[AssetLibrary] Unknown raw type "%s" of %s', rawType, url);
                 }
+// @endif
             }
             if (pendingCount === 0) {
                 callback(asset);
