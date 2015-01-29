@@ -14,8 +14,7 @@
                 }
                 webAudio.decodeAudioData(xhr.response, function (buffer) {
                     callback(buffer);
-                },
-                function (e) {
+                },function (e) {
                     callback(null, 'LoadAudioClip: "' + url +
                     '" seems to be unreachable or the file is empty. InnerMessage: ' + e);
                 });
