@@ -202,7 +202,9 @@ var AssetLibrary = (function () {
                         if (error) {
                             Fire.error('[AssetLibrary] Failed to load "' + dependsUuid + '", ' + error);
                         }
-                        dependsAsset._uuid = dependsUuid;
+                        else {
+                            dependsAsset._uuid = dependsUuid;
+                        }
                         // update reference
                         obj[prop] = dependsAsset;
                         // check all finished
