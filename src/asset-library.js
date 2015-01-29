@@ -15,6 +15,10 @@ var AssetLibrary = (function () {
             loader: TextLoader,
             defaultExtname: '.txt',
         },
+        audio: {
+            loader: Fire.AudioClipLoader,
+            defaultExtname: '',
+        },
     };
 
     // configs
