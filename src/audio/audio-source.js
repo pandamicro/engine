@@ -1,14 +1,16 @@
 ﻿
-var AudioSources = (function () {
-    var AudioSources = Fire.define("Fire.AudioSources", Component, function () {
-        Fire.AudioContext.initAudioContext(this);
+var AudioSource = (function () {
+    var AudioSource = Fire.define("Fire.AudioSource", Component, function () {
+        Fire.AudioContext.initSource(this);
+        this._play = null;
+        this._pause = null;
     });
 
     //-- 增加 Audio Sources 到 组件菜单上
-    Fire.addComponentMenu(AudioSources, 'AudioSources');
+    Fire.addComponentMenu(AudioSource, 'AudioSource');
 
-    AudioSources.prop('_audioClip', null, Fire.HideInInspector);
-    AudioSources.getset('audioClip',
+    AudioSource.prop('_audioClip', null, Fire.HideInInspector);
+    AudioSource.getset('audioClip',
         function () {
             return this._audioClip;
         },
@@ -21,8 +23,8 @@ var AudioSources = (function () {
         Fire.ObjectType(Fire.AudioClip)
     );
 
-    AudioSources.prop('_loop', false, Fire.HideInInspector);
-    AudioSources.getset('loop',
+    AudioSource.prop('_loop', false, Fire.HideInInspector);
+    AudioSource.getset('loop',
        function () {
            return this._loop;
        },
@@ -34,8 +36,8 @@ var AudioSources = (function () {
        }
     );
 
-    AudioSources.prop('_mute', false, Fire.HideInInspector);
-    AudioSources.getset('mute',
+    AudioSource.prop('_mute', false, Fire.HideInInspector);
+    AudioSource.getset('mute',
        function () {
            return this._mute;
        },
@@ -47,8 +49,8 @@ var AudioSources = (function () {
        }
     );
 
-    AudioSources.prop('_volume', 1, Fire.HideInInspector);
-    AudioSources.getset('volume',
+    AudioSource.prop('_volume', 1, Fire.HideInInspector);
+    AudioSource.getset('volume',
        function () {
            return this._volume;
        },
@@ -61,43 +63,49 @@ var AudioSources = (function () {
        Fire.Range(0,1)
     );
 
-    AudioSources.prop('playOnAwake', true, Fire.HideInInspector);
+    AudioSource.prop('playOnAwake', true, Fire.HideInInspector);
 
-    AudioSources.prototype.pause = function () {
+    AudioSource.prototype.pause = function () {
         Fire.AudioContext.pause(this);
+        this._pause = true;
     };
 
-    AudioSources.prototype.play = function () {
+    AudioSource.prototype.play = function () {
         Fire.AudioContext.play(this);
+        this._play = true;
+        this._pause = false;
     };
 
-    AudioSources.prototype.stop = function () {
+    AudioSource.prototype.stop = function () {
         Fire.AudioContext.stop(this);
+        this._play = false;
+        this._pause = false;
     };
 
-    AudioSources.prototype.onLoad = function () {
+    AudioSource.prototype.onLoad = function () {
         if (!Fire.Engine.isPlaying) {
             this.stop();
         }
     };
 
-    AudioSources.prototype.onStart = function () {
-        if (this.playOnAwake) {
-            this.play();
-        }
+    AudioSource.prototype.onStart = function () {
+        //if (this.playOnAwake) {
+        //    console.log("onStart");
+        //    this.play();
+        //}
     };
 
-    AudioSources.prototype.onEnable = function () {
+    AudioSource.prototype.onEnable = function () {
         if (this.playOnAwake && Fire.Engine.isPlaying) {
             this.play();
         }
     };
 
-    AudioSources.prototype.onDisable = function () {
+    AudioSource.prototype.onDisable = function () {
         this.stop();
     };
 
-    return AudioSources;
+    return AudioSource;
 })();
 
-Fire.AudioSources = AudioSources;
+Fire.AudioSource = AudioSource;

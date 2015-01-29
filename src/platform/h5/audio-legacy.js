@@ -5,8 +5,6 @@
 
     Fire.AudioClipLoader = function (url, callback, onProgress) {
         var audio = document.createElement("audio");
-        audio.src = url;
-        audio.load();
         audio.addEventListener("canplaythrough", function () {
             callback(audio);
         }, false);
@@ -14,11 +12,13 @@
             callback(null, 'LoadAudioClip: "' + url +
                     '" seems to be unreachable or the file is empty. InnerMessage: ' + this.error);
         }, false);
+
+        audio.src = url;
+        audio.load();
     };
 
-    AudioContext.initAudioContext = function (audioSource) {
-        audioSource._play = false;
-        audioSource._audio = null;
+    AudioContext.initSource = function (target) {
+        target._audio = null;
     };
 
     // 靜音
@@ -49,7 +49,6 @@
     AudioContext.pause = function (target) {
         if (!target._audio) { return; }
         target._audio.pause();
-        target._play = false;
     };
 
     // 停止
@@ -57,7 +56,6 @@
         if (!target._audio) { return; }
         target._audio.pause();
         target._audio.currentTime = 0;
-        target._play = false;
     };
 
     // 播放
@@ -69,7 +67,6 @@
         this.updateLoop(target);
         this.updateMute(target);
         target._audio.play();
-        target._play = true;
     };
 
     Fire.AudioContext = AudioContext;
