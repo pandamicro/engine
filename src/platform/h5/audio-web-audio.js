@@ -1,54 +1,67 @@
 ﻿(function () {
-    var AudioContext = {};
-    var WebAudio = (window.AudioContext || window.webkitAudioContext || window.mozAudioContext);
+    var UseWebAudio = (window.AudioContext || window.webkitAudioContext || window.mozAudioContext);
     var webAudio = null;
-    if (!WebAudio) { return; }
+    if (!UseWebAudio) {
+        return;
+    }
+    var AudioContext = {};
 
-    Fire.AudioClipLoader = (function () {
-        return function (url, callback, onProgress) {
-            if (!webAudio) {
-                webAudio = new WebAudio();
+    Fire.AudioClipLoader = function (url, callback, onProgress) {
+        var cb = callback && function (xhr, error) {
+            if (xhr) {
+                if (!webAudio) {
+                    webAudio = new UseWebAudio();
+                }
+                webAudio.decodeAudioData(xhr.response, function (buffer) {
+                    callback(buffer);
+                },
+                function (e) {
+                    callback(null, 'LoadAudioClip: "' + url +
+                    '" seems to be unreachable or the file is empty. InnerMessage: ' + e);
+                });
             }
-            var cb = callback && function (xhr, error) {
-                if (xhr) {
-                    webAudio.decodeAudioData(xhr.response, function (buffer) {
-                        callback(buffer);
-                    });
-                }
-                else {
-                    Fire.error(error);
-                }
-            };
-            _LoadFromXHR(url, cb, onProgress, 'arraybuffer');
+            else {
+                callback(null, 'LoadAudioClip: "' + url +
+               '" seems to be unreachable or the file is empty. InnerMessage: ' + error);
+            }
         };
-    })();
+        _LoadFromXHR(url, cb, onProgress, 'arraybuffer');
+    };
     
-   
+    AudioContext.initAudioContext = function (audioSource) {
+        audioSource._startOffset = 0;
+        audioSource._startTime = 0;
+        audioSource._curAudioSource = null;
+        audioSource._curVolume = null;
+        audioSource._play = null;
+        audioSource._pause = null;
+    };
+
     // 靜音
-    AudioContext.mute = function (target) {
+    AudioContext.updateMute = function (target) {
         if (!target._curVolume) { return; }
-        target._curVolume.gain.value = target.mute ? -1 : this.volume(target);
+        target._curVolume.gain.value = target.mute ? -1 : this.updateVolume(target);
     };
     
     // 设置音量，音量范围是[0, 1]
-    AudioContext.volume = function (target) {
+    AudioContext.updateVolume = function (target) {
         if (!target || !target._curVolume) { return; }
         target._curVolume.gain.value = (target.volume - 1);
     };
     
-    // 设置循環
-    AudioContext.loop = function (target) {
+    // 设置循环
+    AudioContext.updateLoop = function (target) {
         if (!target || !target._curAudioSource ) { return; }
         target._curAudioSource.loop = target.loop;
     };
     
     // 将音乐源节点绑定具体的音频buffer
-    AudioContext.setAudioClip = function (target) {
+    AudioContext.updateAudioClip = function (target) {
         if (!target || !target._curAudioSource) { return; }
         target._curAudioSource.buffer = target.audioClip.clip;
     };
 
-    // 暫停
+    // 暂停
     AudioContext.pause = function (target) {
         target._pause = true;
         this.stop();
@@ -78,13 +91,13 @@
         // 設置開始播放時間
         target._startTime = webAudio.currentTime;
         // 将音乐源节点绑定具体的音频buffer
-        this.setAudioClip(target);
+        this.updateAudioClip(target);
         // 设置音量，音量范围是[0, 1]
-        this.volume(target);
+        this.updateVolume(target);
         // 是否禁音
-        this.mute(target);
+        this.updateMute(target);
         // 是否循環播放
-        this.loop(target);
+        this.updateLoop(target);
         // 播放音樂
         if (target._pause) {
             target._curAudioSource.start(0, target._startOffset % buffer.duration);

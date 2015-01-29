@@ -42,7 +42,7 @@ var paths = {
         "src/bitmapfont/bitmap-text.js",
         'src/component/camera.js',
         'src/component/missing.js',
-        'src/audio/audio-sources.js',
+        'src/audio/audio-source.js',
         'src/interaction-context.js',
         'src/entity.js',
         'src/scene.js',
