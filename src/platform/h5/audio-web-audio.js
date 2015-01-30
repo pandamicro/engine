@@ -55,7 +55,7 @@
     // 将音乐源节点绑定具体的音频buffer
     AudioContext.updateAudioClip = function (target) {
         if (!target || !target._buffSource) { return; }
-        target._buffSource.buffer = target.audioClip.clip;
+        target._buffSource.buffer = target.clip.rawData;
     };
 
     // 暂停
@@ -79,7 +79,7 @@
 
     // 播放
     AudioContext.play = function (target) {
-        if (!target.audioClip || !target.audioClip.clip) { return; }
+        if (!target.clip || !target.clip.rawData) { return; }
         if (target._play) { return; }
         // 初始化
         if (!target._buffSource) {

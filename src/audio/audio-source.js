@@ -9,14 +9,14 @@ var AudioSource = (function () {
     //-- 增加 Audio Sources 到 组件菜单上
     Fire.addComponentMenu(AudioSource, 'AudioSource');
 
-    AudioSource.prop('_audioClip', null, Fire.HideInInspector);
-    AudioSource.getset('audioClip',
+    AudioSource.prop('_clip', null, Fire.HideInInspector);
+    AudioSource.getset('clip',
         function () {
-            return this._audioClip;
+            return this._clip;
         },
         function (value) {
-            if (this._audioClip !== value) {
-                this._audioClip = value;
+            if (this._clip !== value) {
+                this._clip = value;
                 Fire.AudioContext.updateAudioClip(this);
             }
         },
