@@ -47,14 +47,6 @@
         target._audio = target.clip.rawData;
     };
 
-    // 设置音乐播放完后的回调
-    AudioContext.setOnEnd = function (target) {
-        if (!target || !target._audio) { return; }
-        audio.addEventListener('ended', function () {
-            target.onPlayEnd.bind(target)
-        }, false);
-    };
-
     // 暫停
     AudioContext.pause = function (target) {
         if (!target._audio) { return; }
@@ -76,8 +68,12 @@
         this.updateVolume(target);
         this.updateLoop(target);
         this.updateMute(target);
-        this.setOnEnd(target);
         target._audio.play();
+
+        // 播放结束后的回调
+        target._audio.addEventListener('ended', function () {
+            target.onPlayEnd.bind(target)
+        }, false);
     };
 
     // 获得音频剪辑的 buffer

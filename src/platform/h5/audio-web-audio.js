@@ -35,12 +35,18 @@
     };
 
     AudioContext.getCurrentTime = function (target) {
-        if ((!target || !target._buffSource) && !target._play) { return 0; }
-        var currentTime = webAudio.currentTime - target._startTime;
-        if (currentTime >= target._buffSource.buffer.duration) {
-            currentTime = target._buffSource.buffer.duration;
+        if (target && target._buffSource && target._play) {
+            var loadedTime = webAudio.currentTime;
+            var curTime = loadedTime - target._startTime;
+            var duration = target._buffSource.buffer.duration;
+            if (curTime >= duration) {
+                curTime = duration;
+            }
+            return curTime;
         }
-        return currentTime;
+        else {
+            return 0;
+        }
     };
 
     // 静音
@@ -65,12 +71,6 @@
     AudioContext.updateAudioClip = function (target) {
         if (!target || !target._buffSource) { return; }
         target._buffSource.buffer = target.clip.rawData;
-    };
-
-    // 设置音乐播放完后的回调
-    AudioContext.setOnEnd = function (target) {
-        if (!target || !target._buffSource) { return; }
-        target._buffSource.onended = target.onPlayEnd.bind(target);
     };
 
     // 暂停
@@ -130,9 +130,8 @@
         else {
             target._buffSource.start(0);
         }
-        // 设置播放结束回调
-        this.setOnEnd(target);
-        console.log(target._buffSource.onended);
+        // 播放结束后的回调
+        target._buffSource.onended = target.onPlayEnd.bind(target);
     };
 
     // 创建buff Source
