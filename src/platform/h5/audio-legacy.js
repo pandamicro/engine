@@ -82,7 +82,7 @@
     // 播放
     AudioContext.play = function (target) {
         if (!target || !target.clip || !target.clip.rawData) { return; }
-        if (target._play) { return; }
+        if (target._play && !target._pause) { return; }
         this.updateAudioClip(target);
         this.updateVolume(target);
         this.updateLoop(target);

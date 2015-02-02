@@ -85,7 +85,7 @@
 
     // 暂停
     AudioContext.pause = function (target) {
-        this.stop();
+        this.stop(target);
     };
 
     // 停止
@@ -97,15 +97,15 @@
         }
         else {
             target._startOffset = 0;
-            target._buffSource = null;
-            target._volumeGain = null;
         }
+        target._buffSource = null;
+        target._volumeGain = null;
     };
 
     // 播放
     AudioContext.play = function (target) {
         if (!target.clip || !target.clip.rawData) { return; }
-        if (target._play) { return; }
+        if (target._play && !target._pause) { return; }
         // 初始化
         if (!target._buffSource) {
             // 创建音频源节点
