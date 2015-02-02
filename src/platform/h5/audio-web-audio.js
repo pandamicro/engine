@@ -37,7 +37,7 @@
     AudioContext.getCurrentTime = function (target) {
         if (target && target._buffSource && target._play) {
             var loadedTime = webAudio.currentTime;
-            var curTime = loadedTime - target._startTime;
+            var curTime = (loadedTime - target._startTime) + target._time;
             var duration = target._buffSource.buffer.duration;
             if (curTime >= duration) {
                 curTime = duration;
@@ -46,6 +46,16 @@
         }
         else {
             return 0;
+        }
+    };
+
+    AudioContext.updateTime = function (target) {
+        // 当前时间就等于 audio source 的 _time
+        if (target && target._buffSource) {
+            var duration = target._buffSource.buffer.duration;
+            if (target._time > duration) {
+                target._time = duration;
+            }
         }
     };
 
@@ -128,7 +138,7 @@
             target._buffSource.start(0, target._startOffset % buffer.duration);
         }
         else {
-            target._buffSource.start(0);
+            target._buffSource.start(0, target.time);
         }
         // 播放结束后的回调
         target._buffSource.onended = target.onPlayEnd.bind(target);

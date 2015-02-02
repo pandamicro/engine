@@ -23,6 +23,25 @@
         target._audio = null;
     };
 
+    AudioContext.getCurrentTime = function (target) {
+        if (target && target._audio && target._play) {
+            return target._audio.currentTime;
+        }
+        else {
+            return 0;
+        }
+    };
+
+    AudioContext.updateTime = function (target) {
+        if (target && target._audio) {
+            var duration = target._audio.duration;
+            if (target._time >= target._audio.duration) {
+                target._time = duration;
+                target._audio.currentTime = target._time;
+            }
+        }
+    };
+
     // 靜音
     AudioContext.updateMute = function (target) {
         if (!target || !target._audio) { return; }
@@ -72,7 +91,7 @@
 
         // 播放结束后的回调
         target._audio.addEventListener('ended', function () {
-            target.onPlayEnd.bind(target)
+            target.onPlayEnd.bind(target);
         }, false);
     };
 

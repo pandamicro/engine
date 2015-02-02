@@ -3,6 +3,7 @@ var AudioSource = (function () {
 
     var AudioSource = Fire.define("Fire.AudioSource", Component, function () {
         Fire.AudioContext.initSource(this);
+        this._time = 0;
         this._play = false; //-- 声源暂停或者停止时候为false
         this._pause = false;//-- 来区分声源是暂停还是停止
         this.onEnd = null;
@@ -17,9 +18,20 @@ var AudioSource = (function () {
     }, Fire.HideInInspector);   
 
     //-- 当前时间
-    AudioSource.get("time", function () {
-        return Fire.AudioContext.getCurrentTime(this);
-    }, Fire.HideInInspector);
+    Object.defineProperty(AudioSource.prototype, 'time', {
+        get: function () {
+            if (!this._play) {
+                return this._time;
+            }
+            return Fire.AudioContext.getCurrentTime(this);
+        },
+        set: function (value) {
+            if (this._time != value) {
+                this._time = value;
+                Fire.AudioContext.updateTime(this);
+            }
+        }
+    });
 
     //-- 当前音频剪辑
     AudioSource.prop('_clip', null, Fire.HideInInspector);
@@ -80,17 +92,7 @@ var AudioSource = (function () {
     );
 
     //-- 是否立即播放
-    AudioSource.prop('_playOnAwake', true, Fire.HideInInspector);
-    AudioSource.getset('playOnAwake',
-       function () {
-           return this._playOnAwake;
-       },
-       function (value) {
-           if (this._playOnAwake !== value) {
-               this._playOnAwake = value;
-           }
-       }
-    );
+    AudioSource.prop('playOnAwake', true);
 
     //-- 播放结束以后的回调
     AudioSource.prototype.onPlayEnd = function () {
@@ -125,14 +127,14 @@ var AudioSource = (function () {
     };
 
     AudioSource.prototype.onStart = function () {
-        //if (this._playOnAwake) {
+        //if (this.playOnAwake) {
         //    console.log("onStart");
         //    this.play();
         //}
     };
 
     AudioSource.prototype.onEnable = function () {
-        if (this._playOnAwake && Fire.Engine.isPlaying) {
+        if (this.playOnAwake && Fire.Engine.isPlaying) {
             this.play();
         }
     };
