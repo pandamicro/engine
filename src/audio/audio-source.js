@@ -14,7 +14,7 @@ var AudioSource = (function () {
 
     //-- 返回当前播放的状态
     AudioSource.get("isPlaying", function () {
-        return this._play;
+        return this._play && !this._pause;
     }, Fire.HideInInspector);   
 
     //-- 当前时间
@@ -96,16 +96,19 @@ var AudioSource = (function () {
 
     //-- 播放结束以后的回调
     AudioSource.prototype.onPlayEnd = function () {
-        if (this._onEnd) {
-            this._onEnd();
+        if (this._pause) {
+            return;
+        }
+        if (this.onEnd) {
+            this.onEnd();
         }
         this._play = false;
         this._pause = false;
     };
 
     AudioSource.prototype.pause = function () {
-        Fire.AudioContext.pause(this);
         this._pause = true;
+        Fire.AudioContext.pause(this);
     };
 
     AudioSource.prototype.play = function () {
