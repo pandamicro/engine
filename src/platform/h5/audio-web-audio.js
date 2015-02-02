@@ -34,7 +34,16 @@
         target._volumeGain = null;
     };
 
-    // 靜音
+    AudioContext.getCurrentTime = function (target) {
+        if ((!target || !target._buffSource) && !target._play) { return 0; }
+        var currentTime = webAudio.currentTime - target._startTime;
+        if (currentTime >= target._buffSource.buffer.duration) {
+            currentTime = target._buffSource.buffer.duration;
+        }
+        return currentTime;
+    };
+
+    // 静音
     AudioContext.updateMute = function (target) {
         if (!target._volumeGain) { return; }
         target._volumeGain.gain.value = target.mute ? -1 : this.updateVolume(target);
@@ -56,6 +65,12 @@
     AudioContext.updateAudioClip = function (target) {
         if (!target || !target._buffSource) { return; }
         target._buffSource.buffer = target.clip.rawData;
+    };
+
+    // 设置音乐播放完后的回调
+    AudioContext.setOnEnd = function (target) {
+        if (!target || !target._buffSource) { return; }
+        target._buffSource.onended = target.onPlayEnd.bind(target);
     };
 
     // 暂停
@@ -97,7 +112,7 @@
             target._buffSource = bufsrc;
             target._volumeGain = gain;
         }
-        // 設置開始播放時間
+        // 设置开始播放时间
         target._startTime = webAudio.currentTime;
         // 将音乐源节点绑定具体的音频buffer
         this.updateAudioClip(target);
@@ -105,16 +120,69 @@
         this.updateVolume(target);
         // 是否禁音
         this.updateMute(target);
-        // 是否循環播放
+        // 是否循环播放
         this.updateLoop(target);
-        // 播放音樂
+        // 播放音乐
         if (target._pause) {
+            var buffer = target._buffSource.buffer;
             target._buffSource.start(0, target._startOffset % buffer.duration);
         }
         else {
             target._buffSource.start(0);
         }
+        // 设置播放结束回调
+        this.setOnEnd(target);
+        console.log(target._buffSource.onended);
     };
+
+    // 创建buff Source
+    function _createBufferSource(clip) {
+        var buffSource = webAudio.createBufferSource();
+        buffSource.buffer = clip.rawData;
+        return buffSource.buffer;
+    }
+
+    // 获得音频剪辑的 buffer
+    AudioContext.getClipBuffer = function (clip) {
+        return clip.rawData;
+    };
+
+    // 以秒为单位 获取音频剪辑的 长度
+    AudioContext.getClipLength = function (clip) {
+        if (!clip) {
+            return;
+        }
+        var buffer = _createBufferSource(clip);
+        return buffer.duration;
+    };
+
+    // 音频剪辑的长度
+    AudioContext.getClipSamples = function (clip) {
+        if (!clip) {
+            return;
+        }
+        var buffer = _createBufferSource(clip);
+        return buffer.length;
+    };
+
+    // 音频剪辑的声道数
+    AudioContext.getClipChannels = function (clip) {
+        if (!clip) {
+            return;
+        }
+        var buffer = _createBufferSource(clip);
+        return buffer.numberOfChannels;
+    };
+
+    // 音频剪辑的采样频率
+    AudioContext.getClipFrequency = function (clip) {
+        if (!clip) {
+            return;
+        }
+        var buffer = _createBufferSource(clip);
+        return buffer.sampleRate;
+    };
+
 
     Fire.AudioContext = AudioContext;
 })();

@@ -1,6 +1,8 @@
 ﻿(function(){
     var UseWebAudio = (window.AudioContext || window.webkitAudioContext || window.mozAudioContext);
-    if (UseWebAudio) { return; }
+    if (UseWebAudio) {
+        return;
+    }
     var AudioContext = {};
 
     Fire.AudioClipLoader = function (url, callback, onProgress) {
@@ -33,7 +35,7 @@
         target._audio.volume = target.volume;
     };
 
-    // 设置循環
+    // 设置循环
     AudioContext.updateLoop = function (target) {
         if (!target || !target._audio) { return; }
         target._audio.loop = target.loop;
@@ -43,6 +45,14 @@
     AudioContext.updateAudioClip = function (target) {
         if (!target || !target.clip) { return; }
         target._audio = target.clip.rawData;
+    };
+
+    // 设置音乐播放完后的回调
+    AudioContext.setOnEnd = function (target) {
+        if (!target || !target._audio) { return; }
+        audio.addEventListener('ended', function () {
+            target.onPlayEnd.bind(target)
+        }, false);
     };
 
     // 暫停
@@ -66,8 +76,39 @@
         this.updateVolume(target);
         this.updateLoop(target);
         this.updateMute(target);
+        this.setOnEnd(target);
         target._audio.play();
     };
+
+    // 获得音频剪辑的 buffer
+    AudioContext.getClipBuffer = function (clip) {
+        Fire.error("Audio does not contain the attribute!");
+        return null;
+    };
+
+    // 以秒为单位 获取音频剪辑的 长度
+    AudioContext.getClipLength = function (clip) {
+        return target.clip.rawData.duration;
+    };
+
+    // 音频剪辑的长度
+    AudioContext.getClipSamples = function (target) {
+        Fire.error("Audio does not contain the attribute!");
+        return null;
+    };
+
+    // 音频剪辑的声道数
+    AudioContext.getClipChannels = function (target) {
+        Fire.error("Audio does not contain the attribute!");
+        return null;
+    };
+
+    // 音频剪辑的采样频率
+    AudioContext.getClipFrequency = function (target) {
+        Fire.error("Audio does not contain the attribute!");
+        return null;
+    };
+
 
     Fire.AudioContext = AudioContext;
 })();

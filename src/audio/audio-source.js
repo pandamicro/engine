@@ -1,13 +1,19 @@
 ﻿
 var AudioSource = (function () {
+
     var AudioSource = Fire.define("Fire.AudioSource", Component, function () {
         Fire.AudioContext.initSource(this);
-        this._play = null;
-        this._pause = null;
+        this._play = false;
+        this._pause = false;
+        this._onEnd = null;
     });
 
     //-- 增加 Audio Sources 到 组件菜单上
     Fire.addComponentMenu(AudioSource, 'AudioSource');
+
+    AudioSource.get("currentTime", function () {
+        return Fire.AudioContext.getCurrentTime(this);
+    }, Fire.HideInInspector);
 
     AudioSource.prop('_clip', null, Fire.HideInInspector);
     AudioSource.getset('clip',
@@ -63,7 +69,36 @@ var AudioSource = (function () {
        Fire.Range(0,1)
     );
 
-    AudioSource.prop('playOnAwake', true, Fire.HideInInspector);
+    AudioSource.prop('_playOnAwake', true, Fire.HideInInspector);
+    AudioSource.getset('playOnAwake',
+       function () {
+           return this._playOnAwake;
+       },
+       function (value) {
+           if (this._playOnAwake !== value) {
+               this._playOnAwake = value;
+           }
+       }
+    );
+
+    Object.defineProperty(AudioSource.prototype, "onEnd", {
+        get: function () {
+            return this._onEnd;
+        },
+        set: function (value) {
+            if (this._onEnd !== value) {
+                this._onEnd = value;
+            }
+        }
+    });
+
+    AudioSource.prototype.onPlayEnd = function () {
+        if (this._onEnd) {
+            this._onEnd();
+        }
+        this._play = false;
+        this._pause = false;
+    };
 
     AudioSource.prototype.pause = function () {
         Fire.AudioContext.pause(this);
@@ -89,14 +124,14 @@ var AudioSource = (function () {
     };
 
     AudioSource.prototype.onStart = function () {
-        //if (this.playOnAwake) {
+        //if (this._playOnAwake) {
         //    console.log("onStart");
         //    this.play();
         //}
     };
 
     AudioSource.prototype.onEnable = function () {
-        if (this.playOnAwake && Fire.Engine.isPlaying) {
+        if (this._playOnAwake && Fire.Engine.isPlaying) {
             this.play();
         }
     };
