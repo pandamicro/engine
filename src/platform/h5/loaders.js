@@ -95,7 +95,7 @@ function TextLoader(url, callback, onProgress) {
             callback(xhr.responseText);
         }
         else {
-            callback(null, 'LoadText: "' + url +
+            callback(null, 'TextLoader: "' + url +
                 '" seems to be unreachable or the file is empty. InnerMessage: ' + error);
         }
     };
@@ -103,11 +103,11 @@ function TextLoader(url, callback, onProgress) {
 }
 
 function JsonLoader(url, callback, onProgress) {
-    var cb = callback && function(text, error) {
-        if (!error) {
+    var cb = callback && function(xhr, error) {
+        if (xhr && xhr.responseText) {
             var json;
             try {
-                json = JSON.parse(text);
+                json = JSON.parse(xhr.responseText);
             }
             catch (e) {
                 callback(null, e);
@@ -116,10 +116,11 @@ function JsonLoader(url, callback, onProgress) {
             callback(json);
         }
         else {
-            callback(null, error);
+            callback(null, 'JsonLoader: "' + url +
+                '" seems to be unreachable or the file is empty. InnerMessage: ' + error);
         }
     };
-    TextLoader(url, cb, onProgress);
+    _LoadFromXHR(url, cb, onProgress);
 }
 
 Fire._JsonLoader = JsonLoader;

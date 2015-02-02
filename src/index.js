@@ -1,5 +1,5 @@
 // @ifndef PLAYER
-;var Fire;
+;var Fire = Fire || {};
 (function (Fire) {
 // @endif
 

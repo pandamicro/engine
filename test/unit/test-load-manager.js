@@ -20,7 +20,7 @@ asyncTest('base', function () {
         start();
     });
 
-    LoadManager.load(myLoader, '', cb);
+    LoadManager.loadByLoader(myLoader, '', cb);
 
     var timerId = setTimeout(function () {
         ok(false, 'time out!');
@@ -37,9 +37,9 @@ asyncTest('Concurrent', function () {
         callback();
     };
 
-    LoadManager.load(immediateLoader, '', cb);
+    LoadManager.loadByLoader(immediateLoader, '', cb);
     cb.once('should load immediate if concurrent < max');
-    LoadManager.load(immediateLoader, '', cb);
+    LoadManager.loadByLoader(immediateLoader, '', cb);
     cb.once('should load immediate again');
 
 
@@ -51,7 +51,7 @@ asyncTest('Concurrent', function () {
 
     cb.disable('should wait for first loaded');
     // load first
-    LoadManager.load(asyncLoader, '', function () {
+    LoadManager.loadByLoader(asyncLoader, '', function () {
         cb.enable();
     });
     cb.callbackFunction(function () {
@@ -59,7 +59,7 @@ asyncTest('Concurrent', function () {
         start();
     });
     // deferred load second
-    LoadManager.load(asyncLoader, '', cb);
+    LoadManager.loadByLoader(asyncLoader, '', cb);
 
     var timerId = setTimeout(function () {
         ok(false, 'time out!');

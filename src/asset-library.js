@@ -2,25 +2,6 @@
 
 var AssetLibrary = (function () {
 
-    var RawTypes = {
-        image: {
-            loader: ImageLoader,
-            defaultExtname: '.host',
-        },
-        json: {
-            loader: JsonLoader,
-            defaultExtname: '.json',
-        },
-        text: {
-            loader: TextLoader,
-            defaultExtname: '.txt',
-        },
-        audio: {
-            loader: Fire.AudioClipLoader,
-            defaultExtname: '',
-        },
-    };
-
     // configs
 
     /**
@@ -101,7 +82,7 @@ var AssetLibrary = (function () {
             }
 
             // step 5
-            LoadManager.load(TextLoader, url,
+            LoadManager.loadByLoader(JsonLoader, url,
                 function (json, error) {
                     if (error) {
                         _uuidToCallbacks.invokeAndRemove(uuid, null, error);
@@ -159,34 +140,17 @@ var AssetLibrary = (function () {
                 // load depends raw objects
                 var attrs = Fire.attr(asset.constructor, info.rawProp);
                 var rawType = attrs.rawType;
-                var typeInfo = RawTypes[rawType];
-                if (typeInfo) {
-                    var extname = asset._rawext ? ('.' + asset._rawext) : typeInfo.defaultExtname;
-                    if (extname) {
-                        ++pendingCount;
-                        var rawUrl = url + extname;
-                        LoadManager.load(typeInfo.loader, rawUrl, function onRawObjLoaded (raw, error) {
-                            if (error) {
-                                Fire.error('[AssetLibrary] Failed to load %s of %s. %s', rawType, url, error);
-                            }
-                            asset[rawProp] = raw;
-                            --pendingCount;
-                            if (pendingCount === 0) {
-                                callback(asset);
-                            }
-                        });
+                ++pendingCount;
+                LoadManager.load(url, rawType, asset._rawext, function onRawObjLoaded (raw, error) {
+                    if (error) {
+                        Fire.error('[AssetLibrary] Failed to load %s of %s. %s', rawType, url, error);
                     }
-// @ifdef DEV
-                    else {
-                        Fire.error('[AssetLibrary] Undefined extname for the raw %s file of %s', rawType, url);
+                    asset[rawProp] = raw;
+                    --pendingCount;
+                    if (pendingCount === 0) {
+                        callback(asset);
                     }
-// @endif
-                }
-// @ifdef DEV
-                else {
-                    Fire.warn('[AssetLibrary] Unknown raw type "%s" of %s', rawType, url);
-                }
-// @endif
+                });
             }
             if (pendingCount === 0) {
                 callback(asset);

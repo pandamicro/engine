@@ -2,6 +2,7 @@
 /**
  * The manager scheduling resources loading
  * - It will:
+ *   - select registered loader
  *   - merge same url request
  *   - limit the max concurrent request
  * - It will NOT:
@@ -9,6 +10,27 @@
  *   - load depends of resource
  */
 var LoadManager = (function () {
+
+    function getBuiltinRawTypes () {
+        return {
+            image: {
+                loader: ImageLoader,
+                defaultExtname: '.host',
+            },
+            json: {
+                loader: JsonLoader,
+                defaultExtname: '.json',
+            },
+            text: {
+                loader: TextLoader,
+                defaultExtname: '.txt',
+            },
+            audio: {
+                loader: Fire.AudioClipLoader,
+                defaultExtname: '',
+            },
+        };
+    }
 
     var urlToCallbacks = new Fire.CallbacksInvoker();
 
@@ -59,7 +81,7 @@ var LoadManager = (function () {
         /**
          * NOTE: Request the same url with different loader for same url is not allowed
          */
-        load: function (loader, url, callback) {
+        loadByLoader: function (loader, url, callback) {
             if (urlToCallbacks.add(url, callback)) {
                 var callbackBundle = urlToCallbacks.bindKey(url, true);
                 if (this._curConcurrent < this.maxConcurrent) {
@@ -74,11 +96,82 @@ var LoadManager = (function () {
                 }
             }
         },
+
+        /**
+         * @param {string} url
+         * @param {string} rawType
+         * @param {string} [rawExtname]
+         * @param {function} callback
+         */
+        load: function (url, rawType, rawExtname, callback) {
+            if (typeof rawExtname === 'function') {
+                callback = rawExtname;
+            }
+            var typeInfo = this._rawTypes[rawType];
+            if (typeInfo) {
+                var extname = rawExtname ? ('.' + rawExtname) : typeInfo.defaultExtname;
+                if (extname) {
+                    var rawUrl = url + extname;
+                    this.loadByLoader(typeInfo.loader, rawUrl, callback);
+                }
+                else {
+                    callback(null, 'Undefined extname for the raw ' + rawType + ' file of ' + url);
+                }
+            }
+            else {
+                callback(null, 'Unknown raw type "' + rawType + '" of ' + url);
+            }
+        },
+
+        _rawTypes: getBuiltinRawTypes(),
+
+        /**
+         * @param {string} rawType
+         * @param {function} loader
+         * @param {string} defaultExtname
+         */
+        registerRawTypes: function (rawType, loader, defaultExtname) {
+// @ifdef DEV
+            if (!rawType) {
+                Fire.error('[AssetLibrary.registerRawTypes] rawType must be non-nil');
+                return;
+            }
+            if (typeof rawType !== 'string') {
+                Fire.error('[AssetLibrary.registerRawTypes] rawType must be string');
+                return;
+            }
+            if (!loader) {
+                Fire.error('[AssetLibrary.registerRawTypes] loader must be non-nil');
+                return;
+            }
+            if (typeof loader !== 'function') {
+                Fire.error('[AssetLibrary.registerRawTypes] loader must be function');
+                return;
+            }
+// @endif
+            if (this._rawTypes[rawType]) {
+                Fire.error('rawType "%s" has already defined', rawType);
+                return;
+            }
+            if (defaultExtname && defaultExtname[0] !== '.') {
+                defaultExtname = '.' + defaultExtname;
+            }
+            this._rawTypes[rawType] = {
+                loader: loader,
+                defaultExtname: defaultExtname,
+            };
+        },
+
+// @ifdef EDITOR
+        reset: function () {
+            this._rawTypes = getBuiltinRawTypes();
+        },
+// @endif
+
+        _loadFromXHR: _LoadFromXHR,
     };
 
     return LoadManager;
 })();
 
-// @ifdef DEV
-__TESTONLY__.LoadManager = LoadManager;
-// @endif
+Fire.LoadManager = LoadManager;
