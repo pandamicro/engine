@@ -1,14 +1,39 @@
 ﻿
 var AudioSource = (function () {
+
     var AudioSource = Fire.define("Fire.AudioSource", Component, function () {
         Fire.AudioContext.initSource(this);
-        this._play = null;
-        this._pause = null;
+        this._time = 0;
+        this._play = false; //-- 声源暂停或者停止时候为false
+        this._pause = false;//-- 来区分声源是暂停还是停止
+        this.onEnd = null;
     });
 
     //-- 增加 Audio Sources 到 组件菜单上
     Fire.addComponentMenu(AudioSource, 'AudioSource');
 
+    //-- 返回当前播放的状态
+    AudioSource.get("isPlaying", function () {
+        return this._play;
+    }, Fire.HideInInspector);   
+
+    //-- 当前时间
+    Object.defineProperty(AudioSource.prototype, 'time', {
+        get: function () {
+            if (!this._play) {
+                return this._time;
+            }
+            return Fire.AudioContext.getCurrentTime(this);
+        },
+        set: function (value) {
+            if (this._time != value) {
+                this._time = value;
+                Fire.AudioContext.updateTime(this);
+            }
+        }
+    });
+
+    //-- 当前音频剪辑
     AudioSource.prop('_clip', null, Fire.HideInInspector);
     AudioSource.getset('clip',
         function () {
@@ -23,6 +48,7 @@ var AudioSource = (function () {
         Fire.ObjectType(Fire.AudioClip)
     );
 
+    //-- 是否循环
     AudioSource.prop('_loop', false, Fire.HideInInspector);
     AudioSource.getset('loop',
        function () {
@@ -36,6 +62,7 @@ var AudioSource = (function () {
        }
     );
 
+    //-- 是否禁音
     AudioSource.prop('_mute', false, Fire.HideInInspector);
     AudioSource.getset('mute',
        function () {
@@ -49,6 +76,7 @@ var AudioSource = (function () {
        }
     );
 
+    //-- 音量大小
     AudioSource.prop('_volume', 1, Fire.HideInInspector);
     AudioSource.getset('volume',
        function () {
@@ -63,7 +91,17 @@ var AudioSource = (function () {
        Fire.Range(0,1)
     );
 
-    AudioSource.prop('playOnAwake', true, Fire.HideInInspector);
+    //-- 是否立即播放
+    AudioSource.prop('playOnAwake', true);
+
+    //-- 播放结束以后的回调
+    AudioSource.prototype.onPlayEnd = function () {
+        if (this._onEnd) {
+            this._onEnd();
+        }
+        this._play = false;
+        this._pause = false;
+    };
 
     AudioSource.prototype.pause = function () {
         Fire.AudioContext.pause(this);
