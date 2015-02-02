@@ -53,7 +53,8 @@ var AssetsWatcher = (function () {
             var attrs = Fire.attr(component.constructor, propName);
             if (attrs.hasSetter && attrs.hasGetter) {
                 var prop = component[propName];
-                var isAssetType = (prop instanceof Asset || Fire.isChildClassOf(attrs.objectType, Asset));
+                var cls = Fire.getClassByName(attrs.type);
+                var isAssetType = (prop instanceof Asset || (cls && Fire.isChildClassOf(cls, Asset)));
                 if (isAssetType) {
                     forceSetterNotify(component.constructor, propName, attrs.originalSetter);
                     var assetPropsAttr = Fire.attr(component.constructor, 'A$$ETprops', {});
