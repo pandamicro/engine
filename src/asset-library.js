@@ -230,7 +230,21 @@ var AssetLibrary = (function () {
          * @param {object} meta
          */
         loadMeta: function (meta, callback) {
-            this._deserializeWithDepends(meta, '', callback, true);
+            function readSubAssetsUuid (subAssets) {
+                for (var i = 0; i < subAssets.length; i++) {
+                    var item = subAssets[i];
+                    item.asset._uuid = item.meta.uuid;
+                    if (item.meta.subAssets) {
+                        readSubAssetsUuid(item.meta.subAssets);
+                    }
+                }
+            }
+            this._deserializeWithDepends(meta, '', function (meta, error) {
+                if (meta && meta.subAssets) {
+                    readSubAssetsUuid(meta.subAssets);
+                }
+                callback(meta, error);
+            }, true);
         },
         // @endif
 
