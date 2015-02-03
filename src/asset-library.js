@@ -19,6 +19,11 @@ var AssetLibrary = (function () {
     // variables
 
     /**
+     * the loading uuid's callbacks
+     */
+    var _uuidToCallbacks = new Fire.CallbacksInvoker();
+
+    /**
      * uuid to all loaded assets
      *
      * 这里保存所有已经加载的资源，防止同一个资源在内存中加载出多份拷贝。
@@ -27,12 +32,7 @@ var AssetLibrary = (function () {
      * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap
      * https://github.com/TooTallNate/node-weak
      */
-    var _uuidToAsset = {};
-
-    /**
-     * the loading uuid's callbacks
-     */
-    var _uuidToCallbacks = new Fire.CallbacksInvoker();
+    this._uuidToAsset = {};
 
     // publics
 
@@ -189,29 +189,6 @@ var AssetLibrary = (function () {
             this._loadAssetByUuid(uuid, callback, true, null);
         },
 
-        // @ifdef EDITOR
-        /**
-         * @param {object} meta
-         */
-        loadMeta: function (meta, callback) {
-            function readSubAssetsUuid (subAssets) {
-                for (var i = 0; i < subAssets.length; i++) {
-                    var item = subAssets[i];
-                    item.asset._uuid = item.meta.uuid;
-                    if (item.meta.subAssets) {
-                        readSubAssetsUuid(item.meta.subAssets);
-                    }
-                }
-            }
-            this._deserializeWithDepends(meta, '', function (meta, error) {
-                if (meta && meta.subAssets) {
-                    readSubAssetsUuid(meta.subAssets);
-                }
-                callback(meta, error);
-            }, true);
-        },
-        // @endif
-
         /**
          * Get the exists asset by uuid.
          *
@@ -271,136 +248,12 @@ var AssetLibrary = (function () {
             _uuidToUrl = uuidToUrl;
         },
 
-        // @ifdef EDITOR
-
-        /**
-         * Kill all references to assets so they can be garbage collected.
-         * Fireball will reload the asset from disk or remote if loadAssetByUuid being called again.
-         * 如果还有地方引用到 asset，调用该方法可能会导致 asset 被多次创建。
-         *
-         * @private
-         */
-        clearAllCache: function () {
-            _uuidToAsset = {};
-        },
-
-        /**
-         * @param {Fire.Asset} newAsset
-         * @param {string} [uuid]
-         */
-        replaceAsset: function (newAsset, uuid) {
-            uuid = uuid || newAsset._uuid;
-            if (uuid) {
-                _uuidToAsset[uuid] = newAsset;
-            }
-            else {
-                Fire.error('[AssetLibrary] Not supplied uuid of asset to replace');
-            }
-        },
-
-        // the asset changed listener
-        // 这里的回调需要完全由使用者自己维护，AssetLibrary只负责调用。
-        assetListener: new Fire.CallbacksInvoker(),
-
-        _onAssetChanged: function (uuid, asset) {
-            this.assetListener.invoke(uuid, asset);
-        },
-
-        /**
-         * Shadow copy all serializable properties from supplied asset to another indicated by uuid.
-         * @param {string} uuid
-         * @param {Fire.Asset} newAsset
-         */
-        _updateAsset: function (uuid, newAsset) {
-            var asset = _uuidToAsset[uuid];
-            if ( !asset || !newAsset ) {
-                return;
-            }
-            var cls = asset.constructor;
-            if (cls !== newAsset.constructor) {
-                Fire.error('Not the same type');
-                return;
-            }
-            if (asset.shadowCopyFrom) {
-                asset.shadowCopyFrom(newAsset);
-            }
-            else {
-                var props = cls.__props__;
-                if (props) {
-                    for (var p = 0; p < props.length; p++) {
-                        var propName = props[p];
-                        var attrs = Fire.attr(cls, propName);
-                        if (attrs.serializable !== false) {
-                            asset[propName] = newAsset[propName];
-                        }
-                    }
-                }
-            }
-            this._onAssetChanged(uuid, asset);
-        },
-
-        /**
-         * In editor, if you load an asset from loadAsset, and then use the asset in the scene,
-         * you should call cacheAsset manually to ensure the asset's reference is unique.
-         */
-        cacheAsset: function (asset) {
-            if (asset) {
-                if (asset._uuid) {
-                    _uuidToAsset[asset._uuid] = asset;
-                }
-                else {
-                    Fire.error('[AssetLibrary] Not defined uuid of the asset to cache');
-                }
-            }
-            else {
-                Fire.error('[AssetLibrary] The asset to cache must be non-nil');
-            }
-        },
-
-        /**
-         * If asset is cached, reload and update it.
-         * @param {string} uuid
-         */
-        onAssetReimported: function (uuid) {
-            var loaded = _uuidToAsset[uuid];
-            if ( !loaded ) {
-                return;
-            }
-
-            // reload
-
-            // 删除旧的引用，所有用到 asset 的地方必须通过 assetListener 监听资源的更新
-            // 否则资源将出现新旧两份引用。
-            delete _uuidToAsset[uuid];  // force reload
-            this._loadAssetByUuid(uuid, function (asset) {
-                var notUnloaded = uuid in _uuidToAsset;
-                if (asset && notUnloaded) {
-                    this._updateAsset(uuid, asset);
-                }
-            }.bind(this));
-        },
-
-        // @endif // EDITOR
-
         ///**
         // * temporary flag for deserializing assets
         // * @property {boolean} Fire.AssetLibrary.isLoadingAsset
         // */
         //isLoadingAsset: false,
     };
-
-    // @ifdef EDITOR
-    /**
-     * Get the original cached assets (Read Only)
-     * This property can only be used for debugging purpose.
-     * @private
-     */
-    Object.defineProperty(AssetLibrary, '_uuidToAsset', {
-        get: function () {
-            return _uuidToAsset;
-        }
-    });
-    // @endif
 
     // unload asset if it is destoryed
 
