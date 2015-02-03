@@ -27,7 +27,7 @@
                 Engine._scene.appendRoot(this);
             }
             // invoke callbacks
-            Engine._renderContext.onEntityCreated(this);
+            Engine._renderContext.onRootEntityCreated(this);
 // @ifdef EDITOR
             if (editorCallback.onEntityCreated) {
                 editorCallback.onEntityCreated(this);
@@ -510,8 +510,7 @@
         }
 
         // invoke callbacks
-        Engine._renderContext.onEntityLoaded(clone);
-        Engine._renderContext.addRootChild(clone);
+        Engine._renderContext.onEntityCreated(clone, true);
 // @ifdef EDITOR
         if (editorCallback.onEntityCreated) {
             editorCallback.onEntityCreated(clone);

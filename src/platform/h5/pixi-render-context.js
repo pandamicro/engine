@@ -111,7 +111,7 @@ var RenderContext = (function () {
     /**
      * @param {Fire.Entity} entity
      */
-    RenderContext.prototype.onEntityCreated = function (entity) {
+    RenderContext.prototype.onRootEntityCreated = function (entity) {
         // always create pixi node even if is scene gizmo, to keep all their indice sync with transforms' sibling indice.
         entity._pixiObj = new PIXI.DisplayObjectContainer();
         if (Engine._canModifyCurrentScene) {
@@ -270,7 +270,7 @@ var RenderContext = (function () {
     RenderContext.prototype.onSceneLoaded = function (scene) {
         var entities = scene.entities;
         for (var i = 0, len = entities.length; i < len; i++) {
-            this.onEntityLoaded(entities[i]);
+            this.onEntityCreated(entities[i], false);
         }
     };
 
@@ -292,38 +292,38 @@ var RenderContext = (function () {
         }
     };
 
-    /**
-     * create nodes recursively
-     * 这个方法会判断是否有parent，将来也会用在prefab
-     * @param {Fire.Entity} entity - must not scene gizmo
-     */
-    RenderContext.prototype.onEntityLoaded = function (entity) {
+    RenderContext.prototype.onEntityCreated = function (entity, addToScene) {
         entity._pixiObj = new PIXI.DisplayObjectContainer();
         if (entity._parent) {
             entity._parent._pixiObj.addChild(entity._pixiObj);
         }
+        else {
+            this.root.addChild(entity._pixiObj);
+            }
         if (this.sceneView) {
             entity._pixiObjInScene = new PIXI.DisplayObjectContainer();
             if (entity._parent) {
                 entity._parent._pixiObjInScene.addChild(entity._pixiObjInScene);
+                }
+                else {
+                this.sceneView.root.addChild(entity._pixiObjInScene);
             }
-        }
+            }
 
         var children = entity._children;
         for (var i = 0, len = children.length; i < len; i++) {
             _onChildEntityLoaded(children[i], this.sceneView);
         }
-    };
-
-
-    RenderContext.prototype.addRootChild = function (clone) {
-        if (!clone._parent) {
-            var objInGame = clone._pixiObj;
-            if (objInGame) {
-                this.root.addChild(objInGame);
-            }
-            if (this.sceneView) {
-                this.sceneView.root.addChild(clone._pixiObjInScene);
+        
+        if (addToScene) {
+            if (!entity._parent) {
+                var objInGame = entity._pixiObj;
+                if (objInGame) {
+                    this.root.addChild(objInGame);
+                }
+                if (this.sceneView) {
+                    this.sceneView.root.addChild(entity._pixiObjInScene);
+                }
             }
         }
     };
