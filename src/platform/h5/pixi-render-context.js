@@ -383,8 +383,9 @@ var RenderContext = (function () {
     };
 
     /**
+     * Set the final transform to render
      * @param {Fire.SpriteRenderer} target
-     * @param {Fire.Matrix23} matrix - the final matrix to render (Read Only)
+     * @param {Fire.Matrix23} matrix - the matrix to render (Read Only)
      */
     RenderContext.prototype.updateTransform = function (target, matrix) {
         // caculate matrix for pixi

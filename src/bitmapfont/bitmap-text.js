@@ -125,47 +125,39 @@ var BitmapText = (function () {
         var w = this._renderObj ? this._renderObj.textWidth : 0;
         var h = this._renderObj ? this._renderObj.textHeight : 0;
 
-        var anchorOffset = {
-            tx:0,
-            ty:0
-        };
+        var anchorOffsetX = 0;
+        var anchorOffsetY = 0;
 
         switch (this._anchor) {
             case BitmapText.TextAnchor.topLeft:
-                anchorOffset.tx = 0;
-                anchorOffset.ty = 0;
                 break;
             case BitmapText.TextAnchor.topCenter:
-                anchorOffset.tx -= w * 0.5;
-                anchorOffset.ty = 0;
+                anchorOffsetX = w * -0.5;
                 break;
             case BitmapText.TextAnchor.topRight:
-                anchorOffset.tx -= w;
-                anchorOffset.ty = 0;
+                anchorOffsetX = -w;
                 break;
             case BitmapText.TextAnchor.midLeft:
-                anchorOffset.tx = 0;
-                anchorOffset.ty = h * (1.0 - 0.5);
+                anchorOffsetY = h * 0.5;
                 break;
             case BitmapText.TextAnchor.midCenter:
-                anchorOffset.tx -= w * 0.5;
-                anchorOffset.ty = h * (1.0 - 0.5);
+                anchorOffsetX = w * -0.5;
+                anchorOffsetY = h * 0.5;
                 break;
             case BitmapText.TextAnchor.midRight:
-                anchorOffset.tx -= w;
-                anchorOffset.ty = h * (1.0 - 0.5) ;
+                anchorOffsetX = -w;
+                anchorOffsetY = h * 0.5;
                 break;
             case BitmapText.TextAnchor.botLeft:
-                anchorOffset.tx = 0;
-                anchorOffset.ty = h;
+                anchorOffsetY = h;
                 break;
             case BitmapText.TextAnchor.botCenter:
-                anchorOffset.tx -= w * 0.5;
-                anchorOffset.ty = h;
+                anchorOffsetX = w * -0.5;
+                anchorOffsetY = h;
                 break;
             case BitmapText.TextAnchor.botRight:
-                anchorOffset.tx -= w;
-                anchorOffset.ty = h;
+                anchorOffsetX = -w;
+                anchorOffsetY = h;
                 break;
             default:
                 break;
@@ -174,8 +166,8 @@ var BitmapText = (function () {
         out.b = 0;
         out.c = 0;
         out.d = 1;
-        out.tx = anchorOffset.tx;
-        out.ty = anchorOffset.ty;
+        out.tx = anchorOffsetX;
+        out.ty = anchorOffsetY;
     };
 
     return BitmapText;

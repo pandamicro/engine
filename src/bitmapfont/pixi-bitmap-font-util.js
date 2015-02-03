@@ -41,7 +41,9 @@ function _getNewMatrix23(child, tempMatrix) {
     mat.d = child.scale.y;
     mat.tx = child.position.x;
     mat.ty = -child.position.y;
+
     mat.prepend(tempMatrix);
+
     mat.b = -mat.b;
     mat.c = -mat.c;
     mat.ty = Fire.Engine._curRenderContext.renderer.height - mat.ty;
@@ -121,9 +123,11 @@ RenderContext.prototype.addBitmapText = function (target) {
 
     var style = _getStyle(target);
 
-    target._renderObj = new PIXI.BitmapText(target.text, style);
-    target.entity._pixiObj.addChildAt(target._renderObj, 0);
-
+    var inGame = !(target.entity._objFlags & HideInGame);
+    if (inGame) {
+        target._renderObj = new PIXI.BitmapText(target.text, style);
+        target.entity._pixiObj.addChildAt(target._renderObj, 0);
+    }
     if (this.sceneView) {
         target._renderObjInScene = new PIXI.BitmapText(target.text, style);
         target.entity._pixiObjInScene.addChildAt(target._renderObjInScene, 0);
@@ -131,17 +135,18 @@ RenderContext.prototype.addBitmapText = function (target) {
 };
 
 PixiBitmapFontUtil.updateTransform = function (target, tempMatrix) {
-    Engine._curRenderContext.updateTransform(target, tempMatrix);
     var i = 0, childrens = null, len = 0, child = null;
-    if (target._renderObj) {
+    var isGameView = Engine._curRenderContext === Engine._renderContext;
+    if (isGameView) {
+        target._renderObj.updateText();
         childrens = target._renderObj.children;
         for (len = childrens.length; i < len; i++) {
             child = childrens[i];
             child.worldTransform = _getNewMatrix23(child, tempMatrix);
         }
     }
-   
-    if (target._renderObjInScene) {
+    else if (target._renderObjInScene) {
+        target._renderObjInScene.updateText();
         childrens = target._renderObjInScene.children;
         for (i = 0, len = childrens.length; i < len; i++) {
             child = childrens[i];
