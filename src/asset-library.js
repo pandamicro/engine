@@ -48,7 +48,7 @@ var AssetLibrary = (function () {
                 return;
             }
             // step 1
-            var asset = this._uuidToAsset[uuid];
+            var asset = AssetLibrary._uuidToAsset[uuid];
             if (asset) {
                 if (callback) {
                     callback(asset);
@@ -80,7 +80,7 @@ var AssetLibrary = (function () {
                     AssetLibrary._deserializeWithDepends(json, url, function (asset) {
                         asset._uuid = uuid;
                         if ( !dontCache ) {
-                            this._uuidToAsset[uuid] = asset;
+                            AssetLibrary._uuidToAsset[uuid] = asset;
                         }
                         _uuidToCallbacks.invokeAndRemove(uuid, asset);
                     }, dontCache, info);
@@ -185,7 +185,7 @@ var AssetLibrary = (function () {
          * @returns {Fire.Asset} - the existing asset, if not loaded, just returns null.
          */
         getAssetByUuid: function (uuid) {
-            return this._uuidToAsset[uuid] || null;
+            return AssetLibrary._uuidToAsset[uuid] || null;
         },
 
         //loadAssetByUrl: function (url, callback, info) {},
@@ -210,7 +210,7 @@ var AssetLibrary = (function () {
         unloadAsset: function (assetOrUuid, destroyAsset) {
             var asset;
             if (typeof assetOrUuid === 'string') {
-                asset = this._uuidToAsset[assetOrUuid];
+                asset = AssetLibrary._uuidToAsset[assetOrUuid];
             }
             else {
                 asset = assetOrUuid;
@@ -219,7 +219,7 @@ var AssetLibrary = (function () {
                 if (destroyAsset && asset.isValid) {
                     asset.destroy();
                 }
-                delete this._uuidToAsset[asset._uuid];
+                delete AssetLibrary._uuidToAsset[asset._uuid];
             }
         },
 
