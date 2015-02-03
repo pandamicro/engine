@@ -9,7 +9,7 @@
         HashObject.call(this);
 
 // @ifdef EDITOR
-        AssetsWatcher.initComponent(this);
+        Fire._AssetsWatcher.initComponent(this);
 // @endif
 
     });
@@ -116,7 +116,7 @@
                 this.onLoad();
             }
 // @ifdef EDITOR
-            AssetsWatcher.start(this);
+            Fire._AssetsWatcher.start(this);
 // @endif
             //if (this.onHierarchyChanged) {
             //    this.entity.transform._addListener(this);
@@ -155,7 +155,7 @@
         // ensure onDisable called
         _callOnEnable(this, false);
 // @ifdef EDITOR
-        AssetsWatcher.stop(this);
+        Fire._AssetsWatcher.stop(this);
 // @endif
         // onDestroy
         if (this.onDestroy) {
