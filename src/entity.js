@@ -510,7 +510,7 @@
         }
 
         // invoke callbacks
-        Engine._renderContext.onEntityLoaded(clone);
+        Engine._renderContext.onEntityCreated(clone);
 // @ifdef EDITOR
         if (editorCallback.onEntityCreated) {
             editorCallback.onEntityCreated(clone);
