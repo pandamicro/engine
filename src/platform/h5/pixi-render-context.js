@@ -297,24 +297,18 @@ var RenderContext = (function () {
         if (entity._parent) {
             entity._parent._pixiObj.addChild(entity._pixiObj);
         }
-        else {
-            this.root.addChild(entity._pixiObj);
-            }
         if (this.sceneView) {
             entity._pixiObjInScene = new PIXI.DisplayObjectContainer();
             if (entity._parent) {
                 entity._parent._pixiObjInScene.addChild(entity._pixiObjInScene);
-                }
-                else {
-                this.sceneView.root.addChild(entity._pixiObjInScene);
             }
-            }
+        }
 
         var children = entity._children;
         for (var i = 0, len = children.length; i < len; i++) {
             _onChildEntityLoaded(children[i], this.sceneView);
         }
-        
+
         if (addToScene) {
             if (!entity._parent) {
                 var objInGame = entity._pixiObj;
