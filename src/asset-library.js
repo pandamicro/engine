@@ -23,17 +23,6 @@ var AssetLibrary = (function () {
      */
     var _uuidToCallbacks = new Fire.CallbacksInvoker();
 
-    /**
-     * uuid to all loaded assets
-     *
-     * 这里保存所有已经加载的资源，防止同一个资源在内存中加载出多份拷贝。
-     * 由于弱引用尚未标准化，在浏览器中所有加载过的资源都只能手工调用 unloadAsset 释放。
-     * 参考：
-     * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap
-     * https://github.com/TooTallNate/node-weak
-     */
-    this._uuidToAsset = {};
-
     // publics
 
     var AssetLibrary = {
@@ -59,7 +48,7 @@ var AssetLibrary = (function () {
                 return;
             }
             // step 1
-            var asset = _uuidToAsset[uuid];
+            var asset = this._uuidToAsset[uuid];
             if (asset) {
                 if (callback) {
                     callback(asset);
@@ -91,7 +80,7 @@ var AssetLibrary = (function () {
                     AssetLibrary._deserializeWithDepends(json, url, function (asset) {
                         asset._uuid = uuid;
                         if ( !dontCache ) {
-                            _uuidToAsset[uuid] = asset;
+                            this._uuidToAsset[uuid] = asset;
                         }
                         _uuidToCallbacks.invokeAndRemove(uuid, asset);
                     }, dontCache, info);
@@ -196,7 +185,7 @@ var AssetLibrary = (function () {
          * @returns {Fire.Asset} - the existing asset, if not loaded, just returns null.
          */
         getAssetByUuid: function (uuid) {
-            return _uuidToAsset[uuid] || null;
+            return this._uuidToAsset[uuid] || null;
         },
 
         //loadAssetByUrl: function (url, callback, info) {},
@@ -221,7 +210,7 @@ var AssetLibrary = (function () {
         unloadAsset: function (assetOrUuid, destroyAsset) {
             var asset;
             if (typeof assetOrUuid === 'string') {
-                asset = _uuidToAsset[assetOrUuid];
+                asset = this._uuidToAsset[assetOrUuid];
             }
             else {
                 asset = assetOrUuid;
@@ -230,7 +219,7 @@ var AssetLibrary = (function () {
                 if (destroyAsset && asset.isValid) {
                     asset.destroy();
                 }
-                delete _uuidToAsset[asset._uuid];
+                delete this._uuidToAsset[asset._uuid];
             }
         },
 
@@ -257,13 +246,24 @@ var AssetLibrary = (function () {
 
     // unload asset if it is destoryed
 
+    /**
+     * uuid to all loaded assets
+     *
+     * 这里保存所有已经加载的资源，防止同一个资源在内存中加载出多份拷贝。
+     * 由于弱引用尚未标准化，在浏览器中所有加载过的资源都只能手工调用 unloadAsset 释放。
+     * 参考：
+     * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap
+     * https://github.com/TooTallNate/node-weak
+     */
+    AssetLibrary._uuidToAsset = {};
+
     // @ifdef DEV
     if (Asset.prototype._onPreDestroy) {
         Fire.error('_onPreDestroy of Asset has already defined');
     }
     // @endif
     Asset.prototype._onPreDestroy = function () {
-        if (_uuidToAsset[this._uuid] === this) {
+        if (AssetLibrary._uuidToAsset[this._uuid] === this) {
             AssetLibrary.unloadAsset(this, false);
         }
     };
