@@ -315,6 +315,19 @@ var RenderContext = (function () {
         }
     };
 
+
+    RenderContext.prototype.addRootChild = function (clone) {
+        if (!clone._parent) {
+            var objInGame = clone._pixiObj;
+            if (objInGame) {
+                this.root.addChild(objInGame);
+            }
+            if (this.sceneView) {
+                this.sceneView.root.addChild(clone._pixiObjInScene);
+            }
+        }
+    };
+
     /**
      * @param {Fire.SpriteRenderer} target
      */
