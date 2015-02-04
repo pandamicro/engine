@@ -1,4 +1,6 @@
 ﻿
+PIXI.BitmapText.prototype.updateTransform = function () { };
+
 var PixiBitmapFontUtil = {};
 
 var emptyFont = {
@@ -100,6 +102,20 @@ function _registerFont(bitmapFont) {
     PIXI.BitmapText.fonts[data.font] = data;
 }
 
+RenderContext.prototype.getTextSize = function (target) {
+    var inGame = !(target.entity._objFlags & HideInGame);
+    var w = 0, h = 0;
+    if (inGame && target._renderObj) {
+        w = target._renderObj.textWidth;
+        h = target._renderObj.textHeight;
+    }
+    else if (target._renderObjInScene) {
+        w = target._renderObjInScene.textWidth;
+        h = target._renderObjInScene.textHeight;
+    }
+    return new Vec2(w, h);
+};
+
 RenderContext.prototype.setText = function (target, newText) {
     if (target._renderObj) {
         target._renderObj.setText(newText);
@@ -138,7 +154,10 @@ PixiBitmapFontUtil.updateTransform = function (target, tempMatrix) {
     var i = 0, childrens = null, len = 0, child = null;
     var isGameView = Engine._curRenderContext === Engine._renderContext;
     if (isGameView) {
-        target._renderObj.updateText();
+        if (target._renderObj.dirty) {
+            target._renderObj.updateText();
+            target._renderObj.dirty = false;
+        }
         childrens = target._renderObj.children;
         for (len = childrens.length; i < len; i++) {
             child = childrens[i];
@@ -146,7 +165,10 @@ PixiBitmapFontUtil.updateTransform = function (target, tempMatrix) {
         }
     }
     else if (target._renderObjInScene) {
-        target._renderObjInScene.updateText();
+        if (target._renderObjInScene.dirty) {
+            target._renderObjInScene.updateText();
+            target._renderObjInScene.dirty = false;
+        }
         childrens = target._renderObjInScene.children;
         for (i = 0, len = childrens.length; i < len; i++) {
             child = childrens[i];
