@@ -107,10 +107,7 @@ var BitmapText = (function () {
     };
 
     BitmapText.prototype.getWorldSize = function () {
-        var size = new Fire.Vec2(0, 0);
-        size.x = this._renderObj ? this._renderObj.textWidth : 0;
-        size.y = this._renderObj ? this._renderObj.textHeight : 0;
-        return size;
+        return Engine._renderContext.getTextSize(this);
     };
 
     var tempMatrix = new Fire.Matrix23();
@@ -122,8 +119,9 @@ var BitmapText = (function () {
     };
 
     BitmapText.prototype.getSelfMatrix = function (out) {
-        var w = this._renderObj ? this._renderObj.textWidth : 0;
-        var h = this._renderObj ? this._renderObj.textHeight : 0;
+        var textSize = Engine._renderContext.getTextSize(this);
+        var w = textSize.x;
+        var h = textSize.y;
 
         var anchorOffsetX = 0;
         var anchorOffsetY = 0;
