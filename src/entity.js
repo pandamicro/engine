@@ -344,6 +344,49 @@
     // hierarchy methods
     ////////////////////////////////////////////////////////////////////
 
+    Entity.prototype.find = function (path) {
+        if (!path && path !== '') {
+            Fire.error('Argument must be non-nil');
+            return;
+        }
+        if (path[0] === '/') {
+            Fire.error("Path should not start with a '/' character, please use \"Fire.Entity.find\" instead");
+            return;
+        }
+        var nameList = path.split('/');
+
+        var match = this;
+        var t = 0, len = 0, children = null, subEntity = null;
+        for (var i = 0; i < nameList.length; i++) {
+            var name = nameList[i];
+            if (name === '..') {
+                if (!match) {
+                    return null;
+                }
+                match = match._parent;
+            }
+            else {
+                if (!match) {
+                    children = Engine._scene.entities;
+                }
+                else {
+                    children = match._children;
+                }
+                match = null;
+                for (t = 0, len = children.length; t < len; ++t) {
+                    subEntity = children[t];
+                    if (subEntity.name === name) {
+                        match = subEntity;
+                    }
+                }
+                if (!match) {
+                    return null;
+                }
+            }
+        }
+        return match;
+    };
+
     Entity.prototype.getChild = function (index) {
         return this._children[index];
     };
