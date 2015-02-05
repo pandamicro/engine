@@ -306,14 +306,25 @@
         return component;
     };
 
-    Entity.prototype.getComponent = function (constructor) {
-        if (!constructor) {
+    /**
+     * @param {function|string} typeOrTypename
+     * @returns {Component}
+     */
+    Entity.prototype.getComponent = function (typeOrTypename) {
+        if ( !typeOrTypename ) {
             Fire.error('Argument must be non-nil');
             return;
         }
+        var constructor;
+        if (typeof typeOrTypename === 'string') {
+            constructor = Fire.getClassByName(typeOrTypename);
+        }
+        else {
+            constructor = typeOrTypename;
+        }
         for (var c = 0; c < this._components.length; ++c) {
             var component = this._components[c];
-            if (component instanceof constructor) { // TODO: what if multi javascript context?
+            if (component instanceof constructor) {
                 return component;
             }
         }

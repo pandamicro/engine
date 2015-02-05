@@ -279,7 +279,7 @@ var RenderContext = (function () {
      * 这个方法假定parent存在
      * @param {Fire.Entity} entity - must have parent, and not scene gizmo
      */
-    var _onChildEntityLoaded = function (entity, hasSceneView) {
+    var _onChildEntityCreated = function (entity, hasSceneView) {
         entity._pixiObj = new PIXI.DisplayObjectContainer();
         entity._parent._pixiObj.addChild(entity._pixiObj);
         if (hasSceneView) {
@@ -288,10 +288,15 @@ var RenderContext = (function () {
         }
         var children = entity._children;
         for (var i = 0, len = children.length; i < len; i++) {
-            _onChildEntityLoaded(children[i], hasSceneView);
+            _onChildEntityCreated(children[i], hasSceneView);
         }
     };
 
+    /**
+     * create pixi nodes recursively
+     * @param {Entity} entity
+     * @param {boolean} addToScene - add to pixi stage if entity is root
+     */
     RenderContext.prototype.onEntityCreated = function (entity, addToScene) {
         entity._pixiObj = new PIXI.DisplayObjectContainer();
         if (entity._parent) {
@@ -312,7 +317,7 @@ var RenderContext = (function () {
 
         var children = entity._children;
         for (var i = 0, len = children.length; i < len; i++) {
-            _onChildEntityLoaded(children[i], this.sceneView);
+            _onChildEntityCreated(children[i], this.sceneView);
         }
     };
 

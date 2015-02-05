@@ -79,8 +79,8 @@ test('component', function () {
     // 这里主要测试entity，不是测试component
 
     // my component
-    var MyComponentBase = Fire.define('', CallbackTester);
-    var MyComponent = Fire.define('', MyComponentBase, function () {
+    var MyComponentBase = Fire.define('MyComponentBase', CallbackTester);
+    var MyComponent = Fire.define('MyComponent', MyComponentBase, function () {
         MyComponentBase.call(this);
         this.expect(CallbackTester.OnLoad, 'call onLoad while attaching to entity');
         this.expect(CallbackTester.OnEnable, 'then call onEnable if entity active', true);
@@ -103,8 +103,10 @@ test('component', function () {
     obj.active = true;  // onEnable
 
     strictEqual(obj.getComponent(Fire.Transform), obj.transform, 'getComponent: can get transform');
+    strictEqual(obj.getComponent(Fire.getClassName(Fire.Transform)), obj.transform, 'getComponent: can get transform by name');
     strictEqual(obj.getComponent(MyComponent), comp, 'getComponent: can get my component');
     strictEqual(obj.getComponent(MyComponentBase), comp, 'getComponent: can get component by base type');
+    strictEqual(obj.getComponent(Fire.getClassName(MyComponentBase)), comp, 'getComponent: can get component by base name');
 
     comp.expect(CallbackTester.OnDisable, 'should called onDisable when destory');
 
@@ -121,6 +123,8 @@ test('component', function () {
     strictEqual(obj.getComponent(MyComponent), null, 'can not get component after this frame');
 
     comp.stopTest();
+
+    Fire.unregisterClass(MyComponent, MyComponentBase);
 });
 
 test('component in hierarchy', 4, function () {
