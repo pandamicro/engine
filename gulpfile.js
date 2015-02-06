@@ -263,12 +263,13 @@ gulp.task('ref', ['cp-core'], function() {
 });
 
 // watch
-gulp.task('watch-self', function() {
+gulp.task('watch', function() {
     gulp.watch(paths.src.concat(paths.index), ['default']).on ( 'error', gutil.log );
 });
-gulp.task('watch', ['watch-self'], function() {
-    gulp.watch(paths.ext_core, ['cp-core']).on ( 'error', gutil.log );
-});
+
+//gulp.task('watch', ['watch-self'], function() {
+//    gulp.watch(paths.ext_core, ['cp-core']).on ( 'error', gutil.log );
+//});
 
 // tasks
 gulp.task('default', ['js-min', 'js-player']);
