@@ -364,6 +364,21 @@ var RenderContext = (function () {
         }
     };
 
+    RenderContext.prototype.updateSpriteColor = function (target) {
+        if (target._renderObj || target._renderObjInScene) {
+            var tint = target._color.toRGBValue();
+            if (target._renderObj) {
+                target._renderObj.tint = tint;
+            }
+            if (target._renderObjInScene) {
+                target._renderObjInScene.tint = tint;
+            }
+        }
+        else {
+            Fire.error('' + target + ' must be added to render context first!');
+        }
+    };
+
     /**
      * @param target {Fire.SpriteRenderer}
      */
@@ -405,11 +420,13 @@ var RenderContext = (function () {
         if (isGameView) {
             if (target._renderObj) {
                 target._renderObj.worldTransform = mat;
+                target._renderObj.worldAlpha = target._color.a;
                 return;
             }
         }
         else if (target._renderObjInScene) {
             target._renderObjInScene.worldTransform = mat;
+            target._renderObjInScene.worldAlpha = target._color.a;
             return;
         }
         Fire.error('' + target + ' must be added to render context first!');
