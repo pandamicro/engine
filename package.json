@@ -18,7 +18,7 @@
     "gulp-preprocess": "^1.2.0",
     "gulp-qunit": "fireball-x/gulp-qunit",
     "gulp-rename": "",
-    "gulp-uglify": "",
+    "gulp-uglifyjs": "",
     "gulp-util": "",
     "jshint-stylish": "",
     "through": "",
