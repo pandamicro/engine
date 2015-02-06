@@ -238,4 +238,32 @@ test('isChildOf', function () {
     strictEqual(ent3.isChildOf(ent1), true, 'is child of its ancestor');
 });
 
+
+test('find entity child', function () {
+    var ent_a = new Fire.Entity("a");
+    var ent_b = new Fire.Entity("b");
+    var ent_1 = new Fire.Entity("1");
+    var ent_2 = new Fire.Entity("2");
+    var ent_3 = new Fire.Entity("3");
+
+    ent_2.parent = ent_1;
+    ent_1.parent = ent_a;
+    ent_3.parent = ent_b;
+
+    var ent_noName1 = new Fire.Entity('');
+    var ent_noName2 = new Fire.Entity('');
+    ent_noName1.parent = ent_a;
+    ent_noName2.parent = ent_noName1;
+
+    ok(ent_a.find('a/1/2') === null, 'no found');
+    ok(ent_a.find('1/2') === ent_2, 'should found');
+    ok(ent_3.find('../../a/1/2') === ent_2, 'should found');
+    ok(ent_a.find('../b/3') === ent_3, 'should found');
+
+    ok(ent_a.find('') === ent_noName1, 'should found');
+    ok(ent_a.find('../a//') === ent_noName2, 'should found');
+
+    ok(ent_a.find('../../../../../../../a') === null, 'should not found and wont throw error');
+});
+
 // jshint ignore: end
