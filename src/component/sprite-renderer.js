@@ -21,6 +21,19 @@
         Fire.ObjectType(Fire.Sprite)
     );
 
+    SpriteRenderer.prop('_color', new Fire.Color(1, 1, 1, 1), Fire.HideInInspector);
+    SpriteRenderer.getset('color',
+        function () {
+            return this._color;
+        },
+        function (value) {
+            this._color = value;
+            if (this._hasRenderObj) {
+                Engine._renderContext.updateSpriteColor(this);
+            }
+        }
+    );
+
     SpriteRenderer.prop('customSize_', false, Fire.HideInInspector);
     SpriteRenderer.getset('customSize',
         function () {
