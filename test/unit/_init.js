@@ -7,7 +7,7 @@ var Color = Fire.Color;
 var Texture = Fire.Texture;
 var Sprite = Fire.Sprite;
 var Atlas = Fire.Atlas;
-var FontInfo = Fire.FontInfo;
+//var FontInfo = Fire.FontInfo;
 
 var TestOnly = Fire.__TESTONLY__;
 var Ticker = TestOnly.Ticker;
