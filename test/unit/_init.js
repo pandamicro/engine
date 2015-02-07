@@ -1,4 +1,10 @@
-﻿var FObject = Fire.FObject;
+﻿// platform definition
+
+Fire.isUnitTest = true;
+
+// shortcuts
+
+var FObject = Fire.FObject;
 var Asset = Fire.Asset;
 var Vec2 = Fire.Vec2;
 var Matrix23 = Fire.Matrix23;
@@ -27,6 +33,8 @@ var M3 = Fire.Matrix23;
 function v2 (x, y) {
     return new Fire.Vec2(x, y);
 }
+
+// Test helpers
 
 /**
  * force reset the engine

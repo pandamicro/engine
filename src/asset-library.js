@@ -231,6 +231,12 @@ var AssetLibrary = (function () {
          * @private
          */
         init: function (libraryPath, uuidToUrl) {
+// @ifdef EDITOR
+            if (_libraryBase && !Fire.isUnitTest) {
+                Fire.error('AssetLibrary has already been initialized!');
+                return;
+            }
+// @endif
             _libraryBase = Fire.Path.setEndWithSep(libraryPath);
             //Fire.log('[AssetLibrary] library: ' + _libraryBase);
 
