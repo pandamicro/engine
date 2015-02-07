@@ -33,28 +33,24 @@
     ////////////////////////////////////////////////////////////////////
 
     // 当引入DestroyImmediate后，entity和component可能会在遍历过程中变少，需要复制一个新的数组，或者做一些标记
-    var visitFunctionTmpl = '\
-(function (entity) {\n\
-    var countBefore = entity._components.length;\n\
-    for (var c = 0; c < countBefore; ++c) {\n\
-        var component = entity._components[c];\n\
-        if (component._enabled && component._FUNC_NAME_) {\n\
-            component._FUNC_NAME_();\n\
-        }\n\
-    }\n\
-    var children = entity._children;\n\
-    for (var i = 0, len = children.length; i < len; ++i) {\n\
-        var subEntity = children[i];\n\
-        if (subEntity._active) {\n\
-            _FUNC_NAME_Recursively(subEntity);\n\
-        }\n\
-    }\n\
-})';
+    var visitFunctionTmpl = "\
+(function(e){\
+	var len=e._components.length;\
+	for(var c=0;c<len;++c){\
+		var c=e._components[c];\
+		if(c._enabled && c._FUNC_) c._FUNC_();\
+	}\
+	var cs=e._children;\
+	for(var i=0,len=cs.length;i<len;++i){\
+		var sub=cs[i];\
+		if(sub._active) _FUNC_Recursively(sub);\
+	}\
+})";
 
     // jshint evil: true
-    var updateRecursively = eval(visitFunctionTmpl.replace(/_FUNC_NAME_/g, 'update'));
-    var lateUpdateRecursively = eval(visitFunctionTmpl.replace(/_FUNC_NAME_/g, 'lateUpdate'));
-    var onPreRenderRecursively = eval(visitFunctionTmpl.replace(/_FUNC_NAME_/g, 'onPreRender'));
+    var updateRecursively = eval(visitFunctionTmpl.replace(/_FUNC_/g, 'update'));
+    var lateUpdateRecursively = eval(visitFunctionTmpl.replace(/_FUNC_/g, 'lateUpdate'));
+    var onPreRenderRecursively = eval(visitFunctionTmpl.replace(/_FUNC_/g, 'onPreRender'));
     // jshint evil: false
 
     Scene.prototype.update = function () {
