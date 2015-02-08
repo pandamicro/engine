@@ -16,7 +16,7 @@
     "gulp-fb": "",
     "gulp-jshint": "",
     "gulp-preprocess": "^1.2.0",
-    "gulp-qunit": "fireball-x/gulp-qunit",
+    "gulp-qunit": "^1.2.1",
     "gulp-rename": "",
     "gulp-uglifyjs": "",
     "gulp-util": "",
