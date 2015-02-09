@@ -35,13 +35,13 @@
     // 当引入DestroyImmediate后，entity和component可能会在遍历过程中变少，需要复制一个新的数组，或者做一些标记
     var visitFunctionTmpl = "\
 (function(e){\
-	var len=e._components.length;\
-	for(var c=0;c<len;++c){\
-		var c=e._components[c];\
+	var i, len=e._components.length;\
+	for(i=0;i<len;++i){\
+		var c=e._components[i];\
 		if(c._enabled && c._FUNC_) c._FUNC_();\
 	}\
 	var cs=e._children;\
-	for(var i=0,len=cs.length;i<len;++i){\
+	for(i=0,len=cs.length;i<len;++i){\
 		var sub=cs[i];\
 		if(sub._active) _FUNC_Recursively(sub);\
 	}\
