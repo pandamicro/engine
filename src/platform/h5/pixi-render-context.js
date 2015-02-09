@@ -339,6 +339,7 @@ var RenderContext = (function () {
             target._renderObjInScene = new PIXI.Sprite(tex);
             target.entity._pixiObjInScene.addChildAt(target._renderObjInScene, 0);
         }
+        this.updateSpriteColor(target);
     };
 
     /**
