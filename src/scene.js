@@ -64,11 +64,15 @@
         }
         // invoke update
         for (i = 0, len = entities.length; i < len; ++i) {
-            updateRecursively(entities[i]);
+            if (entities[i]._active) {
+                updateRecursively(entities[i]);
+            }
         }
         // invoke lateUpdate
         for (i = 0, len = entities.length; i < len; ++i) {
-            lateUpdateRecursively(entities[i]);
+            if (entities[i]._active) {
+                lateUpdateRecursively(entities[i]);
+            }
         }
     };
 
@@ -81,7 +85,9 @@
         // call onPreRender
         var entities = this.entities;
         for (var i = 0, len = entities.length; i < len; ++i) {
-            onPreRenderRecursively(entities[i]);
+            if (entities[i]._active) {
+                onPreRenderRecursively(entities[i]);
+            }
         }
 
         // render
