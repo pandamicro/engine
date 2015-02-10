@@ -327,6 +327,9 @@ var Engine = (function () {
         AssetLibrary._loadAssetByUuid(uuid, function onSceneLoaded (scene, error) {
             if (error) {
                 Fire.error('Failed to load scene: ' + error);
+                // @ifdef EDITOR
+                console.throw('[test] Failed to load scene');
+                // @endif
                 isLoadingScene = false;
                 if (onLaunched) {
                     onLaunched(null, error);

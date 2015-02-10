@@ -112,15 +112,7 @@
     var cachedArray = new Array(16);
     cachedArray.length = 0;
 
-    /**
-     * Dispatches an event into the event flow. The event target is the EventTarget object upon which the dispatchEvent() method is called.
-     *
-     * @param {Fire.Event} event - The Event object that is dispatched into the event flow
-     * @returns {boolean} - returns true if either the event's preventDefault() method was not invoked,
-     *                      or its cancelable attribute value is false, and false otherwise.
-     */
-    EventTarget.prototype.dispatchEvent = function (event) {
-        event._reset();
+    EventTarget.prototype._doDispatchEvent = function (event) {
         event.target = this;
 
         // Event.CAPTURING_PHASE
@@ -136,8 +128,7 @@
                 target._capturingListeners.invoke(event);
                 // check if propagation stopped
                 if (event._propagationStopped) {
-                    cachedArray.length = 0;
-                    return ! event._defaultPrevented;
+                    return;
                 }
             }
         }
@@ -148,7 +139,7 @@
         if (this.isValid) {
             this._doSendEvent(event);
             if (event._propagationStopped) {
-                return ! event._defaultPrevented;
+                return;
             }
         }
 
@@ -165,14 +156,26 @@
                     target._bubblingListeners.invoke(event);
                     // check if propagation stopped
                     if (event._propagationStopped) {
-                        cachedArray.length = 0;
-                        return ! event._defaultPrevented;
+                        return;
                     }
                 }
             }
-            cachedArray.length = 0;
         }
-        return ! event._defaultPrevented;
+    }
+
+    /**
+     * Dispatches an event into the event flow. The event target is the EventTarget object upon which the dispatchEvent() method is called.
+     *
+     * @param {Fire.Event} event - The Event object that is dispatched into the event flow
+     * @returns {boolean} - returns true if either the event's preventDefault() method was not invoked,
+     *                      or its cancelable attribute value is false, and false otherwise.
+     */
+    EventTarget.prototype.dispatchEvent = function (event) {
+        this._doDispatchEvent(event);
+        cachedArray.length = 0;
+        var notPrevented = ! event._defaultPrevented;
+        event._reset();
+        return notPrevented;
     };
 
     /**
