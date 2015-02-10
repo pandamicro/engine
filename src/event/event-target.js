@@ -161,7 +161,7 @@
                 }
             }
         }
-    }
+    };
 
     /**
      * Dispatches an event into the event flow. The event target is the EventTarget object upon which the dispatchEvent() method is called.
