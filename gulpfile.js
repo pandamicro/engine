@@ -62,28 +62,30 @@ var paths = {
         runner: 'test/lib/runner.html',
         lib_dev: [
             'ext/pixi/bin/pixi.dev.js',
-            'ext/fire-core/bin/core.dev.js',
-            'bin/engine.dev.js',
+            'ext/fire-core/bin/dev/core.js',
+            'bin/dev/engine.js',
         ],
         lib_min: [
             'ext/pixi/bin/pixi.js',
-            'ext/fire-core/bin/core.min.js',
-            'bin/engine.min.js',
+            'ext/fire-core/bin/min/core.js',
+            'bin/min/engine.js',
         ],
     },
 
     // output
     output: 'bin/',
-    engine_dev: 'engine.dev.js',
-    engine_min: 'engine.dev.js',
+    output_dev: 'bin/dev/',
+    output_min: 'bin/min/',
+    engine_dev: 'engine.js',
+    engine_min: 'engine.js',
     engine_player_dev: 'engine.player.dev.js',
-    engine_player: 'engine.player.dev.js',
+    engine_player: 'engine.player.js',
 
     // references
     ref: {
         src: [
             'ext/pixi/bin/pixi.dev.js',
-            'ext/fire-core/bin/core.dev.js',
+            'ext/fire-core/bin/dev/core.js',
             'test/lib/*.js',
             'test/unit/_*.js',
         ],
@@ -169,7 +171,7 @@ gulp.task('js-dev', function() {
                .pipe(concat(paths.engine_dev))
                .pipe(embedIntoModule(paths.index))
                .pipe(preprocess({context: { EDITOR: true, DEBUG: true, DEV: true }}))
-               .pipe(gulp.dest(paths.output))
+               .pipe(gulp.dest(paths.output_dev))
                ;
 });
 
@@ -185,7 +187,7 @@ gulp.task('js-min', function() {
                 unused: false
             }
         }))
-        .pipe(gulp.dest(paths.output))
+        .pipe(gulp.dest(paths.output_min))
         ;
 });
 
@@ -267,12 +269,9 @@ gulp.task('watch', function() {
     gulp.watch(paths.src.concat(paths.index), ['default']).on ( 'error', gutil.log );
 });
 
-//gulp.task('watch', ['watch-self'], function() {
-//    gulp.watch(paths.ext_core, ['cp-core']).on ( 'error', gutil.log );
-//});
-
 // tasks
-gulp.task('default', ['js-min', 'js-player']);
+gulp.task('min', ['js-min', 'js-player']);
 gulp.task('dev', ['js-dev', 'js-player-dev']);
 gulp.task('all', ['dev', 'test', 'ref'] );
 gulp.task('ci', ['test'] );
+gulp.task('default', ['dev', 'min']);
