@@ -108,8 +108,9 @@ var AssetLibrary = (function () {
 
             // deserialize asset
             Engine._canModifyCurrentScene = false;
+            var isScene = json && json[0] && json[0].__type__ === Fire._getClassId(Scene);
             var asset = Fire.deserialize(json, info, {
-                classFinder: function (id) {
+                classFinder: isScene ? Fire._MissingScript.safeFindClass : function (id) {
                     var cls = Fire._getClassById(id);
                     if (cls) {
                         return cls;
