@@ -211,7 +211,7 @@ gulp.task('js-player', function() {
         ;
 });
 
-gulp.task('js-all', ['js-min', 'js-dev', 'js-player-dev', 'js-player']);
+gulp.task('js-all', ['js-dev', 'js-min', 'js-player-dev', 'js-player']);
 
 /////////////////////////////////////////////////////////////////////////////
 // test
@@ -270,8 +270,8 @@ gulp.task('watch', function() {
 });
 
 // tasks
-gulp.task('min', ['js-min', 'js-player']);
-gulp.task('dev', ['js-dev', 'js-player-dev']);
+gulp.task('min', ['js-min', 'js-player-dev', 'js-player']);
+gulp.task('dev', ['js-dev', 'js-player-dev', 'js-player']);
 gulp.task('all', ['dev', 'test', 'ref'] );
 gulp.task('ci', ['test'] );
 gulp.task('default', ['dev', 'min']);
