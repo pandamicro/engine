@@ -3,7 +3,7 @@ var Engine = (function () {
 
     var Engine = {
 // @ifdef EDITOR
-        _editorCallback: editorCallback,
+        _editorCallback: editorCallback
 // @endif
     };
 
@@ -44,21 +44,21 @@ var Engine = (function () {
     Object.defineProperty(Engine, 'isPlaying', {
         get: function () {
             return isPlaying;
-        },
+        }
     });
 
     // is logic paused
     Object.defineProperty(Engine, 'isPaused', {
         get: function () {
             return isPaused;
-        },
+        }
     });
 
     // is loading scene and its assets asynchronous
     Object.defineProperty(Engine, 'isLoadingScene', {
         get: function () {
             return isLoadingScene;
-        },
+        }
     });
 
     var lockingScene = null;
@@ -110,7 +110,7 @@ var Engine = (function () {
     Object.defineProperty(Engine, 'inited', {
         get: function () {
             return inited;
-        },
+        }
     });
 
     // functions
@@ -226,16 +226,16 @@ var Engine = (function () {
     };
 
     var doUpdate = function (updateLogic) {
-        //Fire.log('canUpdateLogic: ' + updateLogic + ' Time: ' + Time);
-        // TODO: scheduler
-        if (updateLogic) {
-            Engine._scene.update();
-            FObject._deferredDestroy();
-        }
-        render();
+        if (Engine._scene) {
+            if (updateLogic) {
+                Engine._scene.update();
+                FObject._deferredDestroy();
+            }
+            render();
 
-        // update interaction context
-        Engine._interactionContext.update(Engine._scene.entities);
+            // update interaction context
+            Engine._interactionContext.update(Engine._scene.entities);
+        }
     };
 
     /**
@@ -274,7 +274,7 @@ var Engine = (function () {
      * @param {function} [onUnloaded]
      * @private
      */
-    Engine._setCurrentScene = function (scene, onUnloaded) {
+    Engine._setCurrentScene = function (scene, onPreSceneLoad) {
         if (!scene) {
             Fire.error('Argument must be non-nil');
             return;
@@ -289,8 +289,10 @@ var Engine = (function () {
             oldScene.destroy();
             FObject._deferredDestroy(); // simulate destroy immediate
         }
-        if (onUnloaded) {
-            onUnloaded();
+        Engine._scene = null;
+
+        if (onPreSceneLoad) {
+            onPreSceneLoad();
         }
 
         // init scene

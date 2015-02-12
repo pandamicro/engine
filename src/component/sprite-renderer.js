@@ -6,6 +6,7 @@
         this._hasRenderObj = false;
     });
     Fire.addComponentMenu(SpriteRenderer, 'SpriteRenderer');
+    Fire.executeInEditMode(SpriteRenderer);
 
     SpriteRenderer.prop('_sprite', null, Fire.HideInInspector);
     SpriteRenderer.getset('sprite',

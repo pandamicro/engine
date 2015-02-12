@@ -21,6 +21,8 @@
         //this._hierarchyChangedListeners = null;
     });
 
+    Fire.executeInEditMode(Transform);
+
     Transform.prop('_position', null, Fire.HideInInspector);
     Transform.prop('_rotation', 0, Fire.HideInInspector);
     Transform.prop('_scale', null, Fire.HideInInspector);
@@ -369,7 +371,7 @@
     //            var target = this._hierarchyChangedListeners[i];
     //            if (target.isValid) {
     //                if (target.onHierarchyChanged(transform, oldParent)) {
-    //                    // TODO: 目前只有一种component会终止事件，如果有多种，这里需要做分类
+    //                    // 目前只有一种component会终止事件，如果有多种，这里需要做分类
     //                    return;
     //                }
     //            }

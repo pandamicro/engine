@@ -57,6 +57,7 @@
     Component.prototype.onEnable = null;
     Component.prototype.onDisable = null;
     Component.prototype.onDestroy = null;
+    Component.prototype.onPreRender = null;
 
     /**
      * This method will be invoked when the scene graph changed, which is means the parent of its transform changed,
@@ -81,6 +82,11 @@
 
     // Should not call onEnable/onDisable in other place
     var _callOnEnable = function (self, enable) {
+// @ifdef EDITOR
+        if ( !(Fire.Engine.isPlaying || Fire.attr(self, 'executeInEditMode')) ) {
+            return;
+        }
+// @endif
         if ( enable ) {
             if ( !(self._objFlags & IsOnEnableCalled) ) {
                 self._objFlags |= IsOnEnableCalled;
@@ -110,18 +116,29 @@
     };
 
     Component.prototype._onEntityActivated = function (active) {
+// @ifdef EDITOR
+        if ( !(this._objFlags & IsOnLoadCalled) && (Fire.Engine.isPlaying || Fire.attr(this, 'executeInEditMode')) ) {
+            this._objFlags |= IsOnLoadCalled;
+            if (this.onLoad) {
+                this.onLoad();
+            }
+            Fire._AssetsWatcher.start(this);
+            //if (this.onHierarchyChanged) {
+            //    this.entity.transform._addListener(this);
+            //}
+        }
+// @endif
+// @ifndef EDITOR
         if ( !(this._objFlags & IsOnLoadCalled) ) {
             this._objFlags |= IsOnLoadCalled;
             if (this.onLoad) {
                 this.onLoad();
             }
-// @ifdef EDITOR
-            Fire._AssetsWatcher.start(this);
-// @endif
             //if (this.onHierarchyChanged) {
             //    this.entity.transform._addListener(this);
             //}
         }
+// @endif
         if (this._enabled) {
             _callOnEnable(this, active);
         }
@@ -133,18 +150,36 @@
      */
     Component._invokeStarts = function (entity) {
         var countBefore = entity._components.length;
-        for (var c = 0; c < countBefore; ++c) {
-            var comp = entity._components[c];
-            if ( !(comp._objFlags & IsOnStartCalled) ) {
-                comp._objFlags |= IsOnStartCalled;
-                if (comp.onStart) {
-                    comp.onStart();
+        var c = 0, comp = null;
+        // @ifdef EDITOR
+        if (Fire.Engine.isPlaying) {
+        // @endif
+            for (; c < countBefore; ++c) {
+                comp = entity._components[c];
+                if ( !(comp._objFlags & IsOnStartCalled) ) {
+                    comp._objFlags |= IsOnStartCalled;
+                    if (comp.onStart) {
+                        comp.onStart();
+                    }
+                }
+            }
+        // @ifdef EDITOR
+        }
+        else {
+            for (; c < countBefore; ++c) {
+                comp = entity._components[c];
+                if ( !(comp._objFlags & IsOnStartCalled) && Fire.attr(comp, 'executeInEditMode')) {
+                    comp._objFlags |= IsOnStartCalled;
+                    if (comp.onStart) {
+                        comp.onStart();
+                    }
                 }
             }
         }
+        // @endif
         // activate its children recursively
-        for (var i = 0, len = entity.childCount; i < len; ++i) {
-            var child = entity._children[i];
+        for (var i = 0, children = entity._children, len = children.length; i < len; ++i) {
+            var child = [i];
             if (child._active) {
                 Component._invokeStarts(child);
             }
@@ -156,11 +191,15 @@
         _callOnEnable(this, false);
 // @ifdef EDITOR
         Fire._AssetsWatcher.stop(this);
+        if (Fire.Engine.isPlaying || Fire.attr(this, 'executeInEditMode')) {
 // @endif
-        // onDestroy
-        if (this.onDestroy) {
-            this.onDestroy();
+            // onDestroy
+            if (this.onDestroy) {
+                this.onDestroy();
+            }
+// @ifdef EDITOR
         }
+// @endif
         // remove component
         this.entity._removeComponent(this);
     };
@@ -170,6 +209,12 @@
 
 Fire.Component = Component;
 
+// Register Component Menu
+
+// @ifdef EDITOR
+Fire._componentMenuItems = [];
+// @endif
+
 /**
  * Register a component to the "Component" menu.
  *
@@ -178,11 +223,34 @@ Fire.Component = Component;
  * @param {string} menuPath - the menu path name. Eg. "Rendering/Camera"
  * @param {number} [priority] - the order which the menu item are displayed
  */
-Fire.addComponentMenu = Fire.addComponentMenu || function (constructor, menuPath, priority) {
-    // implement only available in editor
+Fire.addComponentMenu = function (constructor, menuPath, priority) {
+    // @ifdef EDITOR
+    Fire._componentMenuItems.push({
+        component: constructor,
+        menuPath: menuPath,
+        priority: priority
+    });
+    // @endif
 };
 
+// @ifdef EDITOR
+Fire.attr(Component, 'executeInEditMode', false);
+// @endif
 
+/**
+ * Makes a component execute in edit mode.
+ * By default, all components are only executed in play mode,
+ * which means they will not have their callback functions executed while the Editor is in edit mode.
+ * By calling this function, each component will also have its callback executed in edit mode.
+ *
+ * @method Fire.addComponentMenu
+ * @param {function} constructor - the class you want to register, must inherit from Component
+ */
+Fire.executeInEditMode = function (constructor) {
+    // @ifdef EDITOR
+    Fire.attr(constructor, 'executeInEditMode', true);
+    // @endif
+};
 
 var _requiringFrame = [];  // the requiring frame infos
 
