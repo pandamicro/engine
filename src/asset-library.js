@@ -77,6 +77,9 @@ var AssetLibrary = (function () {
                         if ( !dontCache ) {
                             _uuidToCallbacks.invokeAndRemove(uuid, null, error);
                         }
+                        else {
+                            callback(null, error);
+                        }
                         return;
                     }
                     AssetLibrary._deserializeWithDepends(json, url, function (asset) {
@@ -84,6 +87,9 @@ var AssetLibrary = (function () {
                         if ( !dontCache ) {
                             AssetLibrary._uuidToAsset[uuid] = asset;
                             _uuidToCallbacks.invokeAndRemove(uuid, asset);
+                        }
+                        else {
+                            callback(asset, error);
                         }
                     }, dontCache, info);
                 }
