@@ -57,7 +57,7 @@ var AssetLibrary = (function () {
             }
 
             // step 2
-            if (_uuidToCallbacks.add(uuid, callback) === false) {
+            if ( !dontCache && _uuidToCallbacks.add(uuid, callback) === false) {
                 // already loading
                 return;
             }
@@ -74,18 +74,20 @@ var AssetLibrary = (function () {
             LoadManager.loadByLoader(JsonLoader, url,
                 function (json, error) {
                     if (error) {
-                        _uuidToCallbacks.invokeAndRemove(uuid, null, error);
+                        if ( !dontCache ) {
+                            _uuidToCallbacks.invokeAndRemove(uuid, null, error);
+                        }
                         return;
                     }
                     AssetLibrary._deserializeWithDepends(json, url, function (asset) {
                         asset._uuid = uuid;
                         if ( !dontCache ) {
                             AssetLibrary._uuidToAsset[uuid] = asset;
+                            _uuidToCallbacks.invokeAndRemove(uuid, asset);
                         }
-                        _uuidToCallbacks.invokeAndRemove(uuid, asset);
                     }, dontCache, info);
-                });
-            //loadAssetByUrl (url, callback, info);
+                }
+            );
         },
 
         /**
