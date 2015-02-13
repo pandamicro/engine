@@ -33,6 +33,7 @@ var BitmapText = (function () {
 
     //-- 增加 Bitmap Text 到 组件菜单上
     Fire.addComponentMenu(BitmapText, 'BitmapText');
+    Fire.executeInEditMode(BitmapText);
 
     BitmapText.prop('_bitmapFont', null, Fire.HideInInspector);
     BitmapText.getset('bitmapFont',
@@ -56,8 +57,13 @@ var BitmapText = (function () {
         },
         function (value) {
             if (this._text !== value) {
-                this._text = value;
-                Engine._renderContext.setText(this, value);
+                if (typeof value === 'string') {
+                    this._text = value;
+                }
+                else {
+                    this._text = '' + value;
+                }
+                Engine._renderContext.setText(this, this._text);
             }
         },
         Fire.MultiText

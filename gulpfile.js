@@ -20,7 +20,6 @@ var paths = {
     // source
     src: [
         // runtime pre-defines
-        'src/platform/editor/pre-define.js',
         'src/platform/editor/asset-watcher.js',
         // runtime engine
         'src/definition.js',
@@ -54,7 +53,7 @@ var paths = {
     index: 'src/index.js',
 
     // ext
-    ext_core: '../core/bin/**/*.js',
+    ext_core: '../core/bin/**/core.js',
 
     // test
     test: {

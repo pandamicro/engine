@@ -80,6 +80,7 @@ test('component', function () {
 
     // my component
     var MyComponentBase = Fire.define('MyComponentBase', CallbackTester);
+    Fire.executeInEditMode(MyComponentBase);
     var MyComponent = Fire.define('MyComponent', MyComponentBase, function () {
         MyComponentBase.call(this);
         this.expect(CallbackTester.OnLoad, 'call onLoad while attaching to entity');
@@ -138,6 +139,8 @@ test('component in hierarchy', 4, function () {
         CallbackTester.call(this);
         this.notExpect(CallbackTester.OnLoad, 'should not call onLoad while entity inactive');
     });
+    Fire.executeInEditMode(MyComponent);
+
     var comp = child.addComponent(MyComponent);
 
     comp.expect(CallbackTester.OnLoad, 'should call onLoad while entity activated');
@@ -162,6 +165,7 @@ test('destroy', function () {
         CallbackTester.call(this);
         this.expect([CallbackTester.OnLoad, CallbackTester.OnEnable]);
     });
+    Fire.executeInEditMode(ChildComp);
     var childComp = child.addComponent(ChildComp);
 
     // expect ondisable

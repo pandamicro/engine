@@ -59,27 +59,45 @@ function _LoadFromXHR(url, callback, onProgress, responseType) {
                 }
             }
             xhr.onreadystatechange = null;
-            if (onProgressEventListener) {
-                xhr.removeEventListener('progress', onProgressEventListener);
+            //xhr.onload = null;
+            if (addedProgressListener) {
+                xhr.removeEventListener('progress', addedProgressListener);
             }
         }
-        if (onProgress && xhr.readyState === xhr.LOADING && !('onprogress' in xhr)) {
-            if (total === -1) {
+        else {
+            if (onProgress && xhr.readyState === xhr.LOADING && !('onprogress' in xhr)) {
+                if (total === -1) {
+                    total = xhr.getResponseHeader('Content-Length');
+                }
+                onProgress(xhr.responseText.length, total);
+            }
+            if (onProgress && xhr.readyState === xhr.HEADERS_RECEIVED) {
                 total = xhr.getResponseHeader('Content-Length');
             }
-            onProgress(xhr.responseText.length, total);
-        }
-        if (onProgress && xhr.readyState === xhr.HEADERS_RECEIVED) {
-            total = xhr.getResponseHeader('Content-Length');
         }
     };
+    //xhr.onload = function () {
+    //    if (callback) {
+    //        if (xhr.status === 200 || xhr.status === 0) {
+    //            callback(xhr);
+    //        }
+    //        else {
+    //            callback(null, 'LoadFromXHR: Could not load "' + url + '", status: ' + xhr.status);
+    //        }
+    //    }
+    //    xhr.onreadystatechange = null;
+    //    xhr.onload = null;
+    //    if (addedProgressListener) {
+    //        xhr.removeEventListener('progress', addedProgressListener);
+    //    }
+    //};
     xhr.open('GET', url, true);
     if (responseType) {
         xhr.responseType = responseType;
     }
-    var onProgressEventListener;
+    var addedProgressListener;
     if (onProgress && 'onprogress' in xhr) {
-        onProgressEventListener = function (event) {
+        addedProgressListener = function (event) {
             if (event.lengthComputable) {
                 onProgress(event.loaded, event.total);
             }

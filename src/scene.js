@@ -33,12 +33,17 @@
     ////////////////////////////////////////////////////////////////////
 
     // 当引入DestroyImmediate后，entity和component可能会在遍历过程中变少，需要复制一个新的数组，或者做一些标记
+    var visitOperationTmpl = "if(c._enabled && c._FUNC_) c._FUNC_();";
+// @ifdef EDITOR
+    visitOperationTmpl = "if(c._enabled && c._FUNC_ && " +
+                            "(Fire.Engine.isPlaying || Fire.attr(c,'executeInEditMode'))) c._FUNC_();";
+// @endif
     var visitFunctionTmpl = "\
 (function(e){\
 	var i, len=e._components.length;\
 	for(i=0;i<len;++i){\
 		var c=e._components[i];\
-		if(c._enabled && c._FUNC_) c._FUNC_();\
+		" + visitOperationTmpl + "\
 	}\
 	var cs=e._children;\
 	for(i=0,len=cs.length;i<len;++i){\
