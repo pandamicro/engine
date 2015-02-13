@@ -77,7 +77,7 @@ var AssetLibrary = (function () {
                         _uuidToCallbacks.invokeAndRemove(uuid, null, error);
                         return;
                     }
-                    AssetLibrary._deserializeWithDepends(json, url, function (asset) {
+                    AssetLibrary.loadJson(json, url, function (asset) {
                         asset._uuid = uuid;
                         if ( !dontCache ) {
                             AssetLibrary._uuidToAsset[uuid] = asset;
@@ -96,7 +96,7 @@ var AssetLibrary = (function () {
          * NOTE: loadAssetByUuid will always try to get the cached asset, no matter whether dontCache is indicated.
          * @param {Fire._DeserializeInfo} [info] - reused temp obj
          */
-        _deserializeWithDepends: function (json, url, callback, dontCache, info) {
+        loadJson: function (json, url, callback, dontCache, info) {
             // prepare
             if (info) {
                 // info我们只是用来重用临时对象，所以每次使用前要重设。
