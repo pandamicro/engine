@@ -56,8 +56,13 @@ var BitmapText = (function () {
         },
         function (value) {
             if (this._text !== value) {
-                this._text = value;
-                Engine._renderContext.setText(this, value);
+                if (typeof value === 'string') {
+                    this._text = value;
+                }
+                else {
+                    this._text = '' + value;
+                }
+                Engine._renderContext.setText(this, this._text);
             }
         },
         Fire.MultiText
