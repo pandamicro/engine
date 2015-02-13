@@ -41,7 +41,7 @@ var InteractionContext = (function () {
 
     InteractionContext.prototype._updateRecursilvey = function (entity) {
         var renderer = entity.getComponent(Fire.Renderer);
-        if (renderer) {
+        if (renderer && renderer._enabled) {
             this.entities.push(entity);
             var id = entity.id;
             if ( !obbMap[id] ) {
@@ -53,7 +53,10 @@ var InteractionContext = (function () {
         }
 
         for ( var i = 0, len = entity._children.length; i < len; ++i ) {
-            this._updateRecursilvey(entity._children[i]);
+            var child = entity._children[i];
+            if (child._active) {
+                this._updateRecursilvey(child);
+            }
         }
     };
 
@@ -70,7 +73,10 @@ var InteractionContext = (function () {
 
         // recursively process each entity
         for (var i = 0, len = entities.length; i < len; ++i) {
-            this._updateRecursilvey(entities[i]);
+            var entity = entities[i];
+            if (entity._active) {
+                this._updateRecursilvey(entity);
+            }
         }
     };
 
