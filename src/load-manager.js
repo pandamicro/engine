@@ -15,16 +15,16 @@ var LoadManager = (function () {
         return {
             image: {
                 loader: ImageLoader,
-                defaultExtname: '.host',
+                defaultExtname: '.host'
             },
             json: {
                 loader: JsonLoader,
-                defaultExtname: '.json',
+                defaultExtname: '.json'
             },
             text: {
                 loader: TextLoader,
-                defaultExtname: '.txt',
-            },
+                defaultExtname: '.txt'
+            }
         };
     }
 
@@ -87,7 +87,7 @@ var LoadManager = (function () {
                     loadQueue.push({
                         url: url,
                         loader: loader,
-                        callback: callbackBundle,
+                        callback: callbackBundle
                     });
                 }
             }
@@ -154,7 +154,7 @@ var LoadManager = (function () {
             }
             this._rawTypes[rawType] = {
                 loader: loader,
-                defaultExtname: defaultExtname,
+                defaultExtname: defaultExtname
             };
         },
 
@@ -164,8 +164,10 @@ var LoadManager = (function () {
         },
 // @endif
 
-        _loadFromXHR: _LoadFromXHR,
+        _loadFromXHR: _LoadFromXHR
     };
+
+    LoadManager._urlToCallbacks = urlToCallbacks;
 
     return LoadManager;
 })();
