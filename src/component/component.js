@@ -1,9 +1,13 @@
 ﻿var Component = (function () {
 
     /**
-     * @class Fire.Component
+     *
+     * Base class for everything attached to Entity
      * NOTE: Not allowed to use construction parameters for Component's subclasses,
      *       because Component is created by the engine.
+     * @class Component
+     * @static
+     *
      */
     var Component = Fire.define('Fire.Component', HashObject, function () {
         HashObject.call(this);
@@ -20,6 +24,11 @@
     Component.prop('_enabled', true, Fire.HideInInspector);
 
     // properties
+    /**
+     * If component is enabled.
+     * @property enabled
+     * @type boolean
+     */
     Object.defineProperty(Component.prototype, 'enabled', {
         get: function () {
             return this._enabled;
@@ -36,12 +45,22 @@
         }
     });
 
+    /**
+     * If the component is enabled in hierarchy.
+     * @property enabledInHierarchy
+     * @type Transform
+     */
     Object.defineProperty(Component.prototype, 'enabledInHierarchy', {
         get: function () {
             return this._enabled && this.entity._activeInHierarchy;
         }
     });
 
+    /**
+     * Returns the {% crosslink Fire.Transform Transform %} attached to the entity.
+     * @property transform
+     * @type Transform
+     */
     Object.defineProperty(Component.prototype, 'transform', {
         get: function () {
             return this.entity.transform;
@@ -49,10 +68,23 @@
     });
 
     // callback functions
+    /**
+     * Update is called every frame, if the Component is enabled.
+     * @event update
+     */
     Component.prototype.update = null;
+
+    /**
+     * LateUpdate is called every frame, if the Component is enabled.
+     * @event lateUpdate
+     */
     Component.prototype.lateUpdate = null;
     //(NYI) Component.prototype.onCreate = null;  // customized constructor for template
-    Component.prototype.onLoad = null;    // when attaching to an active entity or its entity first activated
+    /**
+     * When attaching to an active entity or its entity first activated
+     * @event onLoad
+     */
+    Component.prototype.onLoad = null;    //
     Component.prototype.onStart = null;   // called before all scripts' update if the Component is enabled
     Component.prototype.onEnable = null;
     Component.prototype.onDisable = null;
@@ -66,7 +98,7 @@
      *
      * @param {Fire.Transform} transform - the transform which is changed, can be any of this transform's ancestor.
      * @param {Fire.Transform} oldParent - the transform's old parent, if not changed, its sibling index changed.
-     * @returns {boolean} return whether stop propagation to this component's child components.
+     * @return {boolean} return whether stop propagation to this component's child components.
      */
     //Component.prototype.onHierarchyChanged = function (transform, oldParent) {};
 
@@ -146,6 +178,7 @@
 
     /**
      * invoke starts on entities
+     * @method _invokeStarts
      * @param {Fire.Entity} entity
      */
     Component._invokeStarts = function (entity) {
@@ -218,7 +251,8 @@ Fire._componentMenuItems = [];
 /**
  * Register a component to the "Component" menu.
  *
- * @method Fire.addComponentMenu
+ * @method addComponentMenu
+ * @static
  * @param {function} constructor - the class you want to register, must inherit from Component
  * @param {string} menuPath - the menu path name. Eg. "Rendering/Camera"
  * @param {number} [priority] - the order which the menu item are displayed
@@ -243,7 +277,8 @@ Fire.attr(Component, 'executeInEditMode', false);
  * which means they will not have their callback functions executed while the Editor is in edit mode.
  * By calling this function, each component will also have its callback executed in edit mode.
  *
- * @method Fire.addComponentMenu
+ * @method executeInEditMode
+ * @static
  * @param {function} constructor - the class you want to register, must inherit from Component
  */
 Fire.executeInEditMode = function (constructor) {
@@ -269,6 +304,8 @@ Fire._RFpop = function () {
 };
 
 /**
+ * @method defineComponent
+ * @static
  * @param {function} [baseOrConstructor]
  * @param {function} [constructor]
  */

@@ -17,7 +17,7 @@ var ModifierKeyStates = (function () {
      *
      * @param {string} keyArg - A modifier key value. The value must be one of the KeyboardEvent.key values which represent modifier keys or "Accel". This is case-sensitive.
      *                          NOTE: If an application wishes to distinguish between right and left modifiers, this information could be deduced using keyboard events and Fire.KeyboardEvent.location.
-     * @returns {boolean} true if it is a modifier key and the modifier is activated, false otherwise.
+     * @return {boolean} true if it is a modifier key and the modifier is activated, false otherwise.
      */
     ModifierKeyStates.prototype.getModifierState = function (keyArg) {
         return nativeEvent.getModifierState(keyArg);

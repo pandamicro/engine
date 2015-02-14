@@ -167,7 +167,7 @@
      * Dispatches an event into the event flow. The event target is the EventTarget object upon which the dispatchEvent() method is called.
      *
      * @param {Fire.Event} event - The Event object that is dispatched into the event flow
-     * @returns {boolean} - returns true if either the event's preventDefault() method was not invoked,
+     * @return {boolean} - returns true if either the event's preventDefault() method was not invoked,
      *                      or its cancelable attribute value is false, and false otherwise.
      */
     EventTarget.prototype.dispatchEvent = function (event) {
@@ -202,7 +202,7 @@
     // * Send an event to this object directly, this method will not propagate the event to any other objects.
     // *
     // * @param {Fire.Event} event - The Event object that is sent to this event target.
-    // * @returns {boolean} - returns true if either the event's preventDefault() method was not invoked,
+    // * @return {boolean} - returns true if either the event's preventDefault() method was not invoked,
     // *                      or its cancelable attribute value is false, and false otherwise.
     // */
     //EventTarget.prototype.sendEvent = function (event) {

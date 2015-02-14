@@ -119,7 +119,7 @@ var Engine = (function () {
      * @param {number} [w]
      * @param {number} [h]
      * @param {Canvas} [canvas]
-     * @returns {RenderContext}
+     * @return {RenderContext}
      */
     Engine.init = function ( w, h, canvas ) {
         if (inited) {

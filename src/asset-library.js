@@ -191,7 +191,7 @@ var AssetLibrary = (function () {
          * Get the exists asset by uuid.
          *
          * @param {string} uuid
-         * @returns {Fire.Asset} - the existing asset, if not loaded, just returns null.
+         * @return {Fire.Asset} - the existing asset, if not loaded, just returns null.
          */
         getAssetByUuid: function (uuid) {
             return AssetLibrary._uuidToAsset[uuid] || null;

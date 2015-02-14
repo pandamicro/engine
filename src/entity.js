@@ -308,7 +308,7 @@
 
     /**
      * @param {function|string} typeOrTypename
-     * @returns {Component}
+     * @return {Component}
      */
     Entity.prototype.getComponent = function (typeOrTypename) {
         if ( !typeOrTypename ) {
@@ -423,7 +423,7 @@
      *       The return value will be -1
      *
      * @method Fire.Entity#getSiblingIndex
-     * @returns {number}
+     * @return {number}
      */
     Entity.prototype.getSiblingIndex = function () {
         if (this._parent) {
@@ -438,7 +438,7 @@
      * Get the indexed sibling.
      * @method Fire.Entity#getSibling
      * @param {number} index
-     * @returns {Fire.Entity}
+     * @return {Fire.Entity}
      */
     Entity.prototype.getSibling = function (index) {
         if (this._parent) {

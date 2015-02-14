@@ -65,7 +65,7 @@
      * @method Fire.Camera#viewportToScreen
      * @param {Fire.Vec2} position
      * @param {Fire.Vec2} [out] - optional, the receiving vector
-     * @returns {Fire.Vec2}
+     * @return {Fire.Vec2}
      */
     Camera.prototype.viewportToScreen = function (position, out) {
         out = this._renderContext.size.scale(position, out);
@@ -77,7 +77,7 @@
      * @method Fire.Camera#screenToViewport
      * @param {Fire.Vec2} position
      * @param {Fire.Vec2} [out] - optional, the receiving vector
-     * @returns {Fire.Vec2}
+     * @return {Fire.Vec2}
      */
     Camera.prototype.screenToViewport = function (position, out) {
         out = out || new Vec2();
@@ -92,7 +92,7 @@
      * @method Fire.Camera#viewportToWorld
      * @param {Fire.Vec2} position
      * @param {Fire.Vec2} [out] - optional, the receiving vector
-     * @returns {Fire.Vec2}
+     * @return {Fire.Vec2}
      */
     Camera.prototype.viewportToWorld = function (position, out) {
         out = this.viewportToScreen(position, out);
@@ -104,7 +104,7 @@
      * @method Fire.Camera#screenToWorld
      * @param {Fire.Vec2} position
      * @param {Fire.Vec2} [out] - optional, the receiving vector
-     * @returns {Fire.Vec2}
+     * @return {Fire.Vec2}
      */
     Camera.prototype.screenToWorld = function (position, out) {
         var halfScreenSize = (this._renderContext || Engine._renderContext).size.mulSelf(0.5);
@@ -124,7 +124,7 @@
      * @method Fire.Camera#worldToScreen
      * @param {Fire.Vec2} position
      * @param {Fire.Vec2} [out] - optional, the receiving vector
-     * @returns {Fire.Vec2}
+     * @return {Fire.Vec2}
      */
     Camera.prototype.worldToScreen = function (position, out) {
         var mat = new Matrix23();
@@ -142,7 +142,7 @@
      * @method Fire.Camera#worldToViewport
      * @param {Fire.Vec2} position
      * @param {Fire.Vec2} [out] - optional, the receiving vector
-     * @returns {Fire.Vec2}
+     * @return {Fire.Vec2}
      */
     Camera.prototype.worldToViewport = function (position, out) {
         out = this.worldToScreen(position, out);

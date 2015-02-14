@@ -11,7 +11,7 @@
     // *
     // * @function Fire.Renderer#getLocalBounds
     // * @param {Fire.Rect} [out] - optional, the receiving rect
-    // * @returns {Fire.Rect}
+    // * @return {Fire.Rect}
     // */
     //Renderer.prototype.getLocalBounds = function (out) {
     //    Fire.warn('interface not yet implemented');
@@ -25,7 +25,7 @@
      *
      * @function Fire.Renderer#getWorldBounds
      * @param {Fire.Rect} [out] - optional, the receiving rect
-     * @returns {Fire.Rect} - the rect represented in world position
+     * @return {Fire.Rect} - the rect represented in world position
      */
     Renderer.prototype.getWorldBounds = function (out) {
         var worldMatrix = this.entity.transform.getLocalToWorldMatrix();
@@ -44,7 +44,7 @@
      *
      * @function Fire.Renderer#getWorldOrientedBounds
      * @param {...Fire.Vec2} [out] - optional, the vector to receive the world position
-     * @returns {Fire.Vec2[]} - the array contains vectors represented in world position
+     * @return {Fire.Vec2[]} - the array contains vectors represented in world position
      */
     Renderer.prototype.getWorldOrientedBounds = function (out1, out2, out3, out4){
         out1 = out1 || new Vec2(0, 0);

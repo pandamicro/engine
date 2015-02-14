@@ -1,10 +1,11 @@
 ﻿var Transform = (function () {
 
     /**
-     * @class
-     * @alias Fire.Transform
-     * @extends Fire.Component
+     * Position, rotation and scale of an object.
+     * @class Transform
+     * @extends Component
      */
+
     var Transform = Fire.define('Fire.Transform', Component, function () {
         Component.call(this);
 
@@ -14,7 +15,8 @@
         this._worldTransform = new Matrix23();
 
         /**
-         * @property {Transform} _parent - the cached reference to parent transform
+         * @property {Fire.Transform} _parent - the cached reference to parent transform
+         * @default null
          */
         this._parent = null;
 
@@ -31,7 +33,8 @@
 
     /**
      * The local position in its parent's coordinate system
-     * @property {Fire.Vec2} Fire.Transform#position
+     * @member {Fire.Vec2} position
+     * @instance
      */
     Transform.getset('position',
         function () {
@@ -221,7 +224,7 @@
      * Get the local matrix that transforms a point from local space into parents space.
      * @method Fire.Transform#getLocalMatrix
      * @param {Fire.Matrix23} [out]
-     * @returns {Fire.Matrix23}
+     * @return {Fire.Matrix23}
      */
     Transform.prototype.getLocalMatrix = function (out) {
         out = out || new Matrix23();
@@ -261,7 +264,7 @@
      * Get the world transform matrix that transforms a point from local space into world space.
      * @method Transform#getLocalToWorldMatrix
      * @param {Fire.Matrix23} [out]
-     * @returns {Fire.Matrix23}
+     * @return {Fire.Matrix23}
      */
     Transform.prototype.getLocalToWorldMatrix = function (out) {
         // todo, merge with this._worldTransform
@@ -278,7 +281,7 @@
      * Get the inverse world transform matrix that transforms a point from world space into local space.
      * @method Transform#getWorldToLocalMatrix
      * @param {Fire.Matrix23} [out]
-     * @returns {Fire.Matrix23}
+     * @return {Fire.Matrix23}
      */
     Transform.prototype.getWorldToLocalMatrix = function (out) {
         return this.getLocalToWorldMatrix(out).invert();

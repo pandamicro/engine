@@ -173,7 +173,7 @@ var RenderContext = (function () {
      * @param {Fire.Entity} entityParent
      * @param {boolean} inSceneView
      * @param {Fire.Entity} [customFirstChildEntity=null]
-     * @returns {number}
+     * @return {number}
      */
     RenderContext._getChildrenOffset = function (entityParent, inSceneView, customFirstChildEntity) {
         if (entityParent) {

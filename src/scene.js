@@ -1,7 +1,7 @@
 ﻿var Scene = (function () {
     var _super = Asset;
     /**
-     * @class
+     * @class Fire.Scene
      * @extends Fire.Asset
      * @private
      */
