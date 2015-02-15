@@ -1,57 +1,72 @@
 ﻿var EventRegister = {
     inputEvents: {
         // ref: http://www.w3.org/TR/DOM-Level-3-Events/#event-types-list
-        'keydown': {
+        keydown: {
             constructor: KeyboardEvent,
             bubbles: true,
-            cancelable: true,
+            cancelable: true
         },
-        'keyup': {
+        keyup: {
             constructor: KeyboardEvent,
             bubbles: true,
-            cancelable: true,
+            cancelable: true
         },
-        'click': {
+        click: {
             constructor: MouseEvent,
             bubbles: true,
-            cancelable: true,
+            cancelable: true
         },
-        'dblclick': {
+        dblclick: {
             constructor: MouseEvent,
             bubbles: true,
-            cancelable: false,
+            cancelable: false
         },
-        'mousedown': {
+        mousedown: {
             constructor: MouseEvent,
             bubbles: true,
-            cancelable: true,
+            cancelable: true
         },
-        'mouseup': {
+        mouseup: {
             constructor: MouseEvent,
             bubbles: true,
-            cancelable: true,
+            cancelable: true
         },
-        'mousemove': {
+        mousemove: {
             constructor: MouseEvent,
             bubbles: true,
-            cancelable: true,
+            cancelable: true
         },
-        //'mouseenter': {
+        //touchstart: {
+        //    constructor: MouseEvent,
+        //    bubbles: true,
+        //    cancelable: true
+        //},
+        //touchend: {
+        //    constructor: MouseEvent,
+        //    bubbles: true,
+        //    cancelable: true
+        //},
+        //touchmove: {
+        //    constructor: MouseEvent,
+        //    bubbles: true,
+        //    cancelable: true
+        //}
+        //mouseenter: {
         //    constructor: MouseEvent,
         //    bubbles: false,
         //    cancelable: false,
         //},
-        //'mouseleave': {
+        //mouseleave: {
         //    constructor: MouseEvent,
         //    bubbles: false,
         //    cancelable: false,
         //},
-        //'mouseout': {
+        //mouseout: {
         //    constructor: MouseEvent,
         //    bubbles: true,
         //    cancelable: true,
         //},
-        //'mouseover': {
+        //mouseover: {
         //    constructor: MouseEvent,
         //    bubbles: true,
         //    cancelable: true,

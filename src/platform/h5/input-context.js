@@ -25,16 +25,89 @@
 
         this.renderContext = renderContext;
         this.eventRegister = new DomEventRegister(canvas);
+        this.hasTouch = 'ontouchstart' in window;
 
         // bind event
+        var scope = this;
+        function listener (event) {
+            scope.onDomInputEvent(event);
+        }
         for (var type in EventRegister.inputEvents) {
-            this.eventRegister.addEventListener(type, this.onDomInputEvent.bind(this), true);
+            //var info = EventRegister.inputEvents[type];
+            //if (!(this.hasTouch && info.constructor instanceof MouseEvent)) {
+                this.eventRegister.addEventListener(type, listener, true);
+            //}
+        }
+        if (this.hasTouch) {
+            this.simulateMouseEvent();
         }
 
-        // focus the canvas to receive keyborad events
-        this.eventRegister.addEventListener('mousedown', function () {
+        // focus the canvas to receive keyboard events
+        function focusCanvas () {
             canvas.focus();
-        }, true);
+        }
+        if (this.hasTouch) {
+            this.eventRegister.addEventListener('touchstart', focusCanvas, true);
+        }
+        else {
+            this.eventRegister.addEventListener('mousedown', focusCanvas, true);
+        }
+    };
+
+    InputContext.prototype.simulateMouseEvent = function () {
+        var scope = this;
+        function getTouchListener (info) {
+            var type = info.simulateType;
+            if (type) {
+                return function (domEvent) {
+                    // wrap event
+                    var event = new MouseEvent(type);
+                    event.initFromNativeEvent(domEvent);
+                    event.bubbles = true;
+                    // event.cancelable = eventInfo.cancelable; (NYI)
+
+                    // inner dispatch
+                    Input._dispatchEvent(event, scope);
+
+                    // update dom event
+
+                    // Prevent simulated mouse events from firing by browser,
+                    // However, this also prevents any default browser behavior from firing (clicks, scrolling, etc)
+                    domEvent.preventDefault();
+                    if (event._propagationStopped) {
+                        if (event._propagationImmediateStopped) {
+                            domEvent.stopImmediatePropagation();
+                        }
+                        else {
+                            domEvent.stopPropagation();
+                        }
+                    }
+                };
+            }
+            else {
+                return function (domEvent) {
+                    domEvent.preventDefault();
+                };
+            }
+        }
+        var SimulateInfos = {
+            touchstart: {
+                simulateType: 'mousedown'
+            },
+            touchend: {
+                simulateType: 'mouseup'
+            },
+            touchmove: {
+                simulateType: 'mousemove'
+            },
+            touchcancel: {
+                simulateType: ''
+            }
+        };
+        for (var srcType in SimulateInfos) {
+            var info = SimulateInfos[srcType];
+            this.eventRegister.addEventListener(srcType, getTouchListener(info), true);
+        }
     };
 
     InputContext.prototype.destruct = function () {
@@ -44,7 +117,8 @@
     InputContext.prototype.onDomInputEvent = function (domEvent) {
         // wrap event
         var eventInfo = EventRegister.inputEvents[domEvent.type];
-        var event = new eventInfo.constructor(domEvent.type, domEvent);
+        var event = new eventInfo.constructor(domEvent.type);
+        event.initFromNativeEvent(domEvent);
         event.bubbles = eventInfo.bubbles;
         // event.cancelable = eventInfo.cancelable; (NYI)
 

@@ -3,11 +3,15 @@ var ModifierKeyStates = (function () {
 
     /**
      * @param {string} type - The name of the event (case-sensitive), e.g. "click", "fire", or "submit"
-     * @param {MouseEvent|KeyboardEvent} nativeEvent - The original DOM event
      */
     function ModifierKeyStates (type, nativeEvent) {
         Fire.Event.call(this, type, true);
-        this.initFromNativeEvent(nativeEvent);
+
+        this.nativeEvent = null;
+        this.ctrlKey = false;
+        this.shiftKey = false;
+        this.altKey = false;
+        this.metaKey = false;
     }
     Fire.extend(ModifierKeyStates, Fire.Event);
 
@@ -23,12 +27,15 @@ var ModifierKeyStates = (function () {
         return nativeEvent.getModifierState(keyArg);
     };
 
+    /**
+     * @param {MouseEvent|KeyboardEvent|TouchEvent} nativeEvent - The original DOM event
+     */
     ModifierKeyStates.prototype.initFromNativeEvent = function (nativeEvent) {
+        this.nativeEvent = nativeEvent;
         this.ctrlKey = nativeEvent.ctrlKey;
         this.shiftKey = nativeEvent.shiftKey;
         this.altKey = nativeEvent.altKey;
         this.metaKey = nativeEvent.metaKey;
-        this.nativeEvent = nativeEvent;
     };
 
     ModifierKeyStates.prototype._reset = function () {
@@ -51,49 +58,73 @@ var MouseEvent = (function () {
 
     /**
      * @param {string} type - The name of the event (case-sensitive), e.g. "click", "fire", or "submit"
-     * @param {MouseEvent} nativeEvent - The original DOM event
      *
      * @see https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent
      * http://www.quirksmode.org/dom/w3c_events.html#mousepos
-     *
      */
-    function MouseEvent (type, nativeEvent) {
-        Fire.ModifierKeyStates.call(this, type, nativeEvent);
-    }
-    Fire.extend(MouseEvent, ModifierKeyStates);
-
-    MouseEvent.prototype.initFromNativeEvent = function (nativeEvent) {
-        ModifierKeyStates.prototype.initFromNativeEvent.call(this, nativeEvent);
+    function MouseEvent (type) {
+        Fire.ModifierKeyStates.call(this, type);
 
         /**
          * @property {number} button - indicates which button was pressed on the mouse to trigger the event.
          *                             (0: Left button, 1: Wheel button or middle button (if present), 2: Right button)
          */
-        this.button = nativeEvent.button;
+        this.button = 0;
 
         /**
          * @property {number} buttonStates - indicates which buttons were pressed on the mouse to trigger the event
          * @see https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent.buttons
          */
-        this.buttonStates = nativeEvent.buttons;
+        this.buttonStates = 0;
 
-        this.screenX = nativeEvent.offsetX;
-        this.screenY = nativeEvent.offsetY;
+        this.screenX = 0;
+        this.screenY = 0;
 
         /**
          * @property {number} deltaX - The X coordinate of the mouse pointer relative to the position of the last mousemove event.
          */
-        this.deltaX = nativeEvent.movementX;
+        this.deltaX = 0;
 
         /**
          * @property {number} deltaY - The Y coordinate of the mouse pointer relative to the position of the last mousemove event.
          */
-        this.deltaY = nativeEvent.movementY;
+        this.deltaY = 0;
 
         /**
          * @property {Fire.EventTarget} relatedTarget - The secondary target for the event, if there is one.
          */
-        this.relatedTarget = nativeEvent.relatedTarget;
+        this.relatedTarget = null;
+    }
+    Fire.extend(MouseEvent, ModifierKeyStates);
+
+    var TouchEvent = window.TouchEvent;
+
+    /**
+     * @param {MouseEvent|TouchEvent} nativeEvent - The original DOM event
+     */
+    MouseEvent.prototype.initFromNativeEvent = function (nativeEvent) {
+        ModifierKeyStates.prototype.initFromNativeEvent.call(this, nativeEvent);
+
+        if (TouchEvent && nativeEvent instanceof TouchEvent) {
+            var first = nativeEvent.changedTouches[0] || nativeEvent.touches[0];
+            this.button = 0;
+            this.buttonStates = 1;
+            this.screenX = first ? first.screenX : 0;
+            this.screenY = first ? first.screenY : 0;
+            this.deltaX = 0;
+            this.deltaY = 0;
+            this.relatedTarget = null;
+        }
+        else {
+            // MouseEvent
+            this.button = nativeEvent.button;
+            this.buttonStates = nativeEvent.buttons;
+            this.screenX = nativeEvent.offsetX;
+            this.screenY = nativeEvent.offsetY;
+            this.deltaX = nativeEvent.movementX;
+            this.deltaY = nativeEvent.movementY;
+            this.relatedTarget = nativeEvent.relatedTarget;
+        }
     };
 
     MouseEvent.prototype._reset = function () {
