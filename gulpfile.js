@@ -234,7 +234,7 @@ gulp.task('unit-runner', function() {
 gulp.task('test', ['cp-core', 'js-min', 'unit-runner'], function() {
     gutil.log("please run " + gutil.colors.green("'bower install'") + " before running this task.");
     var timeOutInSeconds = 5;
-    return gulp.src('test/unit/runner.dev.html', { read: false })
+    return gulp.src('test/unit/runner.html', { read: false })
                //.pipe(fb.callback(function () {
                //    // launch server
                //    require('./test/server.js');
