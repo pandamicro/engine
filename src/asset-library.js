@@ -162,7 +162,9 @@ var AssetLibrary = (function () {
                     // create closure manually because its extremely faster than bind
                     return function (dependsAsset, error) {
                         if (error) {
-                            Fire.error('[AssetLibrary] Failed to load "' + dependsUuid + '", ' + error);
+                            if (Fire.AssetDB.isValidUuid(dependsUuid)) {
+                                Fire.error('[AssetLibrary] Failed to load "' + dependsUuid + '", ' + error);
+                            }
                         }
                         else {
                             dependsAsset._uuid = dependsUuid;
