@@ -56,15 +56,35 @@
 
     InputContext.prototype.simulateMouseEvent = function () {
         var scope = this;
+        // get canvas page offset
+        var canvasPageX = 0,
+            canvasPageY = 0;
+        var elem = scope.renderContext.renderer.view;
+        while (elem) {
+            canvasPageX += parseInt(elem.offsetLeft);
+            canvasPageY += parseInt(elem.offsetTop);
+            elem = elem.offsetParent;
+        }
+        //
+        function createMouseEvent (type, touchEvent) {
+            var event = new MouseEvent(type);
+            event.bubbles = true;
+            // event.cancelable = eventInfo.cancelable; (NYI)
+            var first = touchEvent.touches[0];  // changedTouches[0]
+            event.button = 0;
+            event.buttonStates = 1;
+            if (first) {
+                event.screenX = first.pageX - canvasPageX;
+                event.screenY = first.pageY - canvasPageY;
+            }
+            return event;
+        }
         function getTouchListener (info) {
             var type = info.simulateType;
             if (type) {
-                return function (domEvent) {
-                    // wrap event
-                    var event = new MouseEvent(type);
-                    event.initFromNativeEvent(domEvent);
-                    event.bubbles = true;
-                    // event.cancelable = eventInfo.cancelable; (NYI)
+                return function (touchEvent) {
+                    // gen mouse event
+                    var event = createMouseEvent(type, touchEvent);
 
                     // inner dispatch
                     Input._dispatchEvent(event, scope);
@@ -73,20 +93,21 @@
 
                     // Prevent simulated mouse events from firing by browser,
                     // However, this also prevents any default browser behavior from firing (clicks, scrolling, etc)
-                    domEvent.preventDefault();
+                    touchEvent.preventDefault();
+
                     if (event._propagationStopped) {
                         if (event._propagationImmediateStopped) {
-                            domEvent.stopImmediatePropagation();
+                            touchEvent.stopImmediatePropagation();
                         }
                         else {
-                            domEvent.stopPropagation();
+                            touchEvent.stopPropagation();
                         }
                     }
                 };
             }
             else {
-                return function (domEvent) {
-                    domEvent.preventDefault();
+                return function (touchEvent) {
+                    touchEvent.preventDefault();
                 };
             }
         }

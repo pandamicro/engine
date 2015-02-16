@@ -100,31 +100,18 @@ var MouseEvent = (function () {
     var TouchEvent = window.TouchEvent;
 
     /**
-     * @param {MouseEvent|TouchEvent} nativeEvent - The original DOM event
+     * @param {MouseEvent} nativeEvent - The original DOM event
      */
     MouseEvent.prototype.initFromNativeEvent = function (nativeEvent) {
         ModifierKeyStates.prototype.initFromNativeEvent.call(this, nativeEvent);
 
-        if (TouchEvent && nativeEvent instanceof TouchEvent) {
-            var first = nativeEvent.changedTouches[0] || nativeEvent.touches[0];
-            this.button = 0;
-            this.buttonStates = 1;
-            this.screenX = first ? first.screenX : 0;
-            this.screenY = first ? first.screenY : 0;
-            this.deltaX = 0;
-            this.deltaY = 0;
-            this.relatedTarget = null;
-        }
-        else {
-            // MouseEvent
-            this.button = nativeEvent.button;
-            this.buttonStates = nativeEvent.buttons;
-            this.screenX = nativeEvent.offsetX;
-            this.screenY = nativeEvent.offsetY;
-            this.deltaX = nativeEvent.movementX;
-            this.deltaY = nativeEvent.movementY;
-            this.relatedTarget = nativeEvent.relatedTarget;
-        }
+        this.button = nativeEvent.button;
+        this.buttonStates = nativeEvent.buttons;
+        this.screenX = nativeEvent.offsetX;
+        this.screenY = nativeEvent.offsetY;
+        this.deltaX = nativeEvent.movementX;
+        this.deltaY = nativeEvent.movementY;
+        this.relatedTarget = nativeEvent.relatedTarget;
     };
 
     MouseEvent.prototype._reset = function () {
