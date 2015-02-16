@@ -37,7 +37,7 @@
                 editorCallback.onEntityCreated(this);
             }
             if ( editorCallback.onComponentAdded ) {
-                editorCallback.onComponentAdded(transform);
+                editorCallback.onComponentAdded(this, transform);
             }
 // @endif
         }
@@ -322,7 +322,7 @@
 
 // @ifdef EDITOR
         if ( editorCallback.onComponentAdded ) {
-            editorCallback.onComponentAdded(component);
+            editorCallback.onComponentAdded(this, component);
         }
 // @endif
         return component;
@@ -368,7 +368,7 @@
                 component.entity = null;
 // @ifdef EDITOR
                 if ( editorCallback.onComponentRemoved ) {
-                    editorCallback.onComponentRemoved(component, this);
+                    editorCallback.onComponentRemoved(this, component);
                 }
 // @endif
             }
