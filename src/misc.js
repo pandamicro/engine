@@ -97,5 +97,25 @@ var editorCallback = {
      * @property {Fire.Engine._editorCallback~onComponentDisabled} Fire.Engine._editorCallback.onComponentDisabled
      */
     onComponentDisabled: null,
+
+    /**
+     * @callback Fire.Engine._editorCallback~onComponentAdded
+     * @param {Fire.Entity} entity
+     * @param {Fire.Component} component
+     */
+    /**
+     * @property {Fire.Engine._editorCallback~onComponentAdded} Fire.Engine._editorCallback.onComponentAdded
+     */
+    onComponentAdded: null,
+
+    /**
+     * @callback Fire.Engine._editorCallback~onComponentRemoved
+     * @param {Fire.Entity} entity
+     * @param {Fire.Component} component
+     */
+    /**
+     * @property {Fire.Engine._editorCallback~onComponentRemoved} Fire.Engine._editorCallback.onComponentRemoved
+     */
+    onComponentRemoved: null
 };
 // @endif

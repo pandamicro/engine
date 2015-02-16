@@ -28,13 +28,18 @@
             }
             // invoke callbacks
             Engine._renderContext.onRootEntityCreated(this);
+
+            // activate componet
+            transform._onEntityActivated(true);     // 因为是刚刚创建，所以 activeInHierarchy 肯定为 true
+
 // @ifdef EDITOR
             if (editorCallback.onEntityCreated) {
                 editorCallback.onEntityCreated(this);
             }
+            if ( editorCallback.onComponentAdded ) {
+                editorCallback.onComponentAdded(transform);
+            }
 // @endif
-            // activate componet
-            transform._onEntityActivated(true);     // 因为是刚刚创建，所以 activeInHierarchy 肯定为 true
         }
     });
     Entity.prop('_active', true, Fire.HideInInspector);
@@ -140,7 +145,7 @@
     Object.defineProperty(Entity.prototype, 'childCount', {
         get: function () {
             return this._children.length;
-        },
+        }
     });
 
     ////////////////////////////////////////////////////////////////////
@@ -184,7 +189,7 @@
     Object.defineProperty(Entity.prototype, 'activeInHierarchy', {
         get: function () {
             return this._activeInHierarchy;
-        },
+        }
     });
 
     ////////////////////////////////////////////////////////////////////
@@ -282,7 +287,18 @@
     // component methods
     ////////////////////////////////////////////////////////////////////
 
-    Entity.prototype.addComponent = function (constructor) {
+    /**
+     * @param {function|string} typeOrTypename
+     * @return {Component}
+     */
+    Entity.prototype.addComponent = function (typeOrTypename) {
+        var constructor;
+        if (typeof typeOrTypename === 'string') {
+            constructor = Fire.getClassByName(typeOrTypename);
+        }
+        else {
+            constructor = typeOrTypename;
+        }
         if (this._objFlags & Destroying) {
             Fire.error('isDestroying');
             return;
@@ -303,6 +319,12 @@
             // call onLoad/onEnable
             component._onEntityActivated(true);
         }
+
+// @ifdef EDITOR
+        if ( editorCallback.onComponentAdded ) {
+            editorCallback.onComponentAdded(component);
+        }
+// @endif
         return component;
     };
 
@@ -344,6 +366,11 @@
             if (i !== -1) {
                 this._components.splice(i, 1);
                 component.entity = null;
+// @ifdef EDITOR
+                if ( editorCallback.onComponentRemoved ) {
+                    editorCallback.onComponentRemoved(component, this);
+                }
+// @endif
             }
             else if (component.entity !== this) {
                 Fire.error("Component not owned by this entity");
