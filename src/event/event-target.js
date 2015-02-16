@@ -4,9 +4,9 @@
      * EventTarget is an object to which an event is dispatched when something has occurred.
      * Entity are the most common event targets, but other objects can be event targets too.
      *
-     * Event targets are an important part of the Fireball-x event model.
+     * Event targets are an important part of the Fireball event model.
      * The event target serves as the focal point for how events flow through the scene graph.
-     * When an event such as a mouse click or a keypress occurs, Fireball-x dispatches an event object
+     * When an event such as a mouse click or a keypress occurs, Fireball dispatches an event object
      * into the event flow from the root of the hierarchy. The event object then makes its way through
      * the scene graph until it reaches the event target, at which point it begins its return trip through
      * the scene graph. This round-trip journey to the event target is conceptually divided into three phases:
