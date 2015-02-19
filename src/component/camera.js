@@ -34,7 +34,11 @@
     Object.defineProperty(Camera.prototype, 'renderContext', {
         set: function (value) {
             this._renderContext = value;
-            this.size = value.size.y;
+// @ifdef EDITOR
+            if ( !Engine.isPlaying ) {
+                this.size = value.size.y;
+            }
+// @endif
             this._applyRenderSettings();
         }
     });
