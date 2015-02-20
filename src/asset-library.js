@@ -44,14 +44,14 @@ var AssetLibrary = (function () {
         _loadAssetByUuid: function (uuid, callback, dontCache, info) {
             dontCache = (typeof dontCache !== 'undefined') ? dontCache : false;
             if (typeof uuid !== 'string') {
-                callback(null, '[AssetLibrary] uuid must be string');
+                callback('[AssetLibrary] uuid must be string', null);
                 return;
             }
             // step 1
             var asset = AssetLibrary._uuidToAsset[uuid];
             if (asset) {
                 if (callback) {
-                    callback(asset);
+                    callback(null, asset);
                 }
                 return;
             }
@@ -72,24 +72,24 @@ var AssetLibrary = (function () {
 
             // step 5
             LoadManager.loadByLoader(JsonLoader, url,
-                function (json, error) {
+                function (error, json) {
                     if (error) {
                         if ( !dontCache ) {
-                            _uuidToCallbacks.invokeAndRemove(uuid, null, error);
+                            _uuidToCallbacks.invokeAndRemove(uuid, error, null);
                         }
                         else {
-                            callback(null, error);
+                            callback(error, null);
                         }
                         return;
                     }
-                    AssetLibrary.loadJson(json, url, function (asset) {
+                    AssetLibrary.loadJson(json, url, function (err, asset) {
                         asset._uuid = uuid;
                         if ( !dontCache ) {
                             AssetLibrary._uuidToAsset[uuid] = asset;
-                            _uuidToCallbacks.invokeAndRemove(uuid, asset);
+                            _uuidToCallbacks.invokeAndRemove(uuid, err, asset);
                         }
                         else {
-                            callback(asset, error);
+                            callback(err, asset);
                         }
                     }, dontCache, info);
                 }
@@ -139,19 +139,19 @@ var AssetLibrary = (function () {
                 var attrs = Fire.attr(asset.constructor, info.rawProp);
                 var rawType = attrs.rawType;
                 ++pendingCount;
-                LoadManager.load(url, rawType, asset._rawext, function onRawObjLoaded (raw, error) {
+                LoadManager.load(url, rawType, asset._rawext, function onRawObjLoaded (error, raw) {
                     if (error) {
                         Fire.error('[AssetLibrary] Failed to load %s of %s. %s', rawType, url, error);
                     }
                     asset[rawProp] = raw;
                     --pendingCount;
                     if (pendingCount === 0) {
-                        callback(asset);
+                        callback(null, asset);
                     }
                 });
             }
             if (pendingCount === 0) {
-                callback(asset);
+                callback(null, asset);
                 return;
             }
 
@@ -160,11 +160,13 @@ var AssetLibrary = (function () {
                 var dependsUuid = info.uuidList[i];
                 var onDependsAssetLoaded = (function (dependsUuid, obj, prop) {
                     // create closure manually because its extremely faster than bind
-                    return function (dependsAsset, error) {
+                    return function (error, dependsAsset) {
                         if (error) {
-                            if (Fire.AssetDB.isValidUuid(dependsUuid)) {
-                                Fire.error('[AssetLibrary] Failed to load "' + dependsUuid + '", ' + error);
+                            // @ifdef EDITOR
+                            if (Fire.AssetDB && Fire.AssetDB.isValidUuid(dependsUuid)) {
+                                Fire.error('[AssetLibrary] Failed to load "%s", %s', dependsUuid, error);
                             }
+                            // @endif
                         }
                         else {
                             dependsAsset._uuid = dependsUuid;
@@ -174,7 +176,7 @@ var AssetLibrary = (function () {
                         // check all finished
                         --pendingCount;
                         if (pendingCount === 0) {
-                            callback(asset);
+                            callback(null, asset);
                         }
                     };
                 })( dependsUuid, info.uuidObjList[i], info.uuidPropList[i] );
@@ -252,7 +254,7 @@ var AssetLibrary = (function () {
             //Fire.log('[AssetLibrary] library: ' + _libraryBase);
 
             _uuidToUrl = uuidToUrl;
-        },
+        }
 
         ///**
         // * temporary flag for deserializing assets

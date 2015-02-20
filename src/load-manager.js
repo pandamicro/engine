@@ -52,8 +52,8 @@ var LoadManager = (function () {
 
     function doLoad (loader, url, callback) {
         LoadManager._curConcurrent += 1;
-        loader(url, function doLoadCB (asset, error) {
-            callback(asset, error);
+        loader(url, function doLoadCB (error, asset) {
+            callback(error, asset);
             LoadManager._curConcurrent = Math.max(0, LoadManager._curConcurrent - 1);
             loadNext();
         });
@@ -111,11 +111,11 @@ var LoadManager = (function () {
                     this.loadByLoader(typeInfo.loader, rawUrl, callback);
                 }
                 else {
-                    callback(null, 'Undefined extname for the raw ' + rawType + ' file of ' + url);
+                    callback('Undefined extname for the raw ' + rawType + ' file of ' + url, null);
                 }
             }
             else {
-                callback(null, 'Unknown raw type "' + rawType + '" of ' + url);
+                callback('Unknown raw type "' + rawType + '" of ' + url, null);
             }
         },
 

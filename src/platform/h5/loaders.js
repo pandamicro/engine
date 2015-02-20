@@ -16,7 +16,7 @@ function ImageLoader(url, callback, onProgress) {
 
     var onload = function () {
         if (callback) {
-            callback(this);
+            callback(null, this);
         }
         image.removeEventListener('load', onload);
         image.removeEventListener('error', onerror);
@@ -25,7 +25,7 @@ function ImageLoader(url, callback, onProgress) {
     var onerror = function (msg, line, url) {
         if (callback) {
             var error = 'Failed to load image: ' + msg + ' Url: ' + url;
-            callback(null, error);
+            callback(error, null);
         }
         image.removeEventListener('load', onload);
         image.removeEventListener('error', onerror);
@@ -52,10 +52,10 @@ function _LoadFromXHR(url, callback, onProgress, responseType) {
         if (xhr.readyState === xhr.DONE) {
             if (callback) {
                 if (xhr.status === 200 || xhr.status === 0) {
-                    callback(xhr);
+                    callback(null, xhr);
                 }
                 else {
-                    callback(null, 'LoadFromXHR: Could not load "' + url + '", status: ' + xhr.status);
+                    callback('LoadFromXHR: Could not load "' + url + '", status: ' + xhr.status, null);
                 }
             }
             xhr.onreadystatechange = null;
@@ -108,34 +108,34 @@ function _LoadFromXHR(url, callback, onProgress, responseType) {
 }
 
 function TextLoader(url, callback, onProgress) {
-    var cb = callback && function(xhr, error) {
+    var cb = callback && function(error, xhr) {
         if (xhr && xhr.responseText) {
-            callback(xhr.responseText);
+            callback(null, xhr.responseText);
         }
         else {
-            callback(null, 'TextLoader: "' + url +
-                '" seems to be unreachable or the file is empty. InnerMessage: ' + error);
+            callback('TextLoader: "' + url +
+                '" seems to be unreachable or the file is empty. InnerMessage: ' + error, null);
         }
     };
     _LoadFromXHR(url, cb, onProgress);
 }
 
 function JsonLoader(url, callback, onProgress) {
-    var cb = callback && function(xhr, error) {
+    var cb = callback && function(error, xhr) {
         if (xhr && xhr.responseText) {
             var json;
             try {
                 json = JSON.parse(xhr.responseText);
             }
             catch (e) {
-                callback(null, e);
+                callback(e, null);
                 return;
             }
-            callback(json);
+            callback(null, json);
         }
         else {
-            callback(null, 'JsonLoader: "' + url +
-                '" seems to be unreachable or the file is empty. InnerMessage: ' + error);
+            callback('JsonLoader: "' + url +
+                '" seems to be unreachable or the file is empty. InnerMessage: ' + error, null);
         }
     };
     _LoadFromXHR(url, cb, onProgress);

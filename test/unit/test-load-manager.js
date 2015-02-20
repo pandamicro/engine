@@ -10,11 +10,11 @@ asyncTest('base', function () {
     var myLoader = function (url, callback, onProgress) {
         setTimeout(function () {
             cb.enable();
-            callback(dummyAsset);
+            callback(null, dummyAsset);
         }, 1);
     };
 
-    var cb = new Callback(function (asset) {
+    var cb = new Callback(function (err, asset) {
         strictEqual(asset, dummyAsset, 'should return the right asset');
         clearTimeout(timerId);
         start();
