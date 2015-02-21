@@ -21,9 +21,9 @@ var paths = {
     src: [
         // runtime pre-defines
         'src/platform/editor/asset-watcher.js',
+        'src/platform/editor/editor-callbacks.js',
         // runtime engine
         'src/definition.js',
-        'src/misc.js',
         'src/time.js',
         'src/event/event.js',
         'src/event/event-listeners.js',

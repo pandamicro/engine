@@ -2,7 +2,7 @@
 var AssetsWatcher = {
     initComponent: function () { },
     start: function () { },
-    stop: function () { },
+    stop: function () { }
 };
 
 Fire._AssetsWatcher = AssetsWatcher;

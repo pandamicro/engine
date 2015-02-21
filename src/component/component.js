@@ -112,8 +112,51 @@
         }
     };
 
+// @ifdef EDITOR
+    function callOnEnableInTryCatch (c) {
+        try {
+            c.onEnable();
+        }
+        catch (e) {
+            Fire.error(e);
+        }
+    }
+    function callOnDisableInTryCatch (c) {
+        try {
+            c.onDisable();
+        }
+        catch (e) {
+            Fire.error(e);
+        }
+    }
+    function callOnLoadInTryCatch (c) {
+        try {
+            c.onLoad();
+        }
+        catch (e) {
+            Fire.error(e);
+        }
+    }
+    function callOnStartInTryCatch (c) {
+        try {
+            c.onStart();
+        }
+        catch (e) {
+            Fire.error(e);
+        }
+    }
+    function callOnDestroyInTryCatch (c) {
+        try {
+            c.onDestroy();
+        }
+        catch (e) {
+            Fire.error(e);
+        }
+    }
+// @endif
+
     // Should not call onEnable/onDisable in other place
-    var _callOnEnable = function (self, enable) {
+    function _callOnEnable (self, enable) {
 // @ifdef EDITOR
         if ( !(Fire.Engine.isPlaying || Fire.attr(self, 'executeInEditMode')) ) {
             return;
@@ -123,7 +166,12 @@
             if ( !(self._objFlags & IsOnEnableCalled) ) {
                 self._objFlags |= IsOnEnableCalled;
                 if ( self.onEnable ) {
+// @ifdef EDITOR
+                    callOnEnableInTryCatch(self);
+// @endif
+// @ifndef EDITOR
                     self.onEnable();
+// @endif
                 }
 // @ifdef EDITOR
                 if ( editorCallback.onComponentEnabled ) {
@@ -136,7 +184,12 @@
             if ( self._objFlags & IsOnEnableCalled ) {
                 self._objFlags &= ~IsOnEnableCalled;
                 if ( self.onDisable ) {
+// @ifdef EDITOR
+                    callOnDisableInTryCatch(self);
+// @endif
+// @ifndef EDITOR
                     self.onDisable();
+// @endif
                 }
 // @ifdef EDITOR
                 if ( editorCallback.onComponentDisabled ) {
@@ -145,14 +198,14 @@
 // @endif
             }
         }
-    };
+    }
 
     Component.prototype._onEntityActivated = function (active) {
 // @ifdef EDITOR
         if ( !(this._objFlags & IsOnLoadCalled) && (Fire.Engine.isPlaying || Fire.attr(this, 'executeInEditMode')) ) {
             this._objFlags |= IsOnLoadCalled;
             if (this.onLoad) {
-                this.onLoad();
+                callOnLoadInTryCatch(this);
             }
             Fire._AssetsWatcher.start(this);
             //if (this.onHierarchyChanged) {
@@ -192,7 +245,12 @@
                 if ( !(comp._objFlags & IsOnStartCalled) ) {
                     comp._objFlags |= IsOnStartCalled;
                     if (comp.onStart) {
+                        // @ifdef EDITOR
+                        callOnStartInTryCatch(comp);
+                        // @endif
+                        // @ifndef EDITOR
                         comp.onStart();
+                        // @endif
                     }
                 }
             }
@@ -204,7 +262,7 @@
                 if ( !(comp._objFlags & IsOnStartCalled) && Fire.attr(comp, 'executeInEditMode')) {
                     comp._objFlags |= IsOnStartCalled;
                     if (comp.onStart) {
-                        comp.onStart();
+                        callOnStartInTryCatch(comp);
                     }
                 }
             }
@@ -222,15 +280,18 @@
     Component.prototype._onPreDestroy = function () {
         // ensure onDisable called
         _callOnEnable(this, false);
+        // onDestroy
 // @ifdef EDITOR
         Fire._AssetsWatcher.stop(this);
         if (Fire.Engine.isPlaying || Fire.attr(this, 'executeInEditMode')) {
-// @endif
-            // onDestroy
             if (this.onDestroy) {
-                this.onDestroy();
+                callOnDestroyInTryCatch(this);
             }
-// @ifdef EDITOR
+        }
+// @endif
+// @ifndef EDITOR
+        if (this.onDestroy) {
+            this.onDestroy();
         }
 // @endif
         // remove component

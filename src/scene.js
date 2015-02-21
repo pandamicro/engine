@@ -32,12 +32,16 @@
     // traversal operations
     ////////////////////////////////////////////////////////////////////
 
-    // 当引入DestroyImmediate后，entity和component可能会在遍历过程中变少，需要复制一个新的数组，或者做一些标记
     var visitOperationTmpl = "if(c._enabled && c._FUNC_) c._FUNC_();";
 // @ifdef EDITOR
-    visitOperationTmpl = "if(c._enabled && c._FUNC_ && " +
-                            "(Fire.Engine.isPlaying || Fire.attr(c,'executeInEditMode'))) c._FUNC_();";
+        visitOperationTmpl =
+           "if (c._enabled && c._FUNC_ && " +
+           "   (Fire.Engine.isPlaying || Fire.attr(c,'executeInEditMode')) ) {" +
+           "    execInTryCatch(c);" +
+           "}";
 // @endif
+
+    // 当引入DestroyImmediate后，entity和component可能会在遍历过程中变少，需要复制一个新的数组，或者做一些标记
     var visitFunctionTmpl = "\
 (function(e){\
 	var i, len=e._components.length;\
@@ -51,6 +55,21 @@
 		if(sub._active) _FUNC_Recursively(sub);\
 	}\
 })";
+
+// @ifdef EDITOR
+    function execInTryCatch (c) {
+        try {
+            c._FUNC_();
+        }
+        catch (e) {
+            Fire.error(e);
+        }
+    }
+    visitFunctionTmpl = "(function () {" +
+                            execInTryCatch +
+                            "return " + visitFunctionTmpl +
+                        "})()";
+// @endif
 
     // jshint evil: true
     var updateRecursively = eval(visitFunctionTmpl.replace(/_FUNC_/g, 'update'));
