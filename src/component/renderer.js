@@ -3,7 +3,7 @@
     /**
      * The base for all renderer
      */
-    var Renderer = Fire.define('Fire.Renderer', Component);
+    var Renderer = Fire.extend('Fire.Renderer', Component);
 
     ///**
     // * Returns a "local" axis aligned bounding box(AABB) of the renderer.

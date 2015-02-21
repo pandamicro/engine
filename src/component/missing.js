@@ -5,7 +5,7 @@
      * Actually, this class will be used whenever a class failed to deserialize,
      * regardless of whether it is component.
      */
-    var MissingScript = Fire.define('Fire.MissingScript', Component);
+    var MissingScript = Fire.extend('Fire.MissingScript', Component);
 
     MissingScript.prototype.onLoad = function () {
         Fire.warn('The referenced script on this Component is missing!');

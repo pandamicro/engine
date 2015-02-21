@@ -1,6 +1,6 @@
 ﻿var Camera = (function () {
 
-    var Camera = Fire.define('Fire.Camera', Component, function () {
+    var Camera = Fire.extend('Fire.Camera', Component, function () {
         Component.call(this);
         this._renderContext = null;
     });

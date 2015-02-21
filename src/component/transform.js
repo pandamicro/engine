@@ -6,7 +6,7 @@
      * @extends Component
      */
 
-    var Transform = Fire.define('Fire.Transform', Component, function () {
+    var Transform = Fire.extend('Fire.Transform', Component, function () {
         Component.call(this);
 
         this._position = new Vec2(0, 0);

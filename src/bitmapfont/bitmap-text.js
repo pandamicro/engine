@@ -23,7 +23,7 @@ var BitmapText = (function () {
 
 
     //-- 增加 Bitmap Text 到 组件菜单上
-    var BitmapText = Fire.define("Fire.BitmapText", Renderer, function () {
+    var BitmapText = Fire.extend("Fire.BitmapText", Renderer, function () {
         Renderer.call(this);
         RenderContext.initRenderer(this);
     });

@@ -9,13 +9,12 @@
      * @static
      *
      */
-    var Component = Fire.define('Fire.Component', HashObject, function () {
+    var Component = Fire.extend('Fire.Component', HashObject, function () {
         HashObject.call(this);
 
 // @ifdef EDITOR
         Fire._AssetsWatcher.initComponent(this);
 // @endif
-
     });
 
     Component.prop('entity', null, Fire.HideInInspector);
@@ -364,73 +363,11 @@ Fire._RFpop = function () {
     _requiringFrame.pop();
 };
 
-/**
- * @method defineComponent
- * @static
- * @param {function} [baseOrConstructor]
- * @param {function} [constructor]
- */
-Fire.defineComponent = function (baseOrConstructor, constructor) {
-    var args = [''];    // class name will be defined later
-    // check args
-    if (arguments.length === 0) {
-        args.push(Component);
-    }
-    else {
-        if (arguments.length === 1) {
-            if (Fire.isChildClassOf(baseOrConstructor, Component)) {
-                // base
-                args.push(baseOrConstructor);
-            }
-            else {
-// @ifdef DEV
-                if (!Fire._isFireClass(baseOrConstructor)) {
-                    if (typeof baseOrConstructor !== 'function') {
-                        Fire.error('[Fire.defineComponent] Constructor must be function type');
-                        return;
-                    }
-// @endif
-                    // base
-                    args.push(Component);
-                    // constructor
-                    args.push(baseOrConstructor);
-// @ifdef DEV
-                }
-                else {
-                    Fire.error('[Fire.defineComponent] Base class must inherit from Component');
-                    return;
-                }
-// @endif
-            }
-        }
-        else {
-// @ifdef DEV
-            if (Fire.isChildClassOf(baseOrConstructor, Component)) {
-                // base
-                if (typeof constructor !== 'function') {
-                    Fire.error('[Fire.defineComponent] Constructor must be function type');
-                    return;
-                }
-// @endif
-                // base
-                args.push(baseOrConstructor);
-                // constructor
-                args.push(constructor);
-// @ifdef DEV
-            }
-            else {
-                Fire.error('[Fire.defineComponent] Base class must inherit from Component');
-                return;
-            }
-// @endif
-        }
-    }
-    //
+function doDefineComp (base, ctor) {
     var frame = _requiringFrame[_requiringFrame.length - 1];
     if (frame) {
         var className = frame.script;
-        args[0] = className;
-        var cls = Fire.define.apply(Fire, args);
+        var cls = Fire.extend(className, base, ctor);
         if (frame.uuid) {
             JS._setClassId(frame.uuid, cls);
         }
@@ -438,7 +375,77 @@ Fire.defineComponent = function (baseOrConstructor, constructor) {
     }
 // @ifdef DEV
     else {
-        Fire.error('[Fire.defineComponent] Sorry, defining Component dynamically is not allowed, define during loading script please.');
+        Fire.error('Sorry, defining Component dynamically is not allowed, define during loading script please.');
+        return null;
     }
 // @endif
+}
+
+// @ifdef DEV
+function checkCompCtor (constructor, scopeName) {
+    if (constructor) {
+        if (typeof constructor !== 'function') {
+            Fire.error(scopeName + ' Constructor must be function type');
+            return false;
+        }
+        if (Fire.isChildClassOf(constructor, Component)) {
+            Fire.error(scopeName + ' Constructor can not be another Component');
+            return false;
+        }
+        if (Fire._isFireClass(constructor)) {
+            Fire.error(scopeName + ' Constructor can not be another FireClass');
+            return false;
+        }
+        if (constructor.length > 0) {
+            // To make a unified FireClass serialization process,
+            // we don't allow parameters for constructor when creating instances of FireClass.
+            // For advance user, construct arguments can get from 'arguments'.
+            Fire.error(scopeName + ' Can not instantiate FireClass with arguments.');
+            return false;
+        }
+    }
+    return true;
+}
+// @endif
+
+/**
+ * @method defineComponent
+ * @static
+ * @param {function} [constructor]
+ */
+Fire.defineComponent = function (constructor) {
+// @ifdef DEV
+    if (checkCompCtor(constructor, '[Fire.defineComponent]')) {
+// @endif
+        return doDefineComp(Component, constructor);
+// @ifdef DEV
+    }
+// @endif
+};
+
+/**
+ * @method extendComponent
+ * @static
+ * @param {function} baseClass
+ * @param {function} [constructor]
+ */
+Fire.extendComponent = function (baseClass, constructor) {
+// @ifdef DEV
+    if ( !baseClass ) {
+        Fire.error('[Fire.extendComponent] baseClass must be non-nil, or use Fire.defineComponent instead.');
+        return;
+    }
+    if ( !Fire.isChildClassOf(baseClass, Component) ) {
+        Fire.error('[Fire.extendComponent] Base class must inherit from Component');
+        return;
+    }
+    if (checkCompCtor(constructor, '[Fire.extendComponent]')) {
+        return doDefineComp(baseClass, constructor);
+    }
+// @endif
+// @ifndef DEV
+    return doDefineComp(baseClass, constructor);
+// @endif
+
+    //var superCtorCalled = this.hasOwnProperty('_name');
 };

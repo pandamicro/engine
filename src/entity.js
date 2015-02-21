@@ -1,6 +1,6 @@
 ﻿var Entity = (function () {
 
-    var Entity = Fire.define('Fire.Entity', EventTarget, function () {
+    var Entity = Fire.extend('Fire.Entity', EventTarget, function () {
         EventTarget.call(this);
 
         var name = arguments[0];
