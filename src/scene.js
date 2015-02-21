@@ -20,8 +20,8 @@
          */
         this.camera = null;
     }
-    Fire.extend(Scene, _super);
-    Fire.setClassName("Fire.Scene", Scene);
+    JS.extend(Scene, _super);
+    JS.setClassName("Fire.Scene", Scene);
 
     ////////////////////////////////////////////////////////////////////
     // static

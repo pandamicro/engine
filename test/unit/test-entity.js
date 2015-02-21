@@ -104,10 +104,10 @@ test('component', function () {
     obj.active = true;  // onEnable
 
     strictEqual(obj.getComponent(Fire.Transform), obj.transform, 'getComponent: can get transform');
-    strictEqual(obj.getComponent(Fire.getClassName(Fire.Transform)), obj.transform, 'getComponent: can get transform by name');
+    strictEqual(obj.getComponent(Fire.JS.getClassName(Fire.Transform)), obj.transform, 'getComponent: can get transform by name');
     strictEqual(obj.getComponent(MyComponent), comp, 'getComponent: can get my component');
     strictEqual(obj.getComponent(MyComponentBase), comp, 'getComponent: can get component by base type');
-    strictEqual(obj.getComponent(Fire.getClassName(MyComponentBase)), comp, 'getComponent: can get component by base name');
+    strictEqual(obj.getComponent(Fire.JS.getClassName(MyComponentBase)), comp, 'getComponent: can get component by base name');
 
     comp.expect(CallbackTester.OnDisable, 'should called onDisable when destory');
 
@@ -125,7 +125,7 @@ test('component', function () {
 
     comp.stopTest();
 
-    Fire.unregisterClass(MyComponent, MyComponentBase);
+    Fire.JS.unregisterClass(MyComponent, MyComponentBase);
 });
 
 test('component in hierarchy', 4, function () {

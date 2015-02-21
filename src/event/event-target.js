@@ -25,7 +25,7 @@
         this._capturingListeners = null;
         this._bubblingListeners = null;
     }
-    Fire.extend(EventTarget, HashObject);
+    JS.extend(EventTarget, HashObject);
 
     /**
      * Register an callback of a specific event type on the EventTarget.

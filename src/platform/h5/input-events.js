@@ -13,7 +13,7 @@ var ModifierKeyStates = (function () {
         this.altKey = false;
         this.metaKey = false;
     }
-    Fire.extend(ModifierKeyStates, Fire.Event);
+    JS.extend(ModifierKeyStates, Fire.Event);
 
     /**
      * Returns the current state of the specified modifier key. true if the modifier is active (i.e., the modifier key is pressed or locked). Otherwise, false.
@@ -95,7 +95,7 @@ var MouseEvent = (function () {
          */
         this.relatedTarget = null;
     }
-    Fire.extend(MouseEvent, ModifierKeyStates);
+    JS.extend(MouseEvent, ModifierKeyStates);
 
     var TouchEvent = window.TouchEvent;
 

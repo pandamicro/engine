@@ -294,7 +294,7 @@
     Entity.prototype.addComponent = function (typeOrTypename) {
         var constructor;
         if (typeof typeOrTypename === 'string') {
-            constructor = Fire.getClassByName(typeOrTypename);
+            constructor = JS.getClassByName(typeOrTypename);
         }
         else {
             constructor = typeOrTypename;
@@ -339,7 +339,7 @@
         }
         var constructor;
         if (typeof typeOrTypename === 'string') {
-            constructor = Fire.getClassByName(typeOrTypename);
+            constructor = JS.getClassByName(typeOrTypename);
         }
         else {
             constructor = typeOrTypename;

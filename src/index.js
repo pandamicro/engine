@@ -10,6 +10,7 @@
 // @endif
 
 // @ifndef PLAYER
+    var JS = Fire.JS;
     var FObject = Fire.FObject;
     var HashObject = Fire.HashObject;
     var Asset = Fire.Asset;

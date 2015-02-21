@@ -432,7 +432,7 @@ Fire.defineComponent = function (baseOrConstructor, constructor) {
         args[0] = className;
         var cls = Fire.define.apply(Fire, args);
         if (frame.uuid) {
-            Fire._setClassId(frame.uuid, cls);
+            JS._setClassId(frame.uuid, cls);
         }
         return cls;
     }

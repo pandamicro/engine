@@ -6,7 +6,7 @@
     function EventListeners () {
         Fire._CallbacksHandler.call(this);
     }
-    Fire.extend(EventListeners, Fire._CallbacksHandler);
+    JS.extend(EventListeners, Fire._CallbacksHandler);
 
     /**
      * @param {Fire.Event} event
