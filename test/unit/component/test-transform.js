@@ -54,7 +54,7 @@ test('getLocalMatrix', function () {
     //var sr = rotateMat.prepend(scaleMat);
 });
 
-test('worldPosition/Rotation', function () {
+test('worldPosition/Rotation/Scale', function () {
     var parent = new Fire.Entity();
     var child = new Fire.Entity();
     child.parent = parent;
@@ -67,7 +67,9 @@ test('worldPosition/Rotation', function () {
     child.transform.scale = new V2(1, 2);
     child.transform.rotation = -212;
 
-    deepClose(parent.transform.worldPosition, parent.transform.position, 0.0001, 'worldPosition equals localPosition if no parent');
+    var worldPosition = parent.transform.worldPosition;
+    deepClose(worldPosition, parent.transform.position, 0.0001, 'worldPosition equals localPosition if no parent');
+    deepClose(v2(parent.transform.worldX, parent.transform.worldY), worldPosition, 0.0001, 'vec(worldX, worldY) equals worldPosition if no parent');
     deepClose(parent.transform.worldRotation % 360, parent.transform.rotation % 360, 0.0001, 'worldRotation equals localRotation if no parent');
     deepClose(parent.transform.worldScale, parent.transform.scale, 0.0001, 'worldScale equals localScale if no parent');
 
@@ -75,12 +77,20 @@ test('worldPosition/Rotation', function () {
 
     // position
 
-    var worldPosition = new V2(-11.16675, 54474.28);
+    worldPosition = new V2(-11.16675, 54474.28);
     deepClose(child.transform.worldPosition, worldPosition, 0.01, 'get world position');
+    deepClose(v2(child.transform.worldX, child.transform.worldY), worldPosition, 0.01, 'vec(worldX, worldY) equals worldPosition');
 
     var localPosition = child.transform.position.clone();
     child.transform.worldPosition = worldPosition;
     deepClose(child.transform.position, localPosition, 0.001, 'set world position');
+
+    child.transform.worldX = -1;
+    child.transform.worldX = worldPosition.x;
+    deepClose(child.transform.position, localPosition, 0.001, 'set world x');
+    child.transform.worldY = -1;
+    child.transform.worldY = worldPosition.y;
+    deepClose(child.transform.position, localPosition, 0.001, 'set world y');
 
     // rotation
 

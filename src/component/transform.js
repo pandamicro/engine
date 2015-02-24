@@ -48,6 +48,34 @@
     );
 
     /**
+     * The local x position in its parent's coordinate system
+     * @member {number} x
+     * @instance
+     */
+    Object.defineProperty(Transform.prototype, 'x', {
+        get: function () {
+            return this._position.x;
+        },
+        set: function (value) {
+            this._position.x = value;
+        }
+    });
+
+    /**
+     * The local y position in its parent's coordinate system
+     * @member {number} y
+     * @instance
+     */
+    Object.defineProperty(Transform.prototype, 'y', {
+        get: function () {
+            return this._position.y;
+        },
+        set: function (value) {
+            this._position.y = value;
+        }
+    });
+
+    /**
      * The position of the transform in world space
      * @property {Fire.Vec2} Fire.Transform#worldPosition
      */
@@ -63,6 +91,62 @@
             }
             else {
                 this.position = value;
+            }
+        }
+    });
+
+    /**
+     * The x position of the transform in world space
+     * @member {number} x
+     * @instance
+     */
+    Object.defineProperty(Transform.prototype, 'worldX', {
+        get: function () {
+            return this.worldPosition.x;
+        },
+        set: function (value) {
+            if ( this._parent ) {
+                var pl2w = this._parent.getLocalToWorldMatrix();
+                var l2w = this.getLocalMatrix().prepend(pl2w);
+                if (l2w.tx !== value) {
+                    this._position.x = value;
+                    this._position.y = l2w.ty;
+                    pl2w.invert().transformPoint(this._position, this._position);
+                }
+            }
+            else {
+                this._position.x = value;
+            }
+            //将来优化做好了以后，上面的代码可以简化成下面这些
+            //var pos = this.worldPosition;
+            //if (pos.x !== value) {
+            //    pos.x = value;
+            //    this.worldPosition = pos;
+            //}
+        }
+    });
+
+    /**
+     * The y position of the transform in world space
+     * @member {number} y
+     * @instance
+     */
+    Object.defineProperty(Transform.prototype, 'worldY', {
+        get: function () {
+            return this.worldPosition.y;
+        },
+        set: function (value) {
+            if ( this._parent ) {
+                var pl2w = this._parent.getLocalToWorldMatrix();
+                var l2w = this.getLocalMatrix().prepend(pl2w);
+                if (l2w.ty !== value) {
+                    this._position.x = l2w.tx;
+                    this._position.y = value;
+                    pl2w.invert().transformPoint(this._position, this._position);
+                }
+            }
+            else {
+                this._position.y = value;
             }
         }
     });
@@ -121,6 +205,34 @@
     );
 
     /**
+     * The local x scale factor relative to the parent
+     * @member {number} x
+     * @instance
+     */
+    Object.defineProperty(Transform.prototype, 'scaleX', {
+        get: function () {
+            return this._scale.x;
+        },
+        set: function (value) {
+            this._scale.x = value;
+        }
+    });
+
+    /**
+     * The local y scale factor relative to the parent
+     * @member {number} y
+     * @instance
+     */
+    Object.defineProperty(Transform.prototype, 'scaleY', {
+        get: function () {
+            return this._scale.y;
+        },
+        set: function (value) {
+            this._scale.y = value;
+        }
+    });
+
+    /**
      * The lossy scale of the transform in world space (Read Only)
      * @property {Fire.Vec2} Fire.Transform#worldScale
      */
@@ -128,19 +240,6 @@
         get: function () {
             var l2w = this.getLocalToWorldMatrix();
             return l2w.getScale();
-        }
-    });
-
-    /**
-     * @private
-     */
-    Object.defineProperty(Transform.prototype, 'parent', {
-        get: function () {
-            Fire.error('Transform.parent is obsolete. Use Entity.parent instead.');
-            return null;
-        },
-        set: function (value) {
-            Fire.error('Transform.parent is obsolete. Use Entity.parent instead.');
         }
     });
 
