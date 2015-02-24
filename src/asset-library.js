@@ -40,8 +40,9 @@ var AssetLibrary = (function () {
          * @param {boolean} [dontCache=false] - If false, the result will cache to AssetLibrary, and MUST be unload by user manually.
          * NOTE: loadAssetByUuid will always try to get the cached asset, no matter whether dontCache is indicated.
          * @param {Fire._DeserializeInfo} [info] - reused temp obj
+         * @param {Fire.Asset} [existingAsset] - existing asset to reload
          */
-        _loadAssetByUuid: function (uuid, callback, dontCache, info) {
+        _loadAssetByUuid: function (uuid, callback, dontCache, info, existingAsset) {
             dontCache = (typeof dontCache !== 'undefined') ? dontCache : false;
             if (typeof uuid !== 'string') {
                 callback('[AssetLibrary] uuid must be string', null);
@@ -103,8 +104,9 @@ var AssetLibrary = (function () {
          * @param {boolean} [dontCache=false] - If false, the result will cache to AssetLibrary, and MUST be unload by user manually.
          * NOTE: loadAssetByUuid will always try to get the cached asset, no matter whether dontCache is indicated.
          * @param {Fire._DeserializeInfo} [info] - reused temp obj
+         * @param {Fire.Asset} [existingAsset] - existing asset to reload
          */
-        loadJson: function (json, url, callback, dontCache, info) {
+        loadJson: function (json, url, callback, dontCache, info, existingAsset) {
             // prepare
             if (info) {
                 // info我们只是用来重用临时对象，所以每次使用前要重设。
@@ -125,7 +127,8 @@ var AssetLibrary = (function () {
                     }
                     Fire.warn('Can not get class "%s"', id);
                     return Object;
-                }
+                },
+                target: existingAsset
             });
             Engine._canModifyCurrentScene = true;
 
