@@ -7,8 +7,6 @@
      */
 
     var Transform = Fire.extend('Fire.Transform', Component, function () {
-        Component.call(this);
-
         this._position = new Vec2(0, 0);
         this._scale = new Vec2(1, 1);
 

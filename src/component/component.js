@@ -1,5 +1,12 @@
 ﻿var Component = (function () {
 
+    var compCtor;
+// @ifdef EDITOR
+    compCtor = function () {
+        Fire._AssetsWatcher.initComponent(this);
+    };
+// @endif
+
     /**
      *
      * Base class for everything attached to Entity
@@ -9,13 +16,7 @@
      * @static
      *
      */
-    var Component = Fire.extend('Fire.Component', HashObject, function () {
-        HashObject.call(this);
-
-// @ifdef EDITOR
-        Fire._AssetsWatcher.initComponent(this);
-// @endif
-    });
+    var Component = Fire.extend('Fire.Component', HashObject, compCtor);
 
     Component.prop('entity', null, Fire.HideInInspector);
 

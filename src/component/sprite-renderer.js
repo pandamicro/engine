@@ -1,7 +1,6 @@
 ﻿var SpriteRenderer = (function () {
 
     var SpriteRenderer = Fire.extend('Fire.SpriteRenderer', Renderer, function () {
-        Renderer.call(this);
         RenderContext.initRenderer(this);
         this._hasRenderObj = false;
     });

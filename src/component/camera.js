@@ -1,7 +1,6 @@
 ﻿var Camera = (function () {
 
     var Camera = Fire.extend('Fire.Camera', Component, function () {
-        Component.call(this);
         this._renderContext = null;
     });
     Fire.addComponentMenu(Camera, 'Camera');

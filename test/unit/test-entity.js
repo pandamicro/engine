@@ -82,7 +82,6 @@ test('component', function () {
     var MyComponentBase = Fire.extend('MyComponentBase', CallbackTester);
     Fire.executeInEditMode(MyComponentBase);
     var MyComponent = Fire.extend('MyComponent', MyComponentBase, function () {
-        MyComponentBase.call(this);
         this.expect(CallbackTester.OnLoad, 'call onLoad while attaching to entity');
         this.expect(CallbackTester.OnEnable, 'then call onEnable if entity active', true);
     });
@@ -136,7 +135,6 @@ test('component in hierarchy', 4, function () {
     parent.active = false;
 
     var MyComponent = Fire.extend('', CallbackTester, function () {
-        CallbackTester.call(this);
         this.notExpect(CallbackTester.OnLoad, 'should not call onLoad while entity inactive');
     });
     Fire.executeInEditMode(MyComponent);
@@ -162,7 +160,6 @@ test('destroy', function () {
 
     // add child component
     var ChildComp = Fire.extend('', CallbackTester, function () {
-        CallbackTester.call(this);
         this.expect([CallbackTester.OnLoad, CallbackTester.OnEnable]);
     });
     Fire.executeInEditMode(ChildComp);
@@ -183,7 +180,6 @@ test('destroy', function () {
     // try add component after destroy
 
     var ChildComp_new = Fire.extend('', CallbackTester, function () {
-        CallbackTester.call(this);
         this.expect(CallbackTester.OnLoad, 'new child component should onLoad even if added after destroy');
         this.expect(CallbackTester.OnEnable, 'new child component should enable even if added after destroy', true);
         this.expect(CallbackTester.OnDisable, 'new component\'s onDisable should be called before its onDestroy', true);
@@ -192,7 +188,6 @@ test('destroy', function () {
     var childComp_new = child.addComponent(ChildComp_new);
 
     var NewParentComp = Fire.extend('', CallbackTester, function () {
-        CallbackTester.call(this);
         this.expect([CallbackTester.OnLoad,
                      CallbackTester.OnEnable,
                      CallbackTester.OnDisable,
@@ -203,7 +198,6 @@ test('destroy', function () {
     // try add child after destroy
 
     var NewChildEntityComp = Fire.extend('', CallbackTester, function () {
-        CallbackTester.call(this);
         this.expect([CallbackTester.OnLoad,
                      CallbackTester.OnEnable,
                      CallbackTester.OnDisable,

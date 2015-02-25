@@ -1,8 +1,6 @@
 ﻿var Entity = (function () {
 
     var Entity = Fire.extend('Fire.Entity', EventTarget, function () {
-        EventTarget.call(this);
-
         var name = arguments[0];
 
         this._name = typeof name !== 'undefined' ? name : 'New Entity';
