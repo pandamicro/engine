@@ -415,12 +415,11 @@ function checkCompCtor (constructor, scopeName) {
  */
 Fire.defineComponent = function (constructor) {
 // @ifdef DEV
-    if (checkCompCtor(constructor, '[Fire.defineComponent]')) {
-// @endif
-        return doDefineComp(Component, constructor);
-// @ifdef DEV
+    if ( !checkCompCtor(constructor, '[Fire.defineComponent]') ) {
+        return;
     }
 // @endif
+    return doDefineComp(Component, constructor);
 };
 
 /**
@@ -439,13 +438,10 @@ Fire.extendComponent = function (baseClass, constructor) {
         Fire.error('[Fire.extendComponent] Base class must inherit from Component');
         return;
     }
-    if (checkCompCtor(constructor, '[Fire.extendComponent]')) {
-        return doDefineComp(baseClass, constructor);
+    if ( !checkCompCtor(constructor, '[Fire.extendComponent]') ) {
+        return;
     }
 // @endif
-// @ifndef DEV
     return doDefineComp(baseClass, constructor);
-// @endif
-
     //var superCtorCalled = this.hasOwnProperty('_name');
 };
