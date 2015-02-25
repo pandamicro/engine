@@ -271,10 +271,10 @@ var Engine = (function () {
      * Set current scene directly
      * @method Fire.Engine._setCurrentScene
      * @param {Scene} scene
-     * @param {function} [onUnloaded]
+     * @param {function} [onBeforeLoadScene]
      * @private
      */
-    Engine._setCurrentScene = function (scene, onPreSceneLoad) {
+    Engine._setCurrentScene = function (scene, onBeforeLoadScene) {
         if (!scene) {
             Fire.error('Argument must be non-nil');
             return;
@@ -283,16 +283,16 @@ var Engine = (function () {
         // TODO: allow dont destroy behaviours
         // unload scene
         var oldScene = Engine._scene;
-        // IMPORTANT! Dont cache last scene
-        AssetLibrary.unloadAsset(oldScene);
         if (Fire.isValid(oldScene)) {
-            oldScene.destroy();
-            FObject._deferredDestroy(); // simulate destroy immediate
+            // destroyed and unload
+            AssetLibrary.unloadAsset(oldScene, true);
+            // simulate destroy immediate
+            FObject._deferredDestroy();
         }
         Engine._scene = null;
 
-        if (onPreSceneLoad) {
-            onPreSceneLoad();
+        if (onBeforeLoadScene) {
+            onBeforeLoadScene();
         }
 
         // init scene
@@ -326,6 +326,7 @@ var Engine = (function () {
     Engine.loadScene = function (uuid, onLaunched, onUnloaded) {
         // TODO: lookup uuid by name
         isLoadingScene = true;
+        AssetLibrary.unloadAsset(uuid);     // force reload
         AssetLibrary._loadAssetByUuid(uuid, function onSceneLoaded (error, scene) {
             if (error) {
                 Fire.error('Failed to load scene: ' + error);
