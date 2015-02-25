@@ -106,11 +106,11 @@
         this.getSelfMatrix(tempMatrix);
         if (this._sprite && this._sprite.rotated) {
             // rotate cw
-            tempMatrix.b = -tempMatrix.d;
-            tempMatrix.c = tempMatrix.a;
+            tempMatrix.b = tempMatrix.d;
+            tempMatrix.c = -tempMatrix.a;
             tempMatrix.a = 0;
             tempMatrix.d = 0;
-            tempMatrix.tx += this.width;
+            tempMatrix.ty -= this.height;
         }
         tempMatrix.prepend(this.transform._worldTransform);
         Engine._curRenderContext.updateTransform(this, tempMatrix);

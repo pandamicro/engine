@@ -491,7 +491,7 @@ var RenderContext = (function () {
     function createTexture(sprite) {
         if (sprite && sprite.texture && sprite.texture.image) {
             var img = new PIXI.BaseTexture(sprite.texture.image);
-            var frame = new PIXI.Rectangle(sprite.x, sprite.y, Math.min(img.width - sprite.x, sprite.width), Math.min(img.height - sprite.y, sprite.height));
+            var frame = new PIXI.Rectangle(sprite.x, sprite.y, Math.min(img.width - sprite.x, sprite.rotatedWidth), Math.min(img.height - sprite.y, sprite.rotatedHeight));
             return new PIXI.Texture(img, frame);
         }
         else {
