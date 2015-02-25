@@ -139,7 +139,9 @@
         // wrap event
         var eventInfo = EventRegister.inputEvents[domEvent.type];
         var event = new eventInfo.constructor(domEvent.type);
-        event.initFromNativeEvent(domEvent);
+        if (event.initFromNativeEvent) {
+            event.initFromNativeEvent(domEvent);
+        }
         event.bubbles = eventInfo.bubbles;
         // event.cancelable = eventInfo.cancelable; (NYI)
 
