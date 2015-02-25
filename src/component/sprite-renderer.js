@@ -104,13 +104,19 @@
 
     SpriteRenderer.prototype.onPreRender = function () {
         this.getSelfMatrix(tempMatrix);
-        if (this._sprite && this._sprite.rotated) {
-            // rotate cw
-            tempMatrix.b = tempMatrix.d;
-            tempMatrix.c = -tempMatrix.a;
-            tempMatrix.a = 0;
-            tempMatrix.d = 0;
-            tempMatrix.ty -= this.height;
+        if (this._sprite) {
+            // calculate render matrix
+            //   scale
+            tempMatrix.a = this.width / this._sprite.width;
+            tempMatrix.d = this.height / this._sprite.height;
+            //   rotate cw
+            if (this._sprite.rotated) {
+                tempMatrix.b = tempMatrix.d;
+                tempMatrix.c = -tempMatrix.a;
+                tempMatrix.a = 0;
+                tempMatrix.d = 0;
+                tempMatrix.ty -= this.height;
+            }
         }
         tempMatrix.prepend(this.transform._worldTransform);
         Engine._curRenderContext.updateTransform(this, tempMatrix);
@@ -127,22 +133,19 @@
 
         var pivotX = 0.5;
         var pivotY = 0.5;
-        var scaleX = 1;
-        var scaleY = 1;
+
         //var rotated = false;
         if (Fire.isValid(this._sprite)) {
             //rotated = this._sprite.rotated;
             pivotX = this._sprite.pivot.x;
             pivotY = this._sprite.pivot.y;
-            scaleX = w / this._sprite.width;
-            scaleY = h / this._sprite.height;
         }
 
         //if ( !rotated ) {
-            out.a = scaleX;
+            out.a = 1;
             out.b = 0;
             out.c = 0;
-            out.d = scaleY;
+            out.d = 1;
             out.tx = - pivotX * w;
             out.ty = (1.0 - pivotY) * h;
         //}
