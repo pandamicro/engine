@@ -169,7 +169,8 @@
             entities.splice(index, 1);
         }
         else {
-            Fire.error('entity ' + _entity + ' not contains in roots of hierarchy');
+            Fire.error('entity ' + _entity + ' not contains in roots of hierarchy, ' +
+                       'is may caused if entity not destroyed immediate before current scene changed');
         }
     };
 

@@ -287,6 +287,10 @@ var Engine = (function () {
             // destroyed and unload
             AssetLibrary.unloadAsset(oldScene, true);
         }
+
+        // purge destroyed entities belongs to old scene
+        FObject._deferredDestroy();
+
         Engine._scene = null;
 
         if (onBeforeLoadScene) {
