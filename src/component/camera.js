@@ -20,7 +20,7 @@
         }
     );
 
-    Camera.prop('_size', 5, Fire.HideInInspector);
+    Camera.prop('_size', 0, Fire.HideInInspector);
     Camera.getset('size',
         function () {
             return this._size;
@@ -155,7 +155,7 @@
 
     Camera.prototype._calculateTransform = function (out_matrix, out_worldPos) {
         var screenSize = (this._renderContext || Engine._renderContext).size;
-        var scale = screenSize.y / this._size;
+        var scale = this._size ? (screenSize.y / this._size) : 1;
         var tf = this.entity.transform;
         var mat = tf.getLocalToWorldMatrix();
 
