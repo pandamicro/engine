@@ -286,8 +286,6 @@ var Engine = (function () {
         if (Fire.isValid(oldScene)) {
             // destroyed and unload
             AssetLibrary.unloadAsset(oldScene, true);
-            // simulate destroy immediate
-            FObject._deferredDestroy();
         }
         Engine._scene = null;
 

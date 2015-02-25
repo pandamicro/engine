@@ -220,10 +220,10 @@ var AssetLibrary = (function () {
          *
          * @method Fire.AssetLibrary.unloadAsset
          * @param {Fire.Asset|string} assetOrUuid
-         * @param {boolean} [destroyAsset=false] - When destroyAsset is true, if there are objects
-         *                                         referencing the asset, the references will become invalid.
+         * @param {boolean} [destroyImmediate=false] - When destroyAsset is true, if there are objects
+         *                                            referencing the asset, the references will become invalid.
          */
-        unloadAsset: function (assetOrUuid, destroyAsset) {
+        unloadAsset: function (assetOrUuid, destroyImmediate) {
             var asset;
             if (typeof assetOrUuid === 'string') {
                 asset = AssetLibrary._uuidToAsset[assetOrUuid];
@@ -232,8 +232,10 @@ var AssetLibrary = (function () {
                 asset = assetOrUuid;
             }
             if (asset) {
-                if (destroyAsset && asset.isValid) {
+                if (destroyImmediate && asset.isValid) {
                     asset.destroy();
+                    // simulate destroy immediate
+                    FObject._deferredDestroy();
                 }
                 delete AssetLibrary._uuidToAsset[asset._uuid];
             }
