@@ -215,17 +215,12 @@ var Engine = (function () {
         }
     };
 
-    var render = function () {
+    function render () {
         // render
         Engine._scene.render(Engine._renderContext);
+    }
 
-        // render standalone scene view test
-        if (Fire.isPureWeb && Engine._renderContext.sceneView) {
-            Engine._scene.render(Engine._renderContext.sceneView);
-        }
-    };
-
-    var doUpdate = function (updateLogic) {
+    function doUpdate (updateLogic) {
         if (Engine._scene) {
             if (updateLogic) {
                 Engine._scene.update();
@@ -236,14 +231,14 @@ var Engine = (function () {
             // update interaction context
             Engine._interactionContext.update(Engine._scene.entities);
         }
-    };
+    }
 
     /**
      * @method Fire.Engine.update
      * @param {float} [unused] - not used parameter, can omit
      * @private
      */
-    var update = function (unused) {
+    function update (unused) {
         if (!isPlaying) {
             return;
         }
@@ -264,7 +259,7 @@ var Engine = (function () {
             __TESTONLY__.update(updateLogic);
         }
 // @endif
-    };
+    }
     Engine.update = update;
 
     /**
