@@ -1,6 +1,12 @@
 ﻿
 PIXI.BitmapText.prototype.updateTransform = function () { };
 
+BitmapFont.prototype._onPreDestroy = function () {
+    if (this._uuid) {
+        PIXI.BitmapText.fonts[this._uuid] = null;
+    }
+};
+
 var PixiBitmapFontUtil = {};
 
 var emptyFont = {
