@@ -42,7 +42,6 @@ var BitmapText = (function () {
         function (value) {
             if (this._bitmapFont !== value) {
                 this._bitmapFont = value;
-                this.face = this._bitmapFont ? this._bitmapFont.face : 'None';
                 Engine._renderContext.setBitmapFont(this);
             }
         },

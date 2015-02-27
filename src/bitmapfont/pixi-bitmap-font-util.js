@@ -4,22 +4,20 @@ PIXI.BitmapText.prototype.updateTransform = function () { };
 var PixiBitmapFontUtil = {};
 
 var emptyFont = {
-    face: "None",
     size: 1,
     align: "left",
 };
 
 function _getStyle(target) {
     var font = emptyFont;
-    if (target.bitmapFont && target.bitmapFont.face) {
+    if (target.bitmapFont && target.bitmapFont._uuid) {
         font = {
-            face: target.bitmapFont.face,
             size: target.bitmapFont.size,
             align: BitmapText.TextAlign[target.align],
         };
     }
     var style = {
-        font: font.size + " " + font.face,
+        font: font.size + " " + target.bitmapFont._uuid,
         align: font.align,
     };
     return style;
@@ -54,14 +52,12 @@ function _getNewMatrix23(child, tempMatrix) {
 
 function _registerFont(bitmapFont) {
     var data = {};
-    if (!bitmapFont || !bitmapFont.face) {
-        data.font = 'None';
+    if (!bitmapFont || !bitmapFont._uuid) {
         data.size = 1;
         data.lineHeight = 1;
         data.chars = {};
     }
     else {
-        data.font = bitmapFont.face;
         data.size = bitmapFont.size;
         data.lineHeight = bitmapFont.lineHeight;
         data.chars = {};
@@ -99,7 +95,7 @@ function _registerFont(bitmapFont) {
             data.chars[second].kerning[first] = amount;
         }
     }
-    PIXI.BitmapText.fonts[data.font] = data;
+    PIXI.BitmapText.fonts[bitmapFont._uuid] = data;
 }
 
 RenderContext.prototype.getTextSize = function (target) {
