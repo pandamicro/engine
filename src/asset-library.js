@@ -40,7 +40,7 @@ var AssetLibrary = (function () {
          * @param {boolean} [dontCache=false] - If false, the result will cache to AssetLibrary, and MUST be unload by user manually.
          * NOTE: loadAssetByUuid will always try to get the cached asset, no matter whether dontCache is indicated.
          * @param {Fire._DeserializeInfo} [info] - reused temp obj
-         * @param {Fire.Asset} [existingAsset] - existing asset to reload
+         * @param {Fire.Asset} [existingAsset] - force reload to existing asset in editor
          */
         _loadAssetByUuid: function (uuid, callback, dontCache, info, existingAsset) {
             dontCache = (typeof dontCache !== 'undefined') ? dontCache : false;
@@ -49,16 +49,18 @@ var AssetLibrary = (function () {
                 return;
             }
             // step 1
-            var asset = AssetLibrary._uuidToAsset[uuid];
-            if (asset) {
-                if (callback) {
-                    callback(null, asset);
+            if ( !existingAsset ) {
+                var asset = AssetLibrary._uuidToAsset[uuid];
+                if (asset) {
+                    if (callback) {
+                        callback(null, asset);
+                    }
+                    return;
                 }
-                return;
             }
 
             // step 2
-            if ( !dontCache && _uuidToCallbacks.add(uuid, callback) === false) {
+            if ( !dontCache && !existingAsset && _uuidToCallbacks.add(uuid, callback) === false) {
                 // already loading
                 return;
             }
@@ -92,7 +94,7 @@ var AssetLibrary = (function () {
                         else {
                             callback(err, asset);
                         }
-                    }, dontCache, info);
+                    }, dontCache, info, existingAsset);
                 }
             );
         },
@@ -221,7 +223,7 @@ var AssetLibrary = (function () {
          * @method Fire.AssetLibrary.unloadAsset
          * @param {Fire.Asset|string} assetOrUuid
          * @param {boolean} [destroyImmediate=false] - When destroyAsset is true, if there are objects
-         *                                            referencing the asset, the references will become invalid.
+         *                                         referencing the asset, the references will become invalid.
          */
         unloadAsset: function (assetOrUuid, destroyImmediate) {
             var asset;
