@@ -218,6 +218,7 @@
         // destroy components
         for (var c = 0; c < this._components.length; ++c) {
             var component = this._components[c];
+            // destroy immediate so its _onPreDestroy can be called before
             component._destroyImmediate();
         }
         // remove self
@@ -232,6 +233,7 @@
         // destroy children
         var children = this._children;
         for (var i = 0, len = children.length; i < len; ++i) {
+            // destroy immediate so its _onPreDestroy can be called before
             children[i]._destroyImmediate();
         }
     };
