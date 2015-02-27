@@ -1,7 +1,7 @@
 ﻿
 PIXI.BitmapText.prototype.updateTransform = function () { };
 
-BitmapFont.prototype._onPreDestroy = function () {
+Fire.BitmapFont.prototype._onPreDestroy = function () {
     if (this._uuid) {
         PIXI.BitmapText.fonts[this._uuid] = null;
     }
