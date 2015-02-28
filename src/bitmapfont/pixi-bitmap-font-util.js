@@ -9,24 +9,21 @@ Fire.BitmapFont.prototype._onPreDestroy = function () {
 
 var PixiBitmapFontUtil = {};
 
-var emptyFont = {
-    size: 1,
-    align: "left",
-};
+var defaultFace = "None";
 
 function _getStyle(target) {
-    var font = emptyFont;
     if (target.bitmapFont && target.bitmapFont._uuid) {
-        font = {
-            size: target.bitmapFont.size,
-            align: BitmapText.TextAlign[target.align],
+        return {
+            font: target.bitmapFont.size + " " + target.bitmapFont._uuid,
+            align: BitmapText.TextAlign[target.align].toLowerCase(),
         };
     }
-    var style = {
-        font: font.size + " " + target.bitmapFont._uuid,
-        align: font.align,
-    };
-    return style;
+    else {
+        return {
+            font: 1 + " " + defaultFace,
+            align: "left",
+        };
+    }
 }
 
 function _setStyle(target) {
@@ -59,11 +56,13 @@ function _getNewMatrix23(child, tempMatrix) {
 function _registerFont(bitmapFont) {
     var data = {};
     if (!bitmapFont || !bitmapFont._uuid) {
+        data.face = defaultFace;
         data.size = 1;
         data.lineHeight = 1;
         data.chars = {};
     }
     else {
+        data.face = bitmapFont._uuid;
         data.size = bitmapFont.size;
         data.lineHeight = bitmapFont.lineHeight;
         data.chars = {};
@@ -101,7 +100,7 @@ function _registerFont(bitmapFont) {
             data.chars[second].kerning[first] = amount;
         }
     }
-    PIXI.BitmapText.fonts[bitmapFont._uuid] = data;
+    PIXI.BitmapText.fonts[data.face] = data;
 }
 
 RenderContext.prototype.getTextSize = function (target) {
@@ -155,7 +154,7 @@ RenderContext.prototype.addBitmapText = function (target) {
 PixiBitmapFontUtil.updateTransform = function (target, tempMatrix) {
     var i = 0, childrens = null, len = 0, child = null;
     var isGameView = Engine._curRenderContext === Engine._renderContext;
-    if (isGameView) {
+    if (isGameView && target._renderObj ) {
         if (target._renderObj.dirty) {
             target._renderObj.updateText();
             target._renderObj.dirty = false;
