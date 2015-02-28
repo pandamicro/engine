@@ -147,6 +147,10 @@ var AssetLibrary = (function () {
                 });
             }
 
+            if (pendingCount === 0) {
+                callback(null, asset);
+            }
+
             /*
              如果依赖的所有资源都要重新下载，批量操作时将会导致同时执行多次重复下载。优化方法是增加一全局事件队列，
              队列保存每个任务的注册，启动，结束事件，任务从注册到启动要延迟几帧，每个任务都存有父任务。
@@ -154,6 +158,12 @@ var AssetLibrary = (function () {
              如果依赖的资源不重新下载也行，但要判断是否刚好在下载过程中，如果是的话必须等待下载完成才能结束本资源的加载，
              否则外部获取到的依赖资源就会是旧的。
              */
+
+            // @ifdef EDITOR
+            // AssetLibrary._loadAssetByUuid 的回调有可能在当帧也可能延后执行，这里要判断是否由它调用 callback，
+            // 否则 callback 可能会重复调用
+            var invokeCbByDepends = false;
+            // @endif
 
             // load depends assets
             for (var i = 0, len = info.uuidList.length; i < len; i++) {
@@ -184,6 +194,9 @@ var AssetLibrary = (function () {
                         continue;
                     }
                 }
+                else {
+                    invokeCbByDepends = true;
+                }
                 // @endif
                 var onDependsAssetLoaded = (function (dependsUuid, obj, prop) {
                     // create closure manually because its extremely faster than bind
@@ -210,9 +223,11 @@ var AssetLibrary = (function () {
                 AssetLibrary._loadAssetByUuid(dependsUuid, onDependsAssetLoaded, dontCache, info);
             }
 
-            if (pendingCount === 0) {
+            // @ifdef EDITOR
+            if ( !invokeCbByDepends && pendingCount === 0) {
                 callback(null, asset);
             }
+            // @endif
         },
 
         /**
