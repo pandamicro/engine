@@ -113,15 +113,22 @@ var Engine = (function () {
         }
     });
 
+    /**
+     * Scene name to uuid
+     * @private
+     */
+    Engine._sceneInfos = {};
+
     // functions
 
     /**
      * @param {number} [w]
      * @param {number} [h]
      * @param {Canvas} [canvas]
+     * @param {object} [sceneInfos]
      * @return {RenderContext}
      */
-    Engine.init = function ( w, h, canvas ) {
+    Engine.init = function ( w, h, canvas, sceneInfos ) {
         if (inited) {
             Fire.error('Engine already inited');
             return;
@@ -143,6 +150,8 @@ var Engine = (function () {
             }
         }
 // @endif
+
+        JS.mixin(Engine._sceneInfos, sceneInfos);
 
         return Engine._renderContext;
     };
@@ -314,13 +323,30 @@ var Engine = (function () {
     };
 
     /**
-     * Load scene sync
+     * Loads the scene by its name.
      * @method Fire.Engine.loadScene
-     * @param {string} uuid - the uuid of scene asset
+     * @param {string} sceneName - the name of the scene to load
      * @param {function} [onLaunched]
      * @param {function} [onUnloaded] - will be called when the previous scene was unloaded
      */
-    Engine.loadScene = function (uuid, onLaunched, onUnloaded) {
+    Engine.loadScene = function (sceneName, onLaunched, onUnloaded) {
+        var uuid = Engine._sceneInfos[sceneName];
+        if (uuid) {
+            Engine._loadSceneByUuid(uuid, onLaunched, onUnloaded);
+        }
+        else {
+            Fire.error('[Engine.loadScene] The scene "%s" could not be loaded because it has not been added to the build settings.');
+        }
+    };
+
+    /**
+     * Load scene
+     * @method Fire.Engine.loadScene
+     * @param {string} uuid - the uuid of the scene asset to load
+     * @param {function} [onLaunched]
+     * @param {function} [onUnloaded] - will be called when the previous scene was unloaded
+     */
+    Engine._loadSceneByUuid = function (uuid, onLaunched, onUnloaded) {
         // TODO: lookup uuid by name
         isLoadingScene = true;
         AssetLibrary.unloadAsset(uuid);     // force reload

@@ -8,7 +8,7 @@ Fire.AssetLibrary.init(libPath);
 
 asyncTest('load scene 1', function () {
 
-    Engine.loadScene('74325665', function (scene) {
+    Engine._loadSceneByUuid('74325665', function (scene) {
         clearTimeout(timerId);
         ok(scene, 'can load scene');
 
@@ -41,7 +41,7 @@ asyncTest('load scene 1', function () {
 
 asyncTest('load scene with camera', function () {
 
-    Engine.loadScene('746548892', function (scene) {
+    Engine._loadSceneByUuid('746548892', function (scene) {
         clearTimeout(timerId);
         ok(true, 'done');
         start();
