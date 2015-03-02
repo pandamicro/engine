@@ -335,7 +335,7 @@ var Engine = (function () {
             Engine._loadSceneByUuid(uuid, onLaunched, onUnloaded);
         }
         else {
-            Fire.error('[Engine.loadScene] The scene "%s" could not be loaded because it has not been added to the build settings.');
+            Fire.error('[Engine.loadScene] The scene "%s" could not be loaded because it has not been added to the build settings.', sceneName);
         }
     };
 
