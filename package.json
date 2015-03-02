@@ -22,7 +22,7 @@
     "gulp-util": "",
     "jshint-stylish": "1.0.0",
     "through": "2.3.6",
-    "del": ""
+    "del": "1.1.1"
   },
   "scripts": {
     "postinstall": "bower install && cd ext/fire-core && npm install && gulp",
