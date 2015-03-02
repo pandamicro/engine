@@ -70,7 +70,7 @@
             var event = new MouseEvent(type);
             event.bubbles = true;
             // event.cancelable = eventInfo.cancelable; (NYI)
-            var first = touchEvent.touches[0];  // changedTouches[0]
+            var first = touchEvent.changedTouches[0] || touchEvent.touches[0];
             event.button = 0;
             event.buttonStates = 1;
             if (first) {
