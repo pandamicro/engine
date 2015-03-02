@@ -287,6 +287,11 @@ var Engine = (function () {
         // TODO: allow dont destroy behaviours
         // unload scene
         var oldScene = Engine._scene;
+// @ifdef EDITOR
+        if (editorCallback.onStartUnloadScene) {
+            editorCallback.onStartUnloadScene(oldScene);
+        }
+// @endif
         if (Fire.isValid(oldScene)) {
             // destroyed and unload
             AssetLibrary.unloadAsset(oldScene, true);
