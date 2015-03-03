@@ -107,10 +107,20 @@ RenderContext.prototype.getTextSize = function (target) {
     var inGame = !(target.entity._objFlags & HideInGame);
     var w = 0, h = 0;
     if (inGame && target._renderObj) {
+        if (target._renderObj.dirty) {
+            target._renderObj.updateText();
+            target._renderObj.dirty = false;
+        }
+
         w = target._renderObj.textWidth;
         h = target._renderObj.textHeight;
     }
     else if (target._renderObjInScene) {
+        if (target._renderObjInScene.dirty) {
+            target._renderObjInScene.updateText();
+            target._renderObjInScene.dirty = false;
+        }
+
         w = target._renderObjInScene.textWidth;
         h = target._renderObjInScene.textHeight;
     }

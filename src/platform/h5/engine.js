@@ -190,6 +190,12 @@ var Engine = (function () {
             Engine._inputContext.destruct();
             Engine._inputContext = null;
             Input._reset();
+
+// @ifdef EDITOR
+            if (editorCallback.onEngineStopped) {
+                editorCallback.onEngineStopped();
+            }
+// @endif
         }
         // reset states
         isPlaying = false;
@@ -199,12 +205,6 @@ var Engine = (function () {
             Ticker.cancelAnimationFrame(requestId);
             requestId = -1;
         }
-
-// @ifdef EDITOR
-        if (editorCallback.onEngineStopped) {
-            editorCallback.onEngineStopped();
-        }
-// @endif
     };
 
     Engine.pause = function () {
