@@ -110,17 +110,18 @@ var AssetLibrary = (function () {
             }
 
             // deserialize asset
-            Engine._canModifyCurrentScene = false;
             var isScene = json && json[0] && json[0].__type__ === JS._getClassId(Scene);
+            var classFinder = isScene ? Fire._MissingScript.safeFindClass : function (id) {
+                var cls = JS._getClassById(id);
+                if (cls) {
+                    return cls;
+                }
+                Fire.warn('Can not get class "%s"', id);
+                return Object;
+            };
+            Engine._canModifyCurrentScene = false;
             var asset = Fire.deserialize(json, info, {
-                classFinder: isScene ? Fire._MissingScript.safeFindClass : function (id) {
-                    var cls = JS._getClassById(id);
-                    if (cls) {
-                        return cls;
-                    }
-                    Fire.warn('Can not get class "%s"', id);
-                    return Object;
-                },
+                classFinder: classFinder,
                 target: existingAsset
             });
             Engine._canModifyCurrentScene = true;

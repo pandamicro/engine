@@ -191,19 +191,20 @@ var Engine = (function () {
             Engine._inputContext = null;
             Input._reset();
 
+            // reset states
+            isPlaying = false;
+            isPaused = false;
+            isLoadingScene = false; // TODO: what if loading scene ?
+            if (requestId !== -1) {
+                Ticker.cancelAnimationFrame(requestId);
+                requestId = -1;
+            }
+
 // @ifdef EDITOR
             if (editorCallback.onEngineStopped) {
                 editorCallback.onEngineStopped();
             }
 // @endif
-        }
-        // reset states
-        isPlaying = false;
-        isPaused = false;
-        isLoadingScene = false; // TODO: what if loading scene ?
-        if (requestId !== -1) {
-            Ticker.cancelAnimationFrame(requestId);
-            requestId = -1;
         }
     };
 
