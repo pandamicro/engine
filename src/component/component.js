@@ -1,5 +1,18 @@
 ﻿var Component = (function () {
 
+    /**
+     * used in _callOnEnable to ensure onEnable and onDisable will be called alternately
+     * 从逻辑上来说OnEnable和OnDisable的交替调用不需要由额外的变量进行保护，但那样会使设计变得复杂
+     * 例如Entity.destory调用后但还未真正销毁时，会调用所有Component的OnDisable。
+     * 这时如果又有addComponent，Entity需要对这些新来的Component特殊处理。将来调度器做了之后可以尝试去掉这个标记。
+     */
+    var IsOnEnableCalled = Fire._ObjectFlags.IsOnEnableCalled;
+
+    // IsOnEnableCalled 会收到 executeInEditMode 的影响，IsEditorOnEnabledCalled 不会
+    var IsEditorOnEnabledCalled = Fire._ObjectFlags.IsEditorOnEnabledCalled;
+    var IsOnLoadCalled = Fire._ObjectFlags.IsOnLoadCalled;
+    var IsOnStartCalled = Fire._ObjectFlags.IsOnStartCalled;
+
     var compCtor;
 // @ifdef EDITOR
     compCtor = function () {
@@ -158,6 +171,22 @@
     // Should not call onEnable/onDisable in other place
     function _callOnEnable (self, enable) {
 // @ifdef EDITOR
+        if ( enable ) {
+            if ( !(self._objFlags & IsEditorOnEnabledCalled) ) {
+                self._objFlags |= IsEditorOnEnabledCalled;
+                if ( editorCallback.onComponentEnabled ) {
+                    editorCallback.onComponentEnabled(self);
+                }
+            }
+        }
+        else {
+            if ( self._objFlags & IsEditorOnEnabledCalled ) {
+                self._objFlags &= ~IsEditorOnEnabledCalled;
+                if ( editorCallback.onComponentDisabled ) {
+                    editorCallback.onComponentDisabled(self);
+                }
+            }
+        }
         if ( !(Fire.Engine.isPlaying || Fire.attr(self, 'executeInEditMode')) ) {
             return;
         }
@@ -173,12 +202,8 @@
                     self.onEnable();
 // @endif
                 }
-// @ifdef EDITOR
-                if ( editorCallback.onComponentEnabled ) {
-                    editorCallback.onComponentEnabled(self);
-                }
-// @endif
             }
+
         }
         else {
             if ( self._objFlags & IsOnEnableCalled ) {
@@ -191,11 +216,6 @@
                     self.onDisable();
 // @endif
                 }
-// @ifdef EDITOR
-                if ( editorCallback.onComponentDisabled ) {
-                    editorCallback.onComponentDisabled(self);
-                }
-// @endif
             }
         }
     }
