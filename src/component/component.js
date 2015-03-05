@@ -104,6 +104,23 @@
     Component.prototype.onDestroy = null;
     Component.prototype.onPreRender = null;
 
+
+    /**
+     * @param {function|string} typeOrTypename
+     * @return {Component}
+     */
+    Component.prototype.addComponent = function (typeOrTypename) {
+        return this.entity.addComponent(typeOrTypename);
+    };
+
+    /**
+     * @param {function|string} typeOrTypename
+     * @return {Component}
+     */
+    Component.prototype.getComponent = function (typeOrTypename) {
+        return this.entity.getComponent(typeOrTypename);
+    };
+
     /**
      * This method will be invoked when the scene graph changed, which is means the parent of its transform changed,
      * or one of its ancestor's parent changed, or one of their sibling index changed.
