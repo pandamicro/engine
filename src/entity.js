@@ -295,21 +295,28 @@
         var constructor;
         if (typeof typeOrTypename === 'string') {
             constructor = JS.getClassByName(typeOrTypename);
+            if ( !constructor ) {
+                Fire.error('[addComponent] Failed to get class "%s"');
+                if (_requiringFrame.length > 0) {
+                    Fire.error('You should not add component when the scripts are still loading.', typeOrTypename);
+                }
+                return null;
+            }
         }
         else {
+            if ( !typeOrTypename ) {
+                Fire.error('[addComponent] Type must be non-nil');
+                return null;
+            }
             constructor = typeOrTypename;
         }
         if (this._objFlags & Destroying) {
             Fire.error('isDestroying');
-            return;
-        }
-        if (!constructor) {
-            Fire.error('Argument must be non-nil');
-            return;
+            return null;
         }
         if (typeof constructor !== 'function') {
             Fire.error("The component to add must be a constructor");
-            return;
+            return null;
         }
         var component = new constructor();
         component.entity = this;
