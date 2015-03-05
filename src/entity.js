@@ -436,6 +436,10 @@
         return this._children[index];
     };
 
+    Entity.prototype.getChildren = function () {
+        return this._children.slice();
+    };
+
     /**
      * is or is child of
      */
