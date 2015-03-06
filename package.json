@@ -1,12 +1,11 @@
 {
   "name": "fireball-engine",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Fireball Engine",
   "homepage": "https://github.com/fireball-x/engine",
   "license": "MIT",
   "licenseUrl": "http://opensource.org/licenses/MIT",
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "bower": "1.3.12",
     "event-stream": "",
