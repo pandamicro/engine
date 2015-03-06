@@ -401,44 +401,18 @@ Fire._RFpop = function () {
     _requiringFrame.pop();
 };
 
-function doDefineComp (base, ctor) {
-    var frame = _requiringFrame[_requiringFrame.length - 1];
-    if (frame) {
-        var className = frame.script;
-        var cls = Fire.extend(className, base, ctor);
-        if (frame.uuid) {
-            JS._setClassId(frame.uuid, cls);
-        }
-        return cls;
-    }
-// @ifdef DEV
-    else {
-        Fire.error('Sorry, defining Component dynamically is not allowed, define during loading script please.');
-        return null;
-    }
-// @endif
-}
-
 // @ifdef DEV
 function checkCompCtor (constructor, scopeName) {
     if (constructor) {
-        if (typeof constructor !== 'function') {
-            Fire.error(scopeName + ' Constructor must be function type');
-            return false;
-        }
         if (Fire.isChildClassOf(constructor, Component)) {
             Fire.error(scopeName + ' Constructor can not be another Component');
-            return false;
-        }
-        if (Fire._isFireClass(constructor)) {
-            Fire.error(scopeName + ' Constructor can not be another FireClass');
             return false;
         }
         if (constructor.length > 0) {
             // To make a unified FireClass serialization process,
             // we don't allow parameters for constructor when creating instances of FireClass.
             // For advance user, construct arguments can get from 'arguments'.
-            Fire.error(scopeName + ' Can not instantiate FireClass with arguments.');
+            Fire.error(scopeName + ' Can not instantiate Component with arguments.');
             return false;
         }
     }
@@ -452,12 +426,8 @@ function checkCompCtor (constructor, scopeName) {
  * @param {function} [constructor]
  */
 Fire.defineComponent = function (constructor) {
-// @ifdef DEV
-    if ( !checkCompCtor(constructor, '[Fire.defineComponent]') ) {
-        return;
-    }
-// @endif
-    return doDefineComp(Component, constructor);
+    Fire.warn('[Fire.defineComponent] is deprecated, use Fire.extend(Fire.Component, constructor) instead');
+    return Fire.extend(Fire.Component, constructor);
 };
 
 /**
@@ -467,19 +437,38 @@ Fire.defineComponent = function (constructor) {
  * @param {function} [constructor]
  */
 Fire.extendComponent = function (baseClass, constructor) {
+    Fire.warn('[Fire.extendComponent] is deprecated, use Fire.extend(baseClass, constructor) instead');
+    return Fire.extend(baseClass, constructor);
+};
+
+var doDefine = Fire._doDefine;
+Fire._doDefine = function (className, baseClass, constructor) {
+    if ( Fire.isChildClassOf(baseClass, Fire.Component) ) {
+        var isRequiring = _requiringFrame.length > 0;
+        if (isRequiring) {
 // @ifdef DEV
-    if ( !baseClass ) {
-        Fire.error('[Fire.extendComponent] baseClass must be non-nil, or use Fire.defineComponent instead.');
-        return;
-    }
-    if ( !Fire.isChildClassOf(baseClass, Component) ) {
-        Fire.error('[Fire.extendComponent] Base class must inherit from Component');
-        return;
-    }
-    if ( !checkCompCtor(constructor, '[Fire.extendComponent]') ) {
-        return;
-    }
+            if ( !checkCompCtor(constructor, '[Fire.extend]') ) {
+                return null;
+            }
 // @endif
-    return doDefineComp(baseClass, constructor);
-    //var superCtorCalled = this.hasOwnProperty('_name');
+            var frame = _requiringFrame[_requiringFrame.length - 1];
+            if (frame.uuid) {
+                // project component
+                if (className) {
+                    Fire.warn('Sorry, specifying class name for Component in project scripts is not allowed. Just use Fire.extend(baseComponent, constructor) please.');
+                }
+            }
+            //else {
+            //    builtin plugin component
+            //}
+            className = className || frame.script;
+            var cls = doDefine(className, baseClass, constructor);
+            if (frame.uuid) {
+                JS._setClassId(frame.uuid, cls);
+            }
+            return cls;
+        }
+    }
+    // not component or engine component
+    return doDefine(className, baseClass, constructor);
 };
