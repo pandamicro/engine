@@ -1,4 +1,10 @@
-﻿var Time = (function () {
+﻿/**
+ * @module Fire
+ * @class Time
+ * @static
+ */
+
+var Time = (function () {
     var Time = {};
 
     Time.time = 0;
