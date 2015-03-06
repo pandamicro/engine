@@ -400,6 +400,9 @@ Fire._RFpush = function (uuid, script) {
 Fire._RFpop = function () {
     _requiringFrame.pop();
 };
+Fire._RFget = function () {
+    return _requiringFrame[_requiringFrame.length - 1];
+};
 
 // @ifdef DEV
 function checkCompCtor (constructor, scopeName) {
@@ -444,14 +447,13 @@ Fire.extendComponent = function (baseClass, constructor) {
 var doDefine = Fire._doDefine;
 Fire._doDefine = function (className, baseClass, constructor) {
     if ( Fire.isChildClassOf(baseClass, Fire.Component) ) {
-        var isRequiring = _requiringFrame.length > 0;
-        if (isRequiring) {
+        var frame = Fire._RFget();
+        if (frame) {
 // @ifdef DEV
             if ( !checkCompCtor(constructor, '[Fire.extend]') ) {
                 return null;
             }
 // @endif
-            var frame = _requiringFrame[_requiringFrame.length - 1];
             if (frame.uuid) {
                 // project component
                 if (className) {
