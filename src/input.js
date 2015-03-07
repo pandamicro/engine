@@ -1,8 +1,14 @@
 ﻿var Input = (function () {
 
     var Input = {
-        _eventListeners: new EventListeners(),
+        _eventListeners: new EventListeners()
     };
+
+    Object.defineProperty(Input, 'hasTouch', {
+        get: function () {
+            return !!Engine._inputContext && Engine._inputContext.hasTouch;
+        }
+    });
 
     Input.on = function (type, callback) {
         if (callback) {
