@@ -28,6 +28,12 @@ var Engine = (function () {
      */
     Engine._scene = null;
 
+    // the director
+    Engine._director = null;
+
+    // the game
+    Engine._game = null;
+
     // main render context
     Engine._renderContext = null;
 
@@ -96,10 +102,10 @@ var Engine = (function () {
      */
     Object.defineProperty(Engine, 'screenSize', {
         get: function () {
-            return Engine._renderContext.size;
+            return cc.winSize;
         },
         set: function (value) {
-            Engine._renderContext.size = value;
+            Engine._renderContext.setDesignResolutionSize(value.width, value.height, Engine._renderContext.getResolutionPolicy());
             //if ( !isPlaying ) {
             //    render();
             //}
@@ -126,23 +132,28 @@ var Engine = (function () {
             Fire.error('Engine already inited');
             return;
         }
-        inited = true;
 
         Engine._renderContext = new RenderContext( w, h, canvas );
-        Engine._interactionContext = new InteractionContext();
 
-// @ifdef EDITOR
+        Engine._game = Engine._renderContext.game;
+        Engine._director = Engine._game.director;
+
+        // @ifdef EDITOR
         if (Fire.isEditor === false) {
             // test in other platform
-            Engine._scene = new Scene();
+            Engine._scene = new cc.Scene();
             //if (editorCallback.onSceneLoaded) {
             //    editorCallback.onSceneLoaded(Engine._scene);
             //}
             if (editorCallback.onSceneLaunched) {
                 editorCallback.onSceneLaunched(Engine._scene);
             }
+
+            Engine._game.director.runScene(Engine._scene);
         }
-// @endif
+        // @endif
+
+        inited = true;
 
         return Engine._renderContext;
     };

@@ -19,6 +19,8 @@
          * @member {Fire.Camera} Fire.Scene#camera
          */
         this.camera = null;
+
+        this._ccNode = new cc.Scene();
     }
     JS.extend(Scene, _super);
     JS.setClassName("Fire.Scene", Scene);
@@ -125,32 +127,32 @@
     ////////////////////////////////////////////////////////////////////
 
     Scene.prototype.updateTransform = function (camera) {
-        var entities = this.entities;
-        var i, len;
-        if (camera) {
-            // transform by camera
-            var mat = new Matrix23();
-            var camPos = new Vec2();
-            camera._calculateTransform(mat, camPos);
-            var offsetX = -camPos.x;
-            var offsetY = -camPos.y;
-            for (i = 0, len = entities.length; i < len; ++i) {
-                var pos = entities[i].transform._position;
-                var x = pos.x;
-                var y = pos.y;
-                pos.x += offsetX;
-                pos.y += offsetY;
-                entities[i].transform._updateTransform(mat);
-                pos.x = x;
-                pos.y = y;
-            }
-        }
-        else {
-            // transform
-            for (i = 0, len = entities.length; i < len; ++i) {
-                entities[i].transform._updateRootTransform();
-            }
-        }
+        // var entities = this.entities;
+        // var i, len;
+        // if (camera) {
+        //     // transform by camera
+        //     var mat = new Matrix23();
+        //     var camPos = new Vec2();
+        //     camera._calculateTransform(mat, camPos);
+        //     var offsetX = -camPos.x;
+        //     var offsetY = -camPos.y;
+        //     for (i = 0, len = entities.length; i < len; ++i) {
+        //         var pos = entities[i].transform._position;
+        //         var x = pos.x;
+        //         var y = pos.y;
+        //         pos.x += offsetX;
+        //         pos.y += offsetY;
+        //         entities[i].transform._updateTransform(mat);
+        //         pos.x = x;
+        //         pos.y = y;
+        //     }
+        // }
+        // else {
+        //     // transform
+        //     for (i = 0, len = entities.length; i < len; ++i) {
+        //         entities[i].transform._updateRootTransform();
+        //     }
+        // }
     };
 
     Scene.prototype.appendRoot = function (_entity) {

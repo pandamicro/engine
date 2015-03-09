@@ -30,14 +30,24 @@ var RenderContext = (function () {
         height = height || 600;
         transparent = transparent || false;
 
+        var self = this;
+
+        this.game = new cc.Game({
+            "width": width,
+            "height": height,
+            "debugMode" : 1,
+            "showFPS" : true,
+            "frameRate" : 60,
+            "id" : canvas,
+            "renderMode" : 1,
+            "jsList" : []
+        }, function () {
+            self.root = self.stage = new cc.Scene();
+            this.director.runScene(self.stage);
+        });
+        this.game.run();
+
         var antialias = false;
-        this.stage = new PIXI.Stage(0x000000);
-        this.root = this.stage;
-        this.renderer = PIXI.autoDetectRenderer(width, height, {
-            view: canvas,
-            transparent: transparent,
-            antialias: antialias
-        } );
 
         // the shared render context that allows display the object which marked as Fire._ObjectFlags.HideInGame
         this.sceneView = null;
@@ -46,9 +56,11 @@ var RenderContext = (function () {
 
         // binded camera, if supplied the scene will always rendered by this camera
         this._camera = null;
+
+        this.view = this.game.view;
     }
 
-    var emptyTexture = new PIXI.Texture(new PIXI.BaseTexture());
+    var emptyTexture = new cc.Texture2D();
 
     // static
 
@@ -62,69 +74,61 @@ var RenderContext = (function () {
 
     Object.defineProperty(RenderContext.prototype, 'canvas', {
         get: function () {
-            return this.renderer.view;
+            return this.game.canvas;
         }
     });
 
     Object.defineProperty(RenderContext.prototype, 'size', {
         get: function () {
-            return new Vec2(this.renderer.width, this.renderer.height);
+            var winSize = this.game.director.getWinSize();
+            return new Vec2(winSize.width, winSize.height);
         },
         set: function (value) {
-            this.renderer.resize(value.x, value.y);
-            // DISABLE
-            // // auto resize scene view camera
-            // if (this._camera && (this._camera.entity._objFlags & Fire._ObjectFlags.EditorOnly)) {
-            //     this._camera.size = value.y;
-            // }
+            this.view.setDesignResolutionSize(value.x, value.y, this.game.view.getResolutionPolicy());
         }
     });
 
     Object.defineProperty(RenderContext.prototype, 'background', {
         set: function (value) {
-            this.stage.setBackgroundColor(value.toRGBValue());
+            //this.stage.setBackgroundColor(value.toRGBValue());
         }
     });
 
     Object.defineProperty(RenderContext.prototype, 'camera', {
         get: function () {
-            //return (this._camera && this._camera.isValid) || null;
-            return this._camera;
+            return this.game.view;
         },
         set: function (value) {
-            this._camera = value;
-            if (Fire.isValid(value)) {
-                value.renderContext = this;
-            }
+            // this._camera = value;
+            // if (Fire.isValid(value)) {
+            //     value.renderContext = this;
+            // }
         }
     });
 
     // functions
 
     RenderContext.prototype.render = function () {
-        this.renderer.render(this.stage);
+        //this.game.director.mainLoop();
     };
 
     /**
      * @param {Fire.Entity} entity
      */
     RenderContext.prototype.onRootEntityCreated = function (entity) {
-        entity._pixiObj = this._createNode();
-        // @ifdef EDITOR
-        if (this.sceneView) {
-            entity._pixiObjInScene = this.sceneView._createNode();
-        }
-        // @endif
-    };
-
-    RenderContext.prototype._createNode = function () {
-        // always create pixi node even if is scene gizmo, to keep all their indices sync with transforms' sibling indices.
-        var node = new PIXI.DisplayObjectContainer();
+        // always create pixi node even if is scene gizmo, to keep all their indice sync with transforms' sibling indice.
+        entity._ccNode = new cc.Node();
         if (Engine._canModifyCurrentScene) {
             // attach node if created dynamically
-            this.root.addChild(node);
+            this.root.addChild(entity._ccNode);
         }
-        return node;
+        if (this.sceneView) {
+            entity._ccNodeInScene = new cc.Node();
+            if (Engine._canModifyCurrentScene) {
+                // attach node if created dynamically
+                this.sceneView.root.addChild(entity._ccNodeInScene);
+            }
+        }
     };
 
     /**
@@ -132,19 +136,17 @@ var RenderContext = (function () {
      * @param {Fire.Entity} entity
      */
     RenderContext.prototype.onEntityRemoved = function (entity) {
-        this._removeNode(entity._pixiObj);
-        entity._pixiObj = null;
-        // @ifdef EDITOR
-        if (this.sceneView) {
-            this.sceneView._removeNode(entity._pixiObjInScene);
-            entity._pixiObjInScene = null;
+        if (entity._ccNode) {
+            if (entity._ccNode.parent) {
+                entity._ccNode.parent.removeChild(entity._ccNode);
+            }
+            entity._ccNode = null;
         }
-        // @endif
-    };
-
-    RenderContext.prototype._removeNode = function (node) {
-        if (node && node.parent) {
-            node.parent.removeChild(node);
+        if (entity._ccNodeInScene) {
+            if (entity._ccNodeInScene.parent) {
+                entity._ccNodeInScene.parent.removeChild(entity._ccNodeInScene);
+            }
+            entity._ccNodeInScene = null;
         }
     };
 
@@ -153,10 +155,10 @@ var RenderContext = (function () {
      * @param {Fire.Entity} oldParent
      */
     RenderContext.prototype.onEntityParentChanged = function (entity, oldParent) {
-        this._setParentNode(entity._pixiObj, entity._parent && entity._parent._pixiObj);
+        this._setParentNode(entity._ccNode, entity._parent && entity._parent._ccNode);
         // @ifdef EDITOR
         if (this.sceneView) {
-            this.sceneView._setParentNode(entity._pixiObjInScene, entity._parent && entity._parent._pixiObjInScene);
+            this.sceneView._setParentNode(entity._ccNodeInScene, entity._parent && entity._parent._ccNodeInScene);
         }
         // @endif
     };
@@ -175,20 +177,20 @@ var RenderContext = (function () {
     /**
      * @param {Fire.Entity} entityParent
      * @param {Fire.Entity} [customFirstChildEntity=null]
-     * @return {number}
+     * @returns {number}
      */
     RenderContext.prototype._getChildrenOffset = function (entityParent, customFirstChildEntity) {
         if (entityParent) {
-            var pixiParent = this.isSceneView ? entityParent._pixiObjInScene : entityParent._pixiObj;
+            var cocosParent = inSceneView ? entityParent._ccNodeInScene : entityParent._ccNode;
             var firstChildEntity = customFirstChildEntity || entityParent._children[0];
             if (firstChildEntity) {
-                var firstChildPixi = this.isSceneView ? firstChildEntity._pixiObjInScene : firstChildEntity._pixiObj;
-                var offset = pixiParent.children.indexOf(firstChildPixi);
+                var firstChildCocos = inSceneView ? firstChildEntity._ccNodeInScene : firstChildEntity._ccNode;
+                var offset = pixiParent.children.indexOf(firstChildCocos);
                 if (offset !== -1) {
                     return offset;
                 }
                 else if (customFirstChildEntity) {
-                    return pixiParent.children.length;
+                    return cocosParent.children.length;
                 }
                 else {
                     Fire.error("%s's pixi object not contains in its pixi parent's children", firstChildEntity.name);
@@ -196,7 +198,7 @@ var RenderContext = (function () {
                 }
             }
             else {
-                return pixiParent.children.length;
+                return cocosParent.children.length;
             }
         }
         else {
@@ -210,59 +212,24 @@ var RenderContext = (function () {
      * @param {number} newIndex
      */
     RenderContext.prototype.onEntityIndexChanged = function (entity, oldIndex, newIndex) {
-        var lastFirstSibling;
-        if (newIndex === 0 && oldIndex > 0) {
-            // insert to first
-            lastFirstSibling = entity.getSibling(1);
-        }
-        else if (oldIndex === 0 && newIndex > 0) {
-            // move first to elsewhere
-            lastFirstSibling = entity;
-        }
-
-        if (entity._pixiObj) {
-            this._setNodeIndex(entity, oldIndex, newIndex, lastFirstSibling);
-        }
-        // @ifdef EDITOR
-        if (this.sceneView) {
-            this.sceneView._setNodeIndex(entity, oldIndex, newIndex, lastFirstSibling);
-        }
-        // @endif
-    };
-
-    RenderContext.prototype._setNodeIndex = function (entity, oldIndex, newIndex, lastFirstSibling) {
-        // skip renderers of entity
-        var siblingOffset = this._getChildrenOffset(entity._parent, lastFirstSibling);
-        //
-        var node = this.isSceneView ? entity._pixiObjInScene : entity._pixiObj;
-        if (node) {
-            var array = node.parent.children;
-            array.splice(oldIndex + siblingOffset, 1);
-            var newPixiIndex = newIndex + siblingOffset;
-            if (newPixiIndex < array.length) {
-                array.splice(newPixiIndex, 0, node);
-            }
-            else {
-                array.push(node);
-            }
-        }
+        entity._ccNode.setLocalZOrder(newIndex);
     };
 
     RenderContext.prototype.onSceneLaunched = function (scene) {
         // attach root nodes
         this._addToScene(scene);
-        // @ifdef EDITOR
         if (this.sceneView) {
             this.sceneView._addToScene(scene);
         }
-        // @endif
     };
 
     RenderContext.prototype._addToScene = function (scene) {
         var entities = scene.entities;
-        for (var i = 0, len = entities.length; i < len; i++) {
-            var node = this.isSceneView? entities[i]._pixiObjInScene : entities[i]._pixiObj;
+        var i = 0, len = entities.length;
+        for (; i < len; i++) {
+            var node = this.isSceneView ? entities[i]._ccNodeInScene : entities[i]._ccNode;
             if (node) {
+                node.removeFromParent();
                 this.root.addChild(node);
             }
         }
@@ -281,12 +248,12 @@ var RenderContext = (function () {
      * @param {Fire.Entity} entity - must have parent, and not scene gizmo
      */
     var _onChildEntityCreated = function (entity, hasSceneView) {
-        entity._pixiObj = new PIXI.DisplayObjectContainer();
-        entity._parent._pixiObj.addChild(entity._pixiObj);
+        entity._ccNode = new cc.Node();
+        entity._parent._ccNode.addChild(entity._ccNode);
         // @ifdef EDITOR
         if (hasSceneView) {
-            entity._pixiObjInScene = new PIXI.DisplayObjectContainer();
-            entity._parent._pixiObjInScene.addChild(entity._pixiObjInScene);
+            entity._ccNodeInScene = new cc.Node();
+            entity._parent._ccNodeInScene.addChild(entity._ccNodeInScene);
         }
         // @endif
         var children = entity._children;
@@ -301,21 +268,21 @@ var RenderContext = (function () {
      * @param {boolean} addToScene - add to pixi stage now if entity is root
      */
     RenderContext.prototype.onEntityCreated = function (entity, addToScene) {
-        entity._pixiObj = new PIXI.DisplayObjectContainer();
+        entity._ccNode = new cc.Node();
         if (entity._parent) {
-            entity._parent._pixiObj.addChild(entity._pixiObj);
+            entity._parent._ccNode.addChild(entity._ccNode);
         }
         else if (addToScene) {
-            this.root.addChild(entity._pixiObj);
+            this.root.addChild(entity._ccNode);
         }
         // @ifdef EDITOR
         if (this.sceneView) {
-            entity._pixiObjInScene = new PIXI.DisplayObjectContainer();
+            entity._ccNodeInScene = new cc.Node();
             if (entity._parent) {
-                entity._parent._pixiObjInScene.addChild(entity._pixiObjInScene);
+                entity._parent._ccNodeInScene.addChild(entity._ccNodeInScene);
             }
             else if (addToScene) {
-                this.sceneView.root.addChild(entity._pixiObjInScene);
+                this.sceneView.root.addChild(entity._ccNodeInScene);
             }
         }
         // @endif
@@ -327,8 +294,8 @@ var RenderContext = (function () {
     };
 
     RenderContext.prototype._addSprite = function (tex, parentNode) {
-        var sprite = new PIXI.Sprite(tex);
-        parentNode.addChildAt(sprite, 0);
+        var sprite = new cc.Sprite(tex);
+        parentNode.addChild(sprite, 0);
         return sprite;
     };
 
@@ -336,17 +303,17 @@ var RenderContext = (function () {
      * @param {Fire.SpriteRenderer} target
      */
     RenderContext.prototype.addSprite = function (target) {
-        var tex = createTexture(target._sprite);
+        var tex = createTexture(target._sprite) || emptyTexture;
 
         var inGame = !(target.entity._objFlags & HideInGame);
         if (inGame) {
-            target._renderObj = this._addSprite(tex, target.entity._pixiObj);
+            target._renderObj = this._addSprite(tex, target.entity._ccNode);
         }
         // @ifdef EDITOR
         if (this.sceneView) {
             // pixi may not share display object between stages at the same time,
             // so another sprite is needed.
-            target._renderObjInScene = this.sceneView._addSprite(tex, target.entity._pixiObjInScene);
+            target._renderObjInScene =  this._addSprite(tex, target.entity._ccNodeInScene);
         }
         // @endif
 
@@ -371,47 +338,53 @@ var RenderContext = (function () {
      * @param show {boolean}
      */
     RenderContext.prototype.remove = function (target) {
-        this._removeNode(target._renderObj);
-        target._renderObj = null;
+        if (target._renderObj) {
+            target._renderObj.parent.removeChild(target._renderObj);
+            target._renderObj = null;
+        }
         // @ifdef EDITOR
         if (this.sceneView) {
-            this.sceneView._removeNode(target._renderObjInScene);
+            target._renderObjInScene.parent.removeChild(target._renderObjInScene);
             target._renderObjInScene = null;
         }
         // @endif
     };
 
     RenderContext.prototype.updateSpriteColor = function (target) {
-        var tint = target._color.toRGBValue();
-        if (target._renderObj) {
-            target._renderObj.tint = tint;
+        if (target._renderObj || target._renderObjInScene) {
+            var tint = target._color.toRGBValue();
+            if (target._renderObj) {
+                target._renderObj.setColor(tint);
+            }
+            // @ifdef EDITOR
+            if (target._renderObjInScene) {
+                target._renderObjInScene.color(tint);
+            }
+            // @endif
         }
-        // @ifdef EDITOR
-        if (target._renderObjInScene) {
-            target._renderObjInScene.tint = tint;
-        }
-        if (!target._renderObj && !target._renderObjInScene) {
+        else {
             Fire.error('' + target + ' must be added to render context first!');
         }
-        // @endif
     };
 
     /**
      * @param target {Fire.SpriteRenderer}
      */
     RenderContext.prototype.updateMaterial = function (target) {
-        var tex = createTexture(target._sprite);
-        if (target._renderObj) {
-            target._renderObj.setTexture(tex);
+        if (target._renderObj || target._renderObjInScene) {
+            var tex = createTexture(target._sprite) || emptyTexture;
+            if (target._renderObj) {
+                target._renderObj.setSpriteFrame(tex);
+            }
+            // @ifdef EDITOR
+            if (target._renderObjInScene) {
+                target._renderObjInScene.setSpriteFrame(tex);
+            }
+            // @endif
         }
-        // @ifdef EDITOR
-        if (target._renderObjInScene) {
-            target._renderObjInScene.setTexture(tex);
-        }
-        if (!target._renderObj && !target._renderObjInScene) {
+        else {
             Fire.error('' + target + ' must be added to render context first!');
         }
-        // @endif
     };
 
     /**
@@ -420,17 +393,7 @@ var RenderContext = (function () {
      * @param {Fire.Matrix23} matrix - the matrix to render (Read Only)
      */
     RenderContext.prototype.updateTransform = function (target, matrix) {
-        // caculate matrix for pixi
-        var mat = target._tempMatrix;
-        mat.a = matrix.a;
-        // negate the rotation because our rotation transform not the same with pixi
-        mat.b = - matrix.b;
-        mat.c = - matrix.c;
-        //
-        mat.d = matrix.d;
-        mat.tx = matrix.tx;
-        // revert Y axis for pixi
-        mat.ty = this.renderer.height - matrix.ty;
+        return;
 
         // apply matrix
         if ( !this.isSceneView ) {
@@ -499,12 +462,12 @@ var RenderContext = (function () {
      */
     function createTexture(sprite) {
         if (sprite && sprite.texture && sprite.texture.image) {
-            var img = new PIXI.BaseTexture(sprite.texture.image);
-            var frame = new PIXI.Rectangle(sprite.x, sprite.y, Math.min(img.width - sprite.x, sprite.rotatedWidth), Math.min(img.height - sprite.y, sprite.rotatedHeight));
-            return new PIXI.Texture(img, frame);
+            var img = cc.TextureCache.addImage(sprite.texture.image);
+            var frame = cc.rect(sprite.x, sprite.y, Math.min(img.width - sprite.x, sprite.width), Math.min(img.height - sprite.y, sprite.height));
+            return new cc.SpriteFrame(img, frame);
         }
         else {
-            return emptyTexture;
+            return null;
         }
     }
 
@@ -518,21 +481,21 @@ var RenderContext = (function () {
  */
 RenderContext.prototype.checkMatchCurrentScene = function () {
     var entities = Engine._scene.entities;
-    var pixiGameNodes = this.stage.children;
-    var pixiSceneNodes;
+    var cocosGameNodes = this.stage.children;
+    var cocosSceneNodes;
     if (this.sceneView) {
-        pixiSceneNodes = this.sceneView.stage.children;
-        pixiSceneNodes = pixiSceneNodes[1].children;    // skip forground and background
+        cocosSceneNodes = this.sceneView.stage.children;
+        cocosSceneNodes = cocosSceneNodes[1].children;    // skip forground and background
     }
     var scope = this;
     function checkMatch (ent, gameNode, sceneNode) {
-        if (sceneNode && ent._pixiObjInScene !== sceneNode) {
-            throw new Error('entity does not match pixi scene node: ' + ent.name);
+        if (sceneNode && ent._ccNodeInScene !== sceneNode) {
+            throw new Error('entity does not match cocos scene node: ' + ent.name);
         }
         //if (!(ent._objFlags & HideInGame)) {
         //    var gameNode = gameNodes[g++];
         //}
-        if (ent._pixiObj !== gameNode) {
+        if (ent._ccNode !== gameNode) {
             throw new Error('entity does not match pixi game node: ' + ent.name);
         }
 
@@ -557,13 +520,13 @@ RenderContext.prototype.checkMatchCurrentScene = function () {
     }
 
     for (var i = 0; i < entities.length; i++) {
-        if (pixiSceneNodes && pixiSceneNodes.length !== entities.length) {
+        if (cocosSceneNodes && cocosSceneNodes.length !== entities.length) {
             throw new Error('Mismatched list of root elements in scene view');
         }
-        if (pixiGameNodes.length !== entities.length) {
+        if (cocosGameNodes.length !== entities.length) {
             throw new Error('Mismatched list of root elements in game view');
         }
-        checkMatch(entities[i], pixiGameNodes[i], pixiSceneNodes && pixiSceneNodes[i]);
+        checkMatch(entities[i], cocosGameNodes[i], cocosSceneNodes && cocosSceneNodes[i]);
     }
 
     //if (g !== pixiGameNodes.length) {

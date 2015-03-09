@@ -9,13 +9,13 @@
     Camera.prop('_background', new Fire.Color(0, 0, 0), Fire.HideInInspector);
     Camera.getset('background',
         function () {
-            return this._background;
+            //return this._background;
         },
         function (value) {
-            this._background = value;
-            if (this._renderContext) {
-                this._renderContext.background = value;
-            }
+            // this._background = value;
+            // if (this._renderContext) {
+            //     this._renderContext.background = value;
+            // }
         }
     );
 
@@ -33,11 +33,11 @@
     Object.defineProperty(Camera.prototype, 'renderContext', {
         set: function (value) {
             this._renderContext = value;
-//// @ifdef EDITOR
-//            if ( !Engine.isPlaying ) {
-//                this.size = value.size.y;
-//            }
-//// @endif
+// @ifdef EDITOR
+            if ( !Engine.isPlaying ) {
+                this.size = value.size.y;
+            }
+// @endif
             this._applyRenderSettings();
         }
     });
@@ -55,10 +55,10 @@
         }
     };
     Camera.prototype.onDisable = function () {
-        if (Engine._scene.camera === this) {
-            Engine._scene.camera = null;
-        }
-        this._renderContext.camera = null;
+        // if (Engine._scene.camera === this) {
+        //     Engine._scene.camera = null;
+        // }
+        // this._renderContext.camera = null;
     };
 
     // other functions
