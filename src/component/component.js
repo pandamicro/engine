@@ -142,11 +142,6 @@
         }
     };
 
-    Component.prototype.dontDestroyOnLoad = function () {
-        this.entity._objFlags |= DontDestroy;
-    };
-
-
 // @ifdef EDITOR
     function callOnEnableInTryCatch (c) {
         try {
