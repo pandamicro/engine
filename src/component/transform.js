@@ -460,7 +460,17 @@
     };
 
     /**
-     * @property {Fire.Vec2} up - up direction, point to the y(green) axis
+     * Moves the transform in the direction and distance of translation. The movement is applied relative to the transform's local space.
+     * @method Transform#translate
+     * @param {Fire.Vec2} translation
+     */
+    Transform.prototype.translate = function (translation) {
+        var rotated = translation.rotate(Math.deg2rad(this._rotation));
+        this.position = this._position.add(rotated, rotated);
+    };
+
+    /**
+     * @property {Fire.Vec2} up - up direction in world space, point to the y(green) axis
      */
     Object.defineProperty(Transform.prototype, 'up', {
         get: function () {
@@ -477,7 +487,7 @@
     });
 
     /**
-     * @property {Fire.Vec2} right - right direction, point to the x(red) axis
+     * @property {Fire.Vec2} right - right direction in world space, point to the x(red) axis
      */
     Object.defineProperty(Transform.prototype, 'right', {
         get: function () {
