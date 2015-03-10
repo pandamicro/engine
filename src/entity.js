@@ -238,6 +238,20 @@
         }
     };
 
+    Object.defineProperty(Entity.prototype, 'dontDestroyOnLoad', {
+        get: function () {
+            return this.dontDestroyOnLoad;
+        },
+        set: function(value) {
+            if(value) {
+                this._objFlags |= DontDestroy;
+            }
+            else {
+                this._objFlags &= ~DontDestroy;
+            }
+        }
+    });
+
     /**
      * Get all the targets listening to the supplied type of event in the target's capturing phase.
      * The capturing phase comprises the journey from the root to the last node BEFORE the event target's node.

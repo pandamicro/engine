@@ -28,6 +28,9 @@ var Engine = (function () {
      */
     Engine._scene = null;
 
+    //
+    Engine._launchingScene = null;
+
     // main render context
     Engine._renderContext = null;
 
@@ -284,8 +287,8 @@ var Engine = (function () {
             Fire.error('Argument must be non-nil');
             return;
         }
+        Engine._launchingScene = scene;
 
-        // TODO: allow dont destroy behaviours
         // unload scene
         var oldScene = Engine._scene;
 // @ifdef EDITOR
@@ -293,6 +296,7 @@ var Engine = (function () {
             editorCallback.onStartUnloadScene(oldScene);
         }
 // @endif
+
         if (Fire.isValid(oldScene)) {
             // destroyed and unload
             AssetLibrary.unloadAsset(oldScene, true);
@@ -318,6 +322,7 @@ var Engine = (function () {
 
         // launch scene
         Engine._scene = scene;
+        Engine._launchingScene = null;
         Engine._renderContext.onSceneLaunched(scene);
 // @ifdef EDITOR
         if (editorCallback.onSceneLaunched) {

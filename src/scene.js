@@ -236,7 +236,12 @@
         for (var i = 0, len = entities.length; i < len; ++i) {
             var entity = entities[i];
             if (entity.isValid) {
-                entity.destroy();
+                if (entity._objFlags & DontDestroy) {
+                    Engine._launchingScene.entities.push(entity);
+                }
+                else {
+                    entity.destroy();
+                }
             }
         }
         _super.prototype.destroy.call(this);
