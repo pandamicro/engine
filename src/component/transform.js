@@ -29,6 +29,8 @@
 
     // properties
 
+    var ERR_NaN = 'The %s must not be NaN';
+
     /**
      * The local position in its parent's coordinate system
      * @member {Fire.Vec2} position
@@ -39,8 +41,15 @@
             return new Vec2(this._position.x, this._position.y);
         },
         function (value) {
-            this._position.x = value.x;
-            this._position.y = value.y;
+            var x = value.x;
+            var y = value.y;
+            if ( !isNaN(x) && !isNaN(y) ) {
+                this._position.x = x;
+                this._position.y = y;
+            }
+            else {
+                Fire.error(ERR_NaN, 'xy of new position');
+            }
         },
         Fire.Tooltip("The local position in its parent's coordinate system")
     );
@@ -55,7 +64,12 @@
             return this._position.x;
         },
         set: function (value) {
-            this._position.x = value;
+            if ( !isNaN(value) ) {
+                this._position.x = value;
+            }
+            else {
+                Fire.error(ERR_NaN, 'new x');
+            }
         }
     });
 
@@ -69,7 +83,12 @@
             return this._position.y;
         },
         set: function (value) {
-            this._position.y = value;
+            if ( !isNaN(value) ) {
+                this._position.y = value;
+            }
+            else {
+                Fire.error(ERR_NaN, 'new y');
+            }
         }
     });
 
@@ -83,12 +102,19 @@
             return new Vec2(l2w.tx, l2w.ty);
         },
         set: function (value) {
-            if ( this._parent ) {
-                var w2l = this._parent.getWorldToLocalMatrix();
-                this.position = w2l.transformPoint(value);
+            var x = value.x;
+            var y = value.y;
+            if ( !isNaN(x) && !isNaN(y) ) {
+                if ( this._parent ) {
+                    var w2l = this._parent.getWorldToLocalMatrix();
+                    this.position = w2l.transformPoint(value);
+                }
+                else {
+                    this.position = value;
+                }
             }
             else {
-                this.position = value;
+                Fire.error(ERR_NaN, 'xy of new worldPosition');
             }
         }
     });
@@ -103,24 +129,29 @@
             return this.worldPosition.x;
         },
         set: function (value) {
-            if ( this._parent ) {
-                var pl2w = this._parent.getLocalToWorldMatrix();
-                var l2w = this.getLocalMatrix().prepend(pl2w);
-                if (l2w.tx !== value) {
-                    this._position.x = value;
-                    this._position.y = l2w.ty;
-                    pl2w.invert().transformPoint(this._position, this._position);
+            if ( !isNaN(value) ) {
+                if ( this._parent ) {
+                    var pl2w = this._parent.getLocalToWorldMatrix();
+                    var l2w = this.getLocalMatrix().prepend(pl2w);
+                    if (l2w.tx !== value) {
+                        this._position.x = value;
+                        this._position.y = l2w.ty;
+                        pl2w.invert().transformPoint(this._position, this._position);
+                    }
                 }
+                else {
+                    this._position.x = value;
+                }
+                //将来优化做好了以后，上面的代码可以简化成下面这些
+                //var pos = this.worldPosition;
+                //if (pos.x !== value) {
+                //    pos.x = value;
+                //    this.worldPosition = pos;
+                //}
             }
             else {
-                this._position.x = value;
+                Fire.error(ERR_NaN, 'new worldX');
             }
-            //将来优化做好了以后，上面的代码可以简化成下面这些
-            //var pos = this.worldPosition;
-            //if (pos.x !== value) {
-            //    pos.x = value;
-            //    this.worldPosition = pos;
-            //}
         }
     });
 
@@ -134,17 +165,22 @@
             return this.worldPosition.y;
         },
         set: function (value) {
-            if ( this._parent ) {
-                var pl2w = this._parent.getLocalToWorldMatrix();
-                var l2w = this.getLocalMatrix().prepend(pl2w);
-                if (l2w.ty !== value) {
-                    this._position.x = l2w.tx;
+            if ( !isNaN(value) ) {
+                if ( this._parent ) {
+                    var pl2w = this._parent.getLocalToWorldMatrix();
+                    var l2w = this.getLocalMatrix().prepend(pl2w);
+                    if (l2w.ty !== value) {
+                        this._position.x = l2w.tx;
+                        this._position.y = value;
+                        pl2w.invert().transformPoint(this._position, this._position);
+                    }
+                }
+                else {
                     this._position.y = value;
-                    pl2w.invert().transformPoint(this._position, this._position);
                 }
             }
             else {
-                this._position.y = value;
+                Fire.error(ERR_NaN, 'new worldY');
             }
         }
     });
@@ -158,7 +194,12 @@
             return this._rotation;
         },
         function (value) {
-            this._rotation = value;
+            if ( !isNaN(value) ) {
+                this._rotation = value;
+            }
+            else {
+                Fire.error(ERR_NaN, 'new rotation');
+            }
         },
         Fire.Tooltip('The counterclockwise degrees of rotation relative to the parent')
     );
@@ -177,11 +218,16 @@
             }
         },
         set: function (value) {
-            if ( this._parent ) {
-                this.rotation = value - this._parent.worldRotation;
+            if ( !isNaN(value) ) {
+                if ( this._parent ) {
+                    this.rotation = value - this._parent.worldRotation;
+                }
+                else {
+                    this.rotation = value;
+                }
             }
             else {
-                this.rotation = value;
+                Fire.error(ERR_NaN, 'new worldRotation');
             }
         }
     });
@@ -196,8 +242,15 @@
             return new Vec2(this._scale.x, this._scale.y);
         },
         function (value) {
-            this._scale.x = value.x;
-            this._scale.y = value.y;
+            var x = value.x;
+            var y = value.y;
+            if ( !isNaN(x) && !isNaN(y) ) {
+                this._scale.x = x;
+                this._scale.y = y;
+            }
+            else {
+                Fire.error(ERR_NaN, 'xy of new scale');
+            }
         },
         Fire.Tooltip('The local scale factor relative to the parent')
     );
@@ -212,7 +265,12 @@
             return this._scale.x;
         },
         set: function (value) {
-            this._scale.x = value;
+            if ( !isNaN(value) ) {
+                this._scale.x = value;
+            }
+            else {
+                Fire.error(ERR_NaN, 'new scaleX');
+            }
         }
     });
 
@@ -226,7 +284,12 @@
             return this._scale.y;
         },
         set: function (value) {
-            this._scale.y = value;
+            if ( !isNaN(value) ) {
+                this._scale.y = value;
+            }
+            else {
+                Fire.error(ERR_NaN, 'new scaleY');
+            }
         }
     });
 
