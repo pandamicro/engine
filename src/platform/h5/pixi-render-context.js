@@ -475,7 +475,7 @@ var RenderContext = (function () {
      */
     function createTexture(sprite) {
         if (sprite && sprite.texture && sprite.texture.image) {
-            var img = cc.TextureCache.addImage(sprite.texture.image);
+            var img = cc.textureCache.addUIImage(sprite.texture.image, sprite.texture.name);
             var frame = cc.rect(sprite.x, sprite.y, Math.min(img.width - sprite.x, sprite.width), Math.min(img.height - sprite.y, sprite.height));
             return new cc.SpriteFrame(img, frame);
         }
