@@ -46,6 +46,7 @@ var RenderContext = (function () {
             this.director.runScene(self.stage);
         });
         this.game.run();
+        this.game.pause();
 
         var antialias = false;
 
@@ -57,7 +58,7 @@ var RenderContext = (function () {
         // binded camera, if supplied the scene will always rendered by this camera
         this._camera = null;
 
-        this.view = this.game.view;
+        this.renderer = this.view = this.game.view;
     }
 
     var emptyTexture = new cc.Texture2D();
@@ -90,32 +91,33 @@ var RenderContext = (function () {
 
     Object.defineProperty(RenderContext.prototype, 'background', {
         set: function (value) {
-            //this.stage.setBackgroundColor(value.toRGBValue());
+            this.view.setBackgroundColor(value.toRGBValue());
         }
     });
 
     Object.defineProperty(RenderContext.prototype, 'camera', {
         get: function () {
-            return this.game.view;
+            return this._camera;
         },
         set: function (value) {
-            // this._camera = value;
-            // if (Fire.isValid(value)) {
-            //     value.renderContext = this;
-            // }
+            this._camera = value;
+            if (Fire.isValid(value)) {
+                value.renderContext = this;
+            }
         }
     });
 
     // functions
 
     RenderContext.prototype.render = function () {
-        //this.game.director.mainLoop();
+        this.game.frameRun();
     };
 
     /**
      * @param {Fire.Entity} entity
      */
     RenderContext.prototype.onRootEntityCreated = function (entity) {
+        this.game.setEnvironment();
         // always create pixi node even if is scene gizmo, to keep all their indice sync with transforms' sibling indice.
         entity._ccNode = new cc.Node();
         if (Engine._canModifyCurrentScene) {
@@ -136,6 +138,7 @@ var RenderContext = (function () {
      * @param {Fire.Entity} entity
      */
     RenderContext.prototype.onEntityRemoved = function (entity) {
+        this.game.setEnvironment();
         if (entity._ccNode) {
             if (entity._ccNode.parent) {
                 entity._ccNode.parent.removeChild(entity._ccNode);
@@ -155,6 +158,7 @@ var RenderContext = (function () {
      * @param {Fire.Entity} oldParent
      */
     RenderContext.prototype.onEntityParentChanged = function (entity, oldParent) {
+        this.game.setEnvironment();
         this._setParentNode(entity._ccNode, entity._parent && entity._parent._ccNode);
         // @ifdef EDITOR
         if (this.sceneView) {
@@ -212,6 +216,7 @@ var RenderContext = (function () {
      * @param {number} newIndex
      */
     RenderContext.prototype.onEntityIndexChanged = function (entity, oldIndex, newIndex) {
+        this.game.setEnvironment();
         entity._ccNode.setLocalZOrder(newIndex);
     };
 
@@ -236,6 +241,7 @@ var RenderContext = (function () {
     };
 
     RenderContext.prototype.onSceneLoaded = function (scene) {
+        this.game.setEnvironment();
         var entities = scene.entities;
         for (var i = 0, len = entities.length; i < len; i++) {
             this.onEntityCreated(entities[i], false);
@@ -268,6 +274,7 @@ var RenderContext = (function () {
      * @param {boolean} addToScene - add to pixi stage now if entity is root
      */
     RenderContext.prototype.onEntityCreated = function (entity, addToScene) {
+        this.game.setEnvironment();
         entity._ccNode = new cc.Node();
         if (entity._parent) {
             entity._parent._ccNode.addChild(entity._ccNode);

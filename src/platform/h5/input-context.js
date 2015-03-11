@@ -20,7 +20,7 @@
      * http://www.quirksmode.org/dom/events/index.html
      */
     var InputContext = function (renderContext) {
-        var canvas = renderContext.renderer.view;
+        var canvas = renderContext.canvas;
         canvas.tabIndex = canvas.tabIndex || 0;     // make key event receivable
 
         this.renderContext = renderContext;

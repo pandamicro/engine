@@ -134,6 +134,7 @@ var Engine = (function () {
         }
 
         Engine._renderContext = new RenderContext( w, h, canvas );
+        Engine._interactionContext = new InteractionContext();
 
         Engine._game = Engine._renderContext.game;
         Engine._director = Engine._game.director;
@@ -141,7 +142,7 @@ var Engine = (function () {
         // @ifdef EDITOR
         if (Fire.isEditor === false) {
             // test in other platform
-            Engine._scene = new cc.Scene();
+            Engine._scene = new Scene();
             //if (editorCallback.onSceneLoaded) {
             //    editorCallback.onSceneLoaded(Engine._scene);
             //}
@@ -149,7 +150,7 @@ var Engine = (function () {
                 editorCallback.onSceneLaunched(Engine._scene);
             }
 
-            Engine._game.director.runScene(Engine._scene);
+            Engine._game.director.runScene(Engine._scene.getSceneNode());
         }
         // @endif
 
@@ -228,7 +229,7 @@ var Engine = (function () {
 
     function render () {
         // render
-        Engine._scene.render(Engine._renderContext);
+        Engine._game.frameRun();
     }
 
     function doUpdate (updateLogic) {
