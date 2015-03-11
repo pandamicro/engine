@@ -91,7 +91,7 @@ var RenderContext = (function () {
 
     Object.defineProperty(RenderContext.prototype, 'background', {
         set: function (value) {
-            this.view.setBackgroundColor(value.toRGBValue());
+            this.view.setBackgroundColor(value.toCCColor());
         }
     });
 
@@ -117,16 +117,17 @@ var RenderContext = (function () {
      * @param {Fire.Entity} entity
      */
     RenderContext.prototype.onRootEntityCreated = function (entity) {
-        this.game.setEnvironment();
         // always create pixi node even if is scene gizmo, to keep all their indice sync with transforms' sibling indice.
         entity._ccNode = new cc.Node();
         if (Engine._canModifyCurrentScene) {
+            this.game.setEnvironment();
             // attach node if created dynamically
             this.root.addChild(entity._ccNode);
         }
         if (this.sceneView) {
             entity._ccNodeInScene = new cc.Node();
             if (Engine._canModifyCurrentScene) {
+                this.sceneView.game.setEnvironment();
                 // attach node if created dynamically
                 this.sceneView.root.addChild(entity._ccNodeInScene);
             }
@@ -138,15 +139,16 @@ var RenderContext = (function () {
      * @param {Fire.Entity} entity
      */
     RenderContext.prototype.onEntityRemoved = function (entity) {
-        this.game.setEnvironment();
         if (entity._ccNode) {
             if (entity._ccNode.parent) {
+                this.game.setEnvironment();
                 entity._ccNode.parent.removeChild(entity._ccNode);
             }
             entity._ccNode = null;
         }
         if (entity._ccNodeInScene) {
             if (entity._ccNodeInScene.parent) {
+                this.sceneView.game.setEnvironment();
                 entity._ccNodeInScene.parent.removeChild(entity._ccNodeInScene);
             }
             entity._ccNodeInScene = null;
@@ -162,6 +164,7 @@ var RenderContext = (function () {
         this._setParentNode(entity._ccNode, entity._parent && entity._parent._ccNode);
         // @ifdef EDITOR
         if (this.sceneView) {
+            this.sceneView.game.setEnvironment();
             this.sceneView._setParentNode(entity._ccNodeInScene, entity._parent && entity._parent._ccNodeInScene);
         }
         // @endif
@@ -284,6 +287,7 @@ var RenderContext = (function () {
         }
         // @ifdef EDITOR
         if (this.sceneView) {
+            this.sceneView.game.setEnvironment();
             entity._ccNodeInScene = new cc.Node();
             if (entity._parent) {
                 entity._parent._ccNodeInScene.addChild(entity._ccNodeInScene);
@@ -314,12 +318,12 @@ var RenderContext = (function () {
 
         var inGame = !(target.entity._objFlags & HideInGame);
         if (inGame) {
+            this.game.setEnvironment();
             target._renderObj = this._addSprite(tex, target.entity._ccNode);
         }
         // @ifdef EDITOR
         if (this.sceneView) {
-            // pixi may not share display object between stages at the same time,
-            // so another sprite is needed.
+            this.sceneView.game.setEnvironment();
             target._renderObjInScene =  this._addSprite(tex, target.entity._ccNodeInScene);
         }
         // @endif
@@ -346,11 +350,13 @@ var RenderContext = (function () {
      */
     RenderContext.prototype.remove = function (target) {
         if (target._renderObj) {
+            this.game.setEnvironment();
             target._renderObj.parent.removeChild(target._renderObj);
             target._renderObj = null;
         }
         // @ifdef EDITOR
         if (this.sceneView) {
+            this.sceneView.game.setEnvironment();
             target._renderObjInScene.parent.removeChild(target._renderObjInScene);
             target._renderObjInScene = null;
         }
@@ -359,13 +365,13 @@ var RenderContext = (function () {
 
     RenderContext.prototype.updateSpriteColor = function (target) {
         if (target._renderObj || target._renderObjInScene) {
-            var tint = target._color.toRGBValue();
+            var tint = target._color.toCCColor();
             if (target._renderObj) {
                 target._renderObj.setColor(tint);
             }
             // @ifdef EDITOR
             if (target._renderObjInScene) {
-                target._renderObjInScene.color(tint);
+                target._renderObjInScene.setColor(tint);
             }
             // @endif
         }
