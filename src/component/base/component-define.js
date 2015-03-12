@@ -29,6 +29,10 @@ Fire._doDefine = function (className, baseClass, constructor) {
                 return null;
             }
 // @endif
+            if (frame.comp) {
+                Fire.error('Sorry, each script can have at most one Component.');
+                return;
+            }
             if (frame.uuid) {
                 // project component
                 if (className) {
@@ -43,6 +47,7 @@ Fire._doDefine = function (className, baseClass, constructor) {
             if (frame.uuid) {
                 JS._setClassId(frame.uuid, cls);
             }
+            frame.comp = cls;
             return cls;
         }
     }
