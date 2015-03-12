@@ -4,17 +4,15 @@ var AssetLibrary = (function () {
 
     // configs
 
-    /**
-     * 当uuid不在_uuidToUrl里面，则将uuid本身作为url加载，路径位于_libraryBase。
-     */
     var _libraryBase = '';
 
     // variables
 
-    /**
-     * the loading uuid's callbacks
-     */
+    // the loading uuid's callbacks
     var _uuidToCallbacks = new Fire.CallbacksInvoker();
+
+    // temp deserialize info
+    var _tdInfo = new Fire._DeserializeInfo();
 
     // publics
 
@@ -30,11 +28,10 @@ var AssetLibrary = (function () {
          * @param {string} uuid
          * @param {AssetLibrary~loadCallback} [callback] - the callback to receive the asset
          * @param {boolean} [dontCache=false] - If false, the result will cache to AssetLibrary, and MUST be unload by user manually.
-         * @param {Fire._DeserializeInfo} [info] - reused temp obj
          * @param {Fire.Asset} [existingAsset] - load to existing asset in editor
          * NOTE: loadAssetByUuid will always try to get the cached asset, unless existingAsset is supplied.
          */
-        _loadAssetByUuid: function (uuid, callback, dontCache, info, existingAsset) {
+        _loadAssetByUuid: function (uuid, callback, dontCache, existingAsset) {
             dontCache = (typeof dontCache !== 'undefined') ? dontCache : false;
             if (typeof uuid !== 'string') {
                 callback('[AssetLibrary] uuid must be string', null);
@@ -81,7 +78,7 @@ var AssetLibrary = (function () {
                         }
                     }
                     if (json) {
-                        AssetLibrary.loadJson(json, url, onDeserializedWithDepends, dontCache, info, existingAsset);
+                        AssetLibrary.loadJson(json, url, onDeserializedWithDepends, dontCache, existingAsset);
                     }
                     else {
                         onDeserializedWithDepends(error, null);
@@ -96,19 +93,9 @@ var AssetLibrary = (function () {
          * @param {function} callback
          * @param {boolean} [dontCache=false] - If false, the result will cache to AssetLibrary, and MUST be unload by user manually.
          * NOTE: loadAssetByUuid will always try to get the cached asset, no matter whether dontCache is indicated.
-         * @param {Fire._DeserializeInfo} [info] - reused temp obj
          * @param {Fire.Asset} [existingAsset] - existing asset to reload
          */
-        loadJson: function (json, url, callback, dontCache, info, existingAsset) {
-            // prepare
-            if (info) {
-                // info我们只是用来重用临时对象，所以每次使用前要重设。
-                info.reset();
-            }
-            else {
-                info = new Fire._DeserializeInfo();
-            }
-
+        loadJson: function (json, url, callback, dontCache, existingAsset) {
             // deserialize asset
             var isScene = json && json[0] && json[0].__type__ === JS._getClassId(Scene);
             var classFinder = isScene ? Fire._MissingScript.safeFindClass : function (id) {
@@ -120,20 +107,20 @@ var AssetLibrary = (function () {
                 return Object;
             };
             Engine._canModifyCurrentScene = false;
-            var asset = Fire.deserialize(json, info, {
+            var asset = Fire.deserialize(json, _tdInfo, {
                 classFinder: classFinder,
                 target: existingAsset
             });
             Engine._canModifyCurrentScene = true;
 
             // load depends
-            var pendingCount = info.uuidList.length;
+            var pendingCount = _tdInfo.uuidList.length;
 
             // load raw
-            var rawProp = info.rawProp;     // info只能在当帧使用，不能用在回调里！
+            var rawProp = _tdInfo.rawProp;     // _tdInfo不能用在回调里！
             if (rawProp) {
                 // load depends raw objects
-                var attrs = Fire.attr(asset.constructor, info.rawProp);
+                var attrs = Fire.attr(asset.constructor, _tdInfo.rawProp);
                 var rawType = attrs.rawType;
                 ++pendingCount;
                 LoadManager.load(url, rawType, asset._rawext, function onRawObjLoaded (error, raw) {
@@ -167,11 +154,11 @@ var AssetLibrary = (function () {
             // @endif
 
             // load depends assets
-            for (var i = 0, len = info.uuidList.length; i < len; i++) {
-                var dependsUuid = info.uuidList[i];
+            for (var i = 0, len = _tdInfo.uuidList.length; i < len; i++) {
+                var dependsUuid = _tdInfo.uuidList[i];
                 // @ifdef EDITOR
                 if (existingAsset) {
-                    var existingDepends = info.uuidObjList[i][info.uuidPropList[i]];
+                    var existingDepends = _tdInfo.uuidObjList[i][_tdInfo.uuidPropList[i]];
                     if (existingDepends) {
                         var dependsUrl = _libraryBase + dependsUuid.substring(0, 2) + Fire.Path.sep + dependsUuid;
                         if ( !LoadManager.isLoading(dependsUrl, true) ) {
@@ -220,8 +207,8 @@ var AssetLibrary = (function () {
                             callback(null, asset);
                         }
                     };
-                })( dependsUuid, info.uuidObjList[i], info.uuidPropList[i] );
-                AssetLibrary._loadAssetByUuid(dependsUuid, onDependsAssetLoaded, dontCache, info);
+                })( dependsUuid, _tdInfo.uuidObjList[i], _tdInfo.uuidPropList[i] );
+                AssetLibrary._loadAssetByUuid(dependsUuid, onDependsAssetLoaded, dontCache);
             }
 
             // @ifdef EDITOR
@@ -229,6 +216,9 @@ var AssetLibrary = (function () {
                 callback(null, asset);
             }
             // @endif
+
+            // _tdInfo 是用来重用临时对象，每次使用后都要重设，这样才对 GC 友好。
+            _tdInfo.reset();
         },
 
         /**
@@ -242,7 +232,7 @@ var AssetLibrary = (function () {
                     asset._uuid = uuid;
                 }
                 callback(err, asset);
-            }, true, null);
+            }, true);
         },
 
         /**
@@ -254,8 +244,6 @@ var AssetLibrary = (function () {
         getAssetByUuid: function (uuid) {
             return AssetLibrary._uuidToAsset[uuid] || null;
         },
-
-        //loadAssetByUrl: function (url, callback, info) {},
 
         /**
          * @callback AssetLibrary~loadCallback
