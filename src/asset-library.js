@@ -235,7 +235,13 @@ var AssetLibrary = (function () {
          * Just the same as _loadAssetByUuid, but will not cache the asset.
          */
         loadAsset: function (uuid, callback) {
-            this._loadAssetByUuid(uuid, callback, true, null);
+            this._loadAssetByUuid(uuid, function (err, asset) {
+                if (asset && AssetLibrary._uuidToAsset[uuid] === asset) {
+                    // 暂时不允许编辑器修改场景的资源实例
+                    asset = Fire.instantiate(asset);
+                }
+                callback(err, asset);
+            }, true, null);
         },
 
         /**
