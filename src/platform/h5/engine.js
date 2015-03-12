@@ -361,7 +361,7 @@ var Engine = (function () {
         // TODO: lookup uuid by name
         isLoadingScene = true;
         AssetLibrary.unloadAsset(uuid);     // force reload
-        AssetLibrary._loadAssetByUuid(uuid, function onSceneLoaded (error, scene) {
+        AssetLibrary.loadAsset(uuid, function onSceneLoaded (error, scene) {
             if (error) {
                 Fire.error('Failed to load scene: ' + error);
                 // @ifdef EDITOR

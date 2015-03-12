@@ -14,32 +14,77 @@ var AssetLibrary = (function () {
     // temp deserialize info
     var _tdInfo = new Fire._DeserializeInfo();
 
+    // create a loading context which reserves all relevant parameters
+    function LoadingHandle (readMainCache, writeMainCache) {
+        this.readMainCache = readMainCache;
+        this.writeMainCache = writeMainCache;
+        var needIndieCache = !(this.readMainCache && this.writeMainCache);
+        this.taskIndieCache = needIndieCache ? {} : null;
+    }
+    LoadingHandle.prototype.readCache = function (uuid) {
+        if (this.readMainCache && this.writeMainCache) {
+            return AssetLibrary._uuidToAsset[uuid];
+        }
+        else {
+            if (this.readMainCache) {
+                // writeMainCache == false
+                return AssetLibrary._uuidToAsset[uuid] || this.taskIndieCache[uuid];
+            }
+            else {
+                return this.taskIndieCache[uuid];
+            }
+        }
+    };
+    LoadingHandle.prototype.writeCache = function (uuid, asset) {
+        if (this.writeMainCache) {
+            AssetLibrary._uuidToAsset[uuid] = asset;
+        }
+        if (this.taskIndieCache) {
+            this.taskIndieCache[uuid] = asset;
+        }
+    };
+
     // publics
 
     var AssetLibrary = {
 
         /**
+         * @param {string} uuid
+         * @param {function} callback
+         * @param {boolean} [readMainCache=true] - If false, the asset and all its depends assets will reload and create new instances from library.
+         * @param {boolean} [writeMainCache=true] - If true, the result will cache to AssetLibrary, and MUST be unload by user manually.
+         * @param {Fire.Asset} [existingAsset] - load to existing asset, this argument is only available in editor
+         */
+        loadAsset: function (uuid, callback, readMainCache, writeMainCache, existingAsset) {
+            readMainCache = typeof readMainCache !== 'undefined' ? readMainCache : true;
+            writeMainCache = typeof writeMainCache !== 'undefined' ? writeMainCache : true;
+
+            var handle = new LoadingHandle(readMainCache, writeMainCache);
+            this._loadAssetByUuid(uuid, callback, handle, existingAsset);
+        },
+
+        _LoadingHandle: LoadingHandle,
+
+        /**
          * uuid加载流程：
          * 1. 查找_uuidToAsset，如果已经加载过，直接返回
          * 2. 查找_uuidToCallbacks，如果已经在加载，则注册回调，直接返回
-         * 4. 如果没有url，则将uuid直接作为路径
-         * 5. 递归加载Asset及其引用到的其它Asset
+         * 3. 如果没有url，则将uuid直接作为路径
+         * 4. 递归加载Asset及其引用到的其它Asset
          *
          * @param {string} uuid
-         * @param {AssetLibrary~loadCallback} [callback] - the callback to receive the asset
-         * @param {boolean} [dontCache=false] - If false, the result will cache to AssetLibrary, and MUST be unload by user manually.
-         * @param {Fire.Asset} [existingAsset] - load to existing asset in editor
-         * NOTE: loadAssetByUuid will always try to get the cached asset, unless existingAsset is supplied.
+         * @param {AssetLibrary~loadCallback} callback - the callback to receive the asset
+         * @param {LoadingHandle} handle - the loading context which reserves all relevant parameters
+         * @param {Fire.Asset} [existingAsset] - load to existing asset, this argument is only available in editor
          */
-        _loadAssetByUuid: function (uuid, callback, dontCache, existingAsset) {
-            dontCache = (typeof dontCache !== 'undefined') ? dontCache : false;
+        _loadAssetByUuid: function (uuid, callback, handle, existingAsset) {
             if (typeof uuid !== 'string') {
                 callback('[AssetLibrary] uuid must be string', null);
                 return;
             }
             // step 1
             if ( !existingAsset ) {
-                var asset = AssetLibrary._uuidToAsset[uuid];
+                var asset = handle.readCache(uuid);
                 if (asset) {
                     if (callback) {
                         callback(null, asset);
@@ -51,7 +96,7 @@ var AssetLibrary = (function () {
             // step 2
             // 如果必须重新加载，则不能合并到到 _uuidToCallbacks，否则现有的加载成功后会同时触发回调，
             // 导致提前返回的之前的资源。
-            var canShareLoadingTask = !dontCache && !existingAsset;
+            var canShareLoadingTask = handle.readMainCache && !existingAsset;
             if ( canShareLoadingTask && !_uuidToCallbacks.add(uuid, callback) ) {
                 // already loading
                 return;
@@ -66,9 +111,7 @@ var AssetLibrary = (function () {
                     function onDeserializedWithDepends (err, asset) {
                         if (asset) {
                             asset._uuid = uuid;
-                            if ( !dontCache ) {
-                                AssetLibrary._uuidToAsset[uuid] = asset;
-                            }
+                            handle.writeCache(uuid, asset);
                         }
                         if ( canShareLoadingTask ) {
                             _uuidToCallbacks.invokeAndRemove(uuid, err, asset);
@@ -78,7 +121,7 @@ var AssetLibrary = (function () {
                         }
                     }
                     if (json) {
-                        AssetLibrary.loadJson(json, url, onDeserializedWithDepends, dontCache, existingAsset);
+                        AssetLibrary._deserializeWithDepends(json, url, onDeserializedWithDepends, handle, existingAsset);
                     }
                     else {
                         onDeserializedWithDepends(error, null);
@@ -89,13 +132,22 @@ var AssetLibrary = (function () {
 
         /**
          * @param {string|object} json
-         * @param {string} url
          * @param {function} callback
          * @param {boolean} [dontCache=false] - If false, the result will cache to AssetLibrary, and MUST be unload by user manually.
-         * NOTE: loadAssetByUuid will always try to get the cached asset, no matter whether dontCache is indicated.
+         */
+        loadJson: function (json, callback, dontCache) {
+            var handle = new LoadingHandle(!dontCache, !dontCache);
+            this._deserializeWithDepends(json, '', callback, handle);
+        },
+
+        /**
+         * @param {string|object} json
+         * @param {string} url
+         * @param {function} callback
+         * @param {object} handle - the loading context which reserves all relevant parameters
          * @param {Fire.Asset} [existingAsset] - existing asset to reload
          */
-        loadJson: function (json, url, callback, dontCache, existingAsset) {
+        _deserializeWithDepends: function (json, url, callback, handle, existingAsset) {
             // deserialize asset
             var isScene = json && json[0] && json[0].__type__ === JS._getClassId(Scene);
             var classFinder = isScene ? Fire._MissingScript.safeFindClass : function (id) {
@@ -196,9 +248,9 @@ var AssetLibrary = (function () {
                             }
                             // @endif
                         }
-                        else {
-                            dependsAsset._uuid = dependsUuid;
-                        }
+                        //else {
+                        //    dependsAsset._uuid = dependsUuid;
+                        //}
                         // update reference
                         obj[prop] = dependsAsset;
                         // check all finished
@@ -208,7 +260,7 @@ var AssetLibrary = (function () {
                         }
                     };
                 })( dependsUuid, _tdInfo.uuidObjList[i], _tdInfo.uuidPropList[i] );
-                AssetLibrary._loadAssetByUuid(dependsUuid, onDependsAssetLoaded, dontCache);
+                AssetLibrary._loadAssetByUuid(dependsUuid, onDependsAssetLoaded, handle);
             }
 
             // @ifdef EDITOR
@@ -219,20 +271,6 @@ var AssetLibrary = (function () {
 
             // _tdInfo 是用来重用临时对象，每次使用后都要重设，这样才对 GC 友好。
             _tdInfo.reset();
-        },
-
-        /**
-         * Just the same as _loadAssetByUuid, but will not cache the asset.
-         */
-        loadAsset: function (uuid, callback) {
-            this._loadAssetByUuid(uuid, function (err, asset) {
-                if (asset && AssetLibrary._uuidToAsset[uuid] === asset) {
-                    // 暂时不允许编辑器修改场景的资源实例
-                    asset = Fire.instantiate(asset);
-                    asset._uuid = uuid;
-                }
-                callback(err, asset);
-            }, true);
         },
 
         /**
