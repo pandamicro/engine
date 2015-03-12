@@ -311,7 +311,7 @@
             constructor = JS.getClassByName(typeOrTypename);
             if ( !constructor ) {
                 Fire.error('[addComponent] Failed to get class "%s"');
-                if (_requiringFrame.length > 0) {
+                if (_requiringFrames.length > 0) {
                     Fire.error('You should not add component when the scripts are still loading.', typeOrTypename);
                 }
                 return null;
