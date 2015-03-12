@@ -239,6 +239,7 @@ var AssetLibrary = (function () {
                 if (asset && AssetLibrary._uuidToAsset[uuid] === asset) {
                     // 暂时不允许编辑器修改场景的资源实例
                     asset = Fire.instantiate(asset);
+                    asset._uuid = uuid;
                 }
                 callback(err, asset);
             }, true, null);
