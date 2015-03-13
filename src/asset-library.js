@@ -211,7 +211,7 @@ var AssetLibrary = (function () {
                 // @ifdef EDITOR
                 if (existingAsset) {
                     var existingDepends = _tdInfo.uuidObjList[i][_tdInfo.uuidPropList[i]];
-                    if (existingDepends) {
+                    if (existingDepends && existingDepends._uuid === dependsUuid) {
                         var dependsUrl = _libraryBase + dependsUuid.substring(0, 2) + Fire.Path.sep + dependsUuid;
                         if ( !LoadManager.isLoading(dependsUrl, true) ) {
                             // 如果有依赖但依赖不在加载过程中就直接略过
@@ -233,9 +233,6 @@ var AssetLibrary = (function () {
                         }
                         continue;
                     }
-                }
-                else {
-                    invokeCbByDepends = true;
                 }
                 // @endif
                 var onDependsAssetLoaded = (function (dependsUuid, obj, prop) {
@@ -261,6 +258,7 @@ var AssetLibrary = (function () {
                     };
                 })( dependsUuid, _tdInfo.uuidObjList[i], _tdInfo.uuidPropList[i] );
                 AssetLibrary._loadAssetByUuid(dependsUuid, onDependsAssetLoaded, handle);
+                invokeCbByDepends = true;
             }
 
             // @ifdef EDITOR

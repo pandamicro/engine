@@ -40,10 +40,8 @@ var BitmapText = (function () {
             return this._bitmapFont;
         },
         function (value) {
-            if (this._bitmapFont !== value) {
-                this._bitmapFont = value;
-                Engine._renderContext.setBitmapFont(this);
-            }
+            this._bitmapFont = value;
+            Engine._renderContext.setBitmapFont(this);
         },
         Fire.ObjectType(Fire.BitmapFont)
     );
