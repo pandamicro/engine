@@ -128,10 +128,10 @@ var Engine = (function () {
      * @param {number} [w]
      * @param {number} [h]
      * @param {Canvas} [canvas]
-     * @param {object} [sceneInfos]
+     * @param {object} [options]
      * @return {RenderContext}
      */
-    Engine.init = function ( w, h, canvas, sceneInfos ) {
+    Engine.init = function ( w, h, canvas, options ) {
         if (inited) {
             Fire.error('Engine already inited');
             return;
@@ -154,8 +154,9 @@ var Engine = (function () {
         }
 // @endif
 
-        JS.mixin(Engine._sceneInfos, sceneInfos);
-
+        if (options) {
+            JS.mixin(Engine._sceneInfos, options.scenes);
+        }
         return Engine._renderContext;
     };
 
