@@ -41,7 +41,7 @@ var BitmapText = (function () {
         },
         function (value) {
             this._bitmapFont = value;
-            Engine._renderContext.setBitmapFont(this);
+            Engine._renderContext.updateBitmapFont(this);
         },
         Fire.ObjectType(Fire.BitmapFont)
     );

@@ -1,5 +1,5 @@
-﻿
-PIXI.BitmapText.prototype.updateTransform = function () { };
+﻿PIXI.BitmapText.prototype.updateTransform = function () {
+};
 
 Fire.BitmapFont.prototype._onPreDestroy = function () {
     if (this._uuid) {
@@ -11,22 +11,22 @@ var PixiBitmapFontUtil = {};
 
 var defaultFace = "None";
 
-function _getStyle(target) {
+function _getStyle (target) {
     if (target.bitmapFont && target.bitmapFont._uuid) {
         return {
-            font: target.bitmapFont.size + " " + target.bitmapFont._uuid,
+            font : target.bitmapFont.size + " " + target.bitmapFont._uuid,
             align: BitmapText.TextAlign[target.align].toLowerCase(),
         };
     }
     else {
         return {
-            font: 1 + " " + defaultFace,
+            font : 1 + " " + defaultFace,
             align: "left",
         };
     }
 }
 
-function _setStyle(target) {
+function _setStyle (target) {
     var style = _getStyle(target);
     if (target._renderObj) {
         target._renderObj.setStyle(style);
@@ -36,7 +36,7 @@ function _setStyle(target) {
     }
 }
 
-function _getNewMatrix23(child, tempMatrix) {
+function _getNewMatrix23 (child, tempMatrix) {
     var mat = new Fire.Matrix23();
     mat.a = child.scale.x;
     mat.b = 0;
@@ -52,56 +52,82 @@ function _getNewMatrix23(child, tempMatrix) {
     mat.ty = Fire.Engine._curRenderContext.renderer.height - mat.ty;
     return mat;
 }
+var tempData = {
+    face      : defaultFace,
+    size      : 1,
+    chars     : {},
+    lineHeight: 1
+};
 
-function _registerFont(bitmapFont) {
+function _registerFont (bitmapFont) {
+
+    //var registered = _hasPixiBitmapFont(bitmapFont);
+    //if (registered) {
+    //    return;
+    //}
+
     var data = {};
-    if (!bitmapFont || !bitmapFont._uuid) {
-        data.face = defaultFace;
-        data.size = 1;
-        data.lineHeight = 1;
-        data.chars = {};
-    }
-    else {
+    if (bitmapFont && bitmapFont._uuid) {
         data.face = bitmapFont._uuid;
         data.size = bitmapFont.size;
         data.lineHeight = bitmapFont.lineHeight;
         data.chars = {};
-        var i = 0, charInfos = bitmapFont.charInfos, len = charInfos.length;
-        for (; i < len; i++) {
-            var charInfo = charInfos[i];
-            var id = charInfo.id;
-            var textureRect = new PIXI.Rectangle(
-                charInfo.x,
-                charInfo.y,
-                charInfo.width,
-                charInfo.height
-            );
 
-            var texture = null;
-            if (bitmapFont && bitmapFont.texture) {
-                var img = new PIXI.BaseTexture(bitmapFont.texture.image);
-                texture = new PIXI.Texture(img, textureRect);
+        if (bitmapFont.texture) {
+            var img = new PIXI.BaseTexture(bitmapFont.texture.image);
+
+            var charInfos = bitmapFont.charInfos, len = charInfos.length;
+            for (var i = 0; i < len; i++) {
+                var charInfo = charInfos[i];
+                var id = charInfo.id;
+                var textureRect = new PIXI.Rectangle(
+                    charInfo.x,
+                    charInfo.y,
+                    charInfo.width,
+                    charInfo.height
+                );
+
+                if ((textureRect.x + textureRect.width) > img.width || (textureRect.y + textureRect.height) > img.height) {
+                    Fire.error('Character in %s does not fit inside the dimensions of texture %s', bitmapFont.name, bitmapFont.texture.name);
+                    break;
+                }
+
+                var texture = new PIXI.Texture(img, textureRect);
+
+                data.chars[id] = {
+                    xOffset : charInfo.xOffset,
+                    yOffset : charInfo.yOffset,
+                    xAdvance: charInfo.xAdvance,
+                    kerning : {},
+                    texture : texture
+                };
             }
-
-            data.chars[id] = {
-                xOffset: charInfo.xOffset,
-                yOffset: charInfo.yOffset,
-                xAdvance: charInfo.xAdvance,
-                kerning: {},
-                texture: PIXI.TextureCache[id] = texture
-            };
         }
+        else {
+            Fire.error('Invalid texture of bitmapFont: %s', bitmapFont.name);
+        }
+
         var kernings = bitmapFont.kernings;
-        for (i = 0; i < kernings.length; i++) {
-            var kerning = kernings[i];
+        for (var j = 0; j < kernings.length; j++) {
+            var kerning = kernings[j];
             var first = kerning.first;
             var second = kerning.second;
             var amount = kerning.amount;
             data.chars[second].kerning[first] = amount;
         }
     }
+    else {
+        data = tempData;
+    }
     PIXI.BitmapText.fonts[data.face] = data;
 }
+
+var _hasPixiBitmapFont = function (bitmapFont) {
+    if (bitmapFont) {
+        return PIXI.BitmapText.fonts[bitmapFont._uuid];
+    }
+    return null;
+};
 
 RenderContext.prototype.getTextSize = function (target) {
     var inGame = !(target.entity._objFlags & HideInGame);
@@ -140,7 +166,7 @@ RenderContext.prototype.setAlign = function (target) {
     _setStyle(target);
 };
 
-RenderContext.prototype.setBitmapFont = function (target) {
+RenderContext.prototype.updateBitmapFont = function (target) {
     _registerFont(target.bitmapFont);
     _setStyle(target);
 };
@@ -164,7 +190,7 @@ RenderContext.prototype.addBitmapText = function (target) {
 PixiBitmapFontUtil.updateTransform = function (target, tempMatrix) {
     var i = 0, childrens = null, len = 0, child = null;
     var isGameView = Engine._curRenderContext === Engine._renderContext;
-    if (isGameView && target._renderObj ) {
+    if (isGameView && target._renderObj) {
         if (target._renderObj.dirty) {
             target._renderObj.updateText();
             target._renderObj.dirty = false;
