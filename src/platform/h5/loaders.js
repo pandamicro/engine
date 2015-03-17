@@ -1,6 +1,7 @@
 // @ifdef EDITOR
 var FireUrl = Fire.isNode ? require('fire-url') : null;
 // @endif
+
 /**
  *
  */
