@@ -1,12 +1,6 @@
 // @ifndef PLAYER
 (function () {
-    // @ifdef EDITOR_CORE
-    var root = global;
-    // @endif
-    // @ifndef EDITOR_CORE
-    var root = this;
-    // @endif
-
+    var root = typeof global !== 'undefined' ? global : this;
     var Fire = root.Fire || {};
 // @endif
 
