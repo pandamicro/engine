@@ -271,10 +271,7 @@ var RenderContext = (function () {
     RenderContext.prototype.onSceneLoaded = function (scene) {
         var entities = scene.entities;
         for (var i = 0, len = entities.length; i < len; i++) {
-            var entity = entities[i];
-            if ( !(entity._objFlags & DontDestroy) ) {
-                this.onEntityCreated(entity, false);
-            }
+            this.onEntityCreated(entities[i], false);
         }
     };
 

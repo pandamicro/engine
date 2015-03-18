@@ -28,8 +28,8 @@ var Engine = (function () {
      */
     Engine._scene = null;
 
-    //
-    Engine._launchingScene = null;
+    // temp array contains persistent entities
+    Engine._dontDestroyEntities = [];
 
     // main render context
     Engine._renderContext = null;
@@ -288,7 +288,7 @@ var Engine = (function () {
             Fire.error('Argument must be non-nil');
             return;
         }
-        Engine._launchingScene = scene;
+        Engine._dontDestroyEntities.length = 0;
 
         // unload scene
         var oldScene = Engine._scene;
@@ -313,7 +313,6 @@ var Engine = (function () {
         }
 
         // init scene
-        //scene.onReady();
         Engine._renderContext.onSceneLoaded(scene);
 // @ifdef EDITOR
         //if (editorCallback.onSceneLoaded) {
@@ -322,8 +321,9 @@ var Engine = (function () {
 // @endif
 
         // launch scene
+        scene.entities = scene.entities.concat(Engine._dontDestroyEntities);
+        Engine._dontDestroyEntities.length = 0;
         Engine._scene = scene;
-        Engine._launchingScene = null;
         Engine._renderContext.onSceneLaunched(scene);
 // @ifdef EDITOR
         if (editorCallback.onSceneLaunched) {

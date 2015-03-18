@@ -237,7 +237,7 @@
             var entity = entities[i];
             if (entity.isValid) {
                 if (entity._objFlags & DontDestroy) {
-                    Engine._launchingScene.entities.push(entity);
+                    Engine._dontDestroyEntities.push(entity);
                 }
                 else {
                     entity.destroy();
