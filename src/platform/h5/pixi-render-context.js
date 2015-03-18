@@ -271,7 +271,10 @@ var RenderContext = (function () {
     RenderContext.prototype.onSceneLoaded = function (scene) {
         var entities = scene.entities;
         for (var i = 0, len = entities.length; i < len; i++) {
-            this.onEntityCreated(entities[i], false);
+            var entity = entities[i];
+            if ( !(entity._objFlags & DontDestroy) ) {
+                this.onEntityCreated(entity, false);
+            }
         }
     };
 
@@ -432,17 +435,19 @@ var RenderContext = (function () {
         // revert Y axis for pixi
         mat.ty = this.renderer.height - matrix.ty;
 
+        var worldAlpha = Math.clamp01(target._color.a);
+
         // apply matrix
         if ( !this.isSceneView ) {
             if (target._renderObj) {
                 target._renderObj.worldTransform = mat;
-                target._renderObj.worldAlpha = target._color.a;
+                target._renderObj.worldAlpha = worldAlpha;
             }
         }
         // @ifdef EDITOR
         else if (target._renderObjInScene) {
             target._renderObjInScene.worldTransform = mat;
-            target._renderObjInScene.worldAlpha = target._color.a;
+            target._renderObjInScene.worldAlpha = worldAlpha;
         }
         // @endif
     };
