@@ -54,6 +54,11 @@
         }
     };
 
+    function convertToRetina (event) {
+        event.screenX *= Fire.Screen.devicePixelRatio;
+        event.screenY *= Fire.Screen.devicePixelRatio;
+    }
+
     InputContext.prototype.simulateMouseEvent = function () {
         var scope = this;
         // get canvas page offset
@@ -85,6 +90,7 @@
                 return function (touchEvent) {
                     // gen mouse event
                     var event = createMouseEvent(type, touchEvent);
+                    convertToRetina(event);
 
                     // inner dispatch
                     Input._dispatchEvent(event, scope);
@@ -144,6 +150,7 @@
         }
         event.bubbles = eventInfo.bubbles;
         // event.cancelable = eventInfo.cancelable; (NYI)
+        convertToRetina(event);
 
         // inner dispatch
         Input._dispatchEvent(event, this);

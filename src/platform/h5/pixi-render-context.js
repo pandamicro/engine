@@ -32,6 +32,8 @@ var RenderContext = (function () {
 
         var antialias = false;
         this.stage = new PIXI.Stage(0x000000);
+        this.stage.interactive = false;
+
         this.root = this.stage;
         this.renderer = PIXI.autoDetectRenderer(width, height, {
             view: canvas,
@@ -63,6 +65,24 @@ var RenderContext = (function () {
     Object.defineProperty(RenderContext.prototype, 'canvas', {
         get: function () {
             return this.renderer.view;
+        }
+    });
+
+    Object.defineProperty(RenderContext.prototype, 'width', {
+        get: function () {
+            return this.renderer.width;
+        },
+        set: function (value) {
+            this.renderer.resize(value, this.renderer.height);
+        }
+    });
+
+    Object.defineProperty(RenderContext.prototype, 'height', {
+        get: function () {
+            return this.renderer.height;
+        },
+        set: function (value) {
+            this.renderer.resize(this.renderer.width, value);
         }
     });
 

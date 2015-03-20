@@ -46,7 +46,7 @@
 
     SpriteRenderer.prop('width_', 100, Fire.DisplayName('Width'),
                         Fire.Watch( 'customSize_', function ( obj, propEL ) {
-                            propEL.disabled = !obj.customSize;
+                            propEL.disabled = !obj.customSize_;
                         } ));
     SpriteRenderer.getset('width',
         function () {

@@ -2,6 +2,7 @@
 
     var Camera = Fire.extend('Fire.Camera', Component, function () {
         this._renderContext = null;
+        this._contentStrategyInst = null;
     });
     Fire.addComponentMenu(Camera, 'Camera');
     Fire.executeInEditMode(Camera);
@@ -19,15 +20,50 @@
         }
     );
 
-    Camera.prop('_size', 0, Fire.HideInInspector);
+    Camera.prop('_size', 800, Fire.HideInInspector);
     Camera.getset('size',
         function () {
             return this._size;
         },
         function (value) {
             this._size = value;
-        }
+
+        },
+        Fire.Tooltip("The height of design resolution. Width varies depending on viewport's aspect ratio"),
+        Fire.Watch('_contentStrategy', function (obj, propEL) {
+            propEL.disabled = (obj._contentStrategy === Fire.ContentStrategyType.NoScale);
+        })
     );
+
+    Camera.prop('_contentStrategy', Fire.ContentStrategyType.FixedHeight, Fire.HideInInspector);
+    Camera.getset('contentStrategy',
+        function () {
+            return this._contentStrategy;
+        },
+        function (value) {
+            this._contentStrategy = value;
+            this._contentStrategyInst = Fire.Screen.ContentStrategy.fromType(value);
+        },
+        Fire.DisplayName('Scale Strategy'),
+        Fire.Enum(Fire.ContentStrategyType),
+        Fire.Tooltip("The type of scale strategy for this camera")
+    );
+
+    Object.defineProperty(Camera.prototype, 'viewportInfo', {
+        get: function (value) {
+            var viewportSize = (this._renderContext || Engine._renderContext).size;
+            return this._contentStrategyInst.apply(new Vec2(0, this._size), viewportSize);
+        }
+    });
+
+    //Object.defineProperty(Camera.prototype, 'scaleStrategyInst', {
+    //    get: function (value) {
+    //        if ( !this._cachedResolutionPolicy ) {
+    //            this._cachedResolutionPolicy = Fire.Screen.ResolutionPolicy.fromType(this._resolutionPolicy);
+    //        }
+    //        return this._cachedResolutionPolicy;
+    //    }
+    //});
 
     // save the render context this camera belongs to, if null, main render context will be used.
     Object.defineProperty(Camera.prototype, 'renderContext', {
@@ -47,6 +83,7 @@
         if (!(this.entity._objFlags & HideInGame)) {
             this.renderContext = Engine._renderContext;
         }
+        this._contentStrategyInst = Fire.Screen.ContentStrategy.fromType(this._contentStrategy);
     };
     Camera.prototype.onEnable = function () {
         if (!(this.entity._objFlags & HideInGame)) {
@@ -153,8 +190,10 @@
     };
 
     Camera.prototype._calculateTransform = function (out_matrix, out_worldPos) {
-        var screenSize = (this._renderContext || Engine._renderContext).size;
-        var scale = this._size !== 0 ? (screenSize.y / this._size) : 1;
+        var viewportInfo = this.viewportInfo;
+        var scale = viewportInfo.scale;
+        var viewport = viewportInfo.viewport;
+
         var tf = this.entity.transform;
         var mat = tf.getLocalToWorldMatrix();
 
@@ -162,10 +201,10 @@
         out_worldPos.y = mat.ty;
 
         out_matrix.identity();
-        out_matrix.tx = screenSize.x * 0.5;
-        out_matrix.ty = screenSize.y * 0.5;
-        out_matrix.a = scale;
-        out_matrix.d = scale;
+        out_matrix.tx = viewport.width * 0.5;
+        out_matrix.ty = viewport.height * 0.5;
+        out_matrix.a = scale.x;
+        out_matrix.d = scale.y;
         out_matrix.rotate(mat.getRotation());
     };
 

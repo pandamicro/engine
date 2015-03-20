@@ -93,22 +93,6 @@ var Engine = (function () {
         }
     });
 
-    /**
-     * @param {Fire.Vec2} value
-     * @return {Fire.Vec2}
-     */
-    Object.defineProperty(Engine, 'screenSize', {
-        get: function () {
-            return Engine._renderContext.size;
-        },
-        set: function (value) {
-            Engine._renderContext.size = value;
-            //if ( !isPlaying ) {
-            //    render();
-            //}
-        }
-    });
-
     var inited = false;
     Object.defineProperty(Engine, 'inited', {
         get: function () {
