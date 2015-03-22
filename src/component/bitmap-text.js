@@ -1,12 +1,11 @@
 ﻿
 var BitmapText = (function () {
 
-    var TextAlign = (function (t) {
-        t[t.left = 0] = 'Left';
-        t[t.center = 1] = 'Center';
-        t[t.right = 2] = 'Right';
-        return t;
-    })({});
+    var TextAlign = Fire.defineEnum({
+        left: -1,
+        center: -1,
+        right: -1
+    });
 
     var TextAnchor = (function (t) {
         t[t.topLeft = 0] = 'Top Left';

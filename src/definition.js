@@ -42,32 +42,16 @@ var Hide = Fire._ObjectFlags.Hide;
 var HideInGame = Fire._ObjectFlags.HideInGame;
 var HideInEditor = Fire._ObjectFlags.HideInEditor;
 
-//var ResolutionPolicyType = (function (t) {
-//
-//    t[t.NoScale = 0] = 'No Scale';
-//
-//    /**
-//     * The application takes the height of the design resolution size and modifies the width of the internal canvas,
-//     * so that it fits the aspect ratio of the device and no distortion will occur,
-//     * however you must make sure your application works on different aspect ratios
-//     */
-//    t[t.FixedHeight = 1] = 'Fixed Height';
-//
-//    return t;
-//})({});
-//Fire.ResolutionPolicyType = ResolutionPolicyType;
 
-var ContentStrategyType = (function (t) {
+var ContentStrategyType = Fire.defineEnum({
 
-    t[t.NoScale = 0] = 'No Scale';
+    NoScale: -1,
 
     /**
      * The application takes the height of the design resolution size and modifies the width of the internal canvas,
      * so that it fits the aspect ratio of the device and no distortion will occur,
      * however you must make sure your application works on different aspect ratios
      */
-    t[t.FixedHeight = 1] = 'Fixed Height';
-
-    return t;
-})({});
+    FixedHeight: -1
+});
 Fire.ContentStrategyType = ContentStrategyType;
