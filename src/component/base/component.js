@@ -3,7 +3,7 @@
     /**
      * used in _callOnEnable to ensure onEnable and onDisable will be called alternately
      * 从逻辑上来说OnEnable和OnDisable的交替调用不需要由额外的变量进行保护，但那样会使设计变得复杂
-     * 例如Entity.destory调用后但还未真正销毁时，会调用所有Component的OnDisable。
+     * 例如Entity.destroy调用后但还未真正销毁时，会调用所有Component的OnDisable。
      * 这时如果又有addComponent，Entity需要对这些新来的Component特殊处理。将来调度器做了之后可以尝试去掉这个标记。
      */
     var IsOnEnableCalled = Fire._ObjectFlags.IsOnEnableCalled;
@@ -32,6 +32,33 @@
     var Component = Fire.extend('Fire.Component', HashObject, compCtor);
 
     Component.prop('entity', null, Fire.HideInInspector);
+
+    Component.getset('_scriptUuid',
+        function () {
+            return this._cacheUuid || '';
+        },
+        function (value) {
+            if (this._cacheUuid !== value) {
+                if (value && Fire.isUuid(value)) {
+                    var classId = Fire.compressUuid(value);
+                    var newComp = Fire.JS._getClassById(classId);
+                    if (newComp) {
+                        // TODO
+                        console.log('@Jare');
+                        //Fire.sendToWindows('reload:window-scripts', Fire._Sandbox.compiled);
+                    }
+                    else {
+                        Fire.error('Can not find a component in the script which uuid is "%s".', value);
+                    }
+                }
+                else {
+                    Fire.error('invalid script');
+                }
+            }
+        },
+        Fire.DisplayName("Script"),
+        Fire.ObjectType(Fire.ScriptAsset, true)
+    );
 
     // enabled self
     Component.prop('_enabled', true, Fire.HideInInspector);
