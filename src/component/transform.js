@@ -66,6 +66,10 @@
         set: function (value) {
             if ( !isNaN(value) ) {
                 this._position.x = value;
+// @ifdef EDITOR
+                // notify change
+                this._position = this._position;
+// @endif
             }
             else {
                 Fire.error(ERR_NaN, 'new x');
@@ -85,6 +89,10 @@
         set: function (value) {
             if ( !isNaN(value) ) {
                 this._position.y = value;
+// @ifdef EDITOR
+                // notify change
+                this._position = this._position;
+// @endif
             }
             else {
                 Fire.error(ERR_NaN, 'new y');
@@ -142,6 +150,10 @@
                 else {
                     this._position.x = value;
                 }
+// @ifdef EDITOR
+                // notify change
+                this._position = this._position;
+// @endif
                 //将来优化做好了以后，上面的代码可以简化成下面这些
                 //var pos = this.worldPosition;
                 //if (pos.x !== value) {
@@ -178,6 +190,10 @@
                 else {
                     this._position.y = value;
                 }
+// @ifdef EDITOR
+                // notify change
+                this._position = this._position;
+// @endif
             }
             else {
                 Fire.error(ERR_NaN, 'new worldY');
@@ -267,6 +283,10 @@
         set: function (value) {
             if ( !isNaN(value) ) {
                 this._scale.x = value;
+// @ifdef EDITOR
+                // notify change
+                this._scale = this._scale;
+// @endif
             }
             else {
                 Fire.error(ERR_NaN, 'new scaleX');
@@ -286,6 +306,10 @@
         set: function (value) {
             if ( !isNaN(value) ) {
                 this._scale.y = value;
+// @ifdef EDITOR
+                // notify change
+                this._scale = this._scale;
+// @endif
             }
             else {
                 Fire.error(ERR_NaN, 'new scaleY');
@@ -312,7 +336,6 @@
 
     Transform.prototype.destroy = function () {
         Fire.error("Not allowed to destroy the transform. Please destroy the entity instead.");
-        return;
     };
 
     // other functions
