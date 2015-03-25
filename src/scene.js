@@ -247,13 +247,6 @@
         _super.prototype.destroy.call(this);
     };
 
-    Scene.prototype._instantiate = function () {
-        var uuid = this._uuid;
-        var result = Fire._doInstantiate(this);
-        result._uuid = uuid;
-        return result;
-    };
-
     return Scene;
 })();
 
