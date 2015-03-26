@@ -1,32 +1,27 @@
 ﻿var Scene = (function () {
-    var _super = Asset;
     /**
      * @class Fire.Scene
      * @extends Fire.Asset
      * @private
      */
-    function Scene () {
-        _super.call(this);
+    var Scene = Fire.Class({
+        name: "Fire.Scene",
+        extends: Asset,
 
-        /**
-         * root entities
-         * @member {Fire.Entity[]} Fire.Scene#entities
-         */
-        this.entities = [];
+        properties: {
+            /**
+             * root entities
+             * @member {Fire.Entity[]} Fire.Scene#entities
+             */
+            entities: [],
 
-        /**
-         * the active camera
-         * @member {Fire.Camera} Fire.Scene#camera
-         */
-        this.camera = null;
-    }
-    JS.extend(Scene, _super);
-    JS.setClassName("Fire.Scene", Scene);
-
-    ////////////////////////////////////////////////////////////////////
-    // static
-    ////////////////////////////////////////////////////////////////////
-
+            /**
+             * the active camera
+             * @member {Fire.Camera} Fire.Scene#camera
+             */
+            camera: null
+        }
+    });
 
     ////////////////////////////////////////////////////////////////////
     // traversal operations
@@ -244,7 +239,7 @@
                 }
             }
         }
-        _super.prototype.destroy.call(this);
+        Asset.prototype.destroy.call(this);
     };
 
     return Scene;

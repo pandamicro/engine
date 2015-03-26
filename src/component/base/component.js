@@ -33,6 +33,9 @@
 
     Component.prop('entity', null, Fire.HideInInspector);
 
+    // @ifdef EDITOR
+
+    // 如果不带有 uuid，则返回空字符串
     Component.getset('_scriptUuid',
         function () {
             return this._cacheUuid || '';
@@ -59,6 +62,8 @@
         Fire.DisplayName("Script"),
         Fire.ObjectType(Fire.ScriptAsset, true)
     );
+
+    // @endif
 
     // enabled self
     Component.prop('_enabled', true, Fire.HideInInspector);
