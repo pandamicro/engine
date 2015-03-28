@@ -84,7 +84,7 @@
 
         transform: {
             default: null,
-            hideInInspector: true
+            visible: false
         },
 
         /**
@@ -155,7 +155,7 @@
             get: function () {
                 return this._children.length;
             },
-            hideInInspector: true
+            visible: false
         },
 
         dontDestroyOnLoad: {
@@ -176,19 +176,19 @@
 
         _active: {
             default: true,
-            hideInInspector: true
+            visible: false
         },
         _parent: {
             default: null,
-            hideInInspector: true
+            visible: false
         },
         _children: {
             default: [],
-            hideInInspector: true
+            visible: false
         },
         _components: {
             default: null,
-            hideInInspector: true
+            visible: false
         }
     },
 

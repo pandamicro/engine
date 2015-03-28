@@ -10,7 +10,7 @@
 
         _background: {
             default: Fire.Color.black,
-            hideInInspector: true
+            visible: false
         },
         background: {
             get: function () {
@@ -26,7 +26,7 @@
 
         _size: {
             default: 800,
-            hideInInspector: true
+            visible: false
         },
         size: {
             get: function () {
@@ -45,7 +45,7 @@
 
         _contentStrategy: {
             default: Fire.ContentStrategyType.FixedHeight,
-            hideInInspector: true
+            visible: false
         },
         contentStrategy: {
             type: Fire.ContentStrategyType,
@@ -65,7 +65,7 @@
                 var viewportSize = (this._renderContext || Engine._renderContext).size;
                 return this._contentStrategyInst.apply(new Vec2(0, this._size), viewportSize);
             },
-            hideInInspector: true
+            visible: false
         },
 
         // save the render context this camera belongs to, if null, main render context will be used.
@@ -79,7 +79,7 @@
                 //// @endif
                 this._applyRenderSettings();
             },
-            hideInInspector: true
+            visible: false
         }
     },
 

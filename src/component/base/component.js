@@ -46,8 +46,7 @@
                     var classId = Fire.compressUuid(value);
                     var newComp = Fire.JS._getClassById(classId);
                     if (newComp) {
-                        // TODO
-                        console.log('@Jare');
+                        Fire.warn('Sorry, replacing component script is not yet implemented.');
                         //Fire.sendToWindows('reload:window-scripts', Fire._Sandbox.compiled);
                     }
                     else {
