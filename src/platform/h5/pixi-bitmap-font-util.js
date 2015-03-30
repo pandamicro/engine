@@ -157,7 +157,7 @@ RenderContext.prototype.setText = function (target, newText) {
     if (target._renderObj) {
         target._renderObj.setText(newText);
     }
-    if (this.sceneView) {
+    if (this.sceneView && target._renderObjInScene) {
         target._renderObjInScene.setText(newText);
     }
 };
