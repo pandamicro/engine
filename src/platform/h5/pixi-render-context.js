@@ -79,6 +79,12 @@ var RenderContext = (function () {
         }
     });
 
+    Object.defineProperty(RenderContext.prototype, 'domNode', {
+        get: function () {
+            return this.game.container;
+        }
+    });
+
     Object.defineProperty(RenderContext.prototype, 'size', {
         get: function () {
             var winSize = this.game.director.getWinSize();
@@ -113,12 +119,30 @@ var RenderContext = (function () {
         this.game.frameRun();
     };
 
+    RenderContext.prototype.setDesignResolutionSize = function(width, height, policy) {
+        // Normal parent
+        var parent = this.game.container.parentNode;
+        if (!parent) {
+            // No parent
+            parent = this.game.container;
+        }
+        else {
+            // Shadow dom parent
+            if (parent.host) {
+                parent = parent.host;
+            }
+        }
+        this.view.setFrame(parent);
+        this.view.setDesignResolutionSize(width, height, policy);
+    };
+
     /**
      * @param {Fire.Entity} entity
      */
     RenderContext.prototype.onRootEntityCreated = function (entity) {
         // always create pixi node even if is scene gizmo, to keep all their indice sync with transforms' sibling indice.
         entity._ccNode = new cc.Node();
+        entity._ccNode.setAnchorPoint(0, 1);
         if (Engine._canModifyCurrentScene) {
             this.game.setEnvironment();
             // attach node if created dynamically
@@ -126,6 +150,7 @@ var RenderContext = (function () {
         }
         if (this.sceneView) {
             entity._ccNodeInScene = new cc.Node();
+            entity._ccNodeInScene.setAnchorPoint(0, 1);
             if (Engine._canModifyCurrentScene) {
                 this.sceneView.game.setEnvironment();
                 // attach node if created dynamically
@@ -258,10 +283,12 @@ var RenderContext = (function () {
      */
     var _onChildEntityCreated = function (entity, hasSceneView) {
         entity._ccNode = new cc.Node();
+        entity._ccNode.setAnchorPoint(0, 1);
         entity._parent._ccNode.addChild(entity._ccNode);
         // @ifdef EDITOR
         if (hasSceneView) {
             entity._ccNodeInScene = new cc.Node();
+            entity._ccNodeInScene.setAnchorPoint(0, 1);
             entity._parent._ccNodeInScene.addChild(entity._ccNodeInScene);
         }
         // @endif
@@ -279,6 +306,7 @@ var RenderContext = (function () {
     RenderContext.prototype.onEntityCreated = function (entity, addToScene) {
         this.game.setEnvironment();
         entity._ccNode = new cc.Node();
+        entity._ccNode.setAnchorPoint(0, 1);
         if (entity._parent) {
             entity._parent._ccNode.addChild(entity._ccNode);
         }
@@ -289,6 +317,7 @@ var RenderContext = (function () {
         if (this.sceneView) {
             this.sceneView.game.setEnvironment();
             entity._ccNodeInScene = new cc.Node();
+            entity._ccNodeInScene.setAnchorPoint(0, 1);
             if (entity._parent) {
                 entity._parent._ccNodeInScene.addChild(entity._ccNodeInScene);
             }
@@ -306,6 +335,7 @@ var RenderContext = (function () {
 
     RenderContext.prototype._addSprite = function (tex, parentNode) {
         var sprite = new cc.Sprite(tex);
+        sprite.setAnchorPoint(0, 1);
         parentNode.addChild(sprite, 0);
         return sprite;
     };
@@ -406,19 +436,19 @@ var RenderContext = (function () {
      * @param {Fire.Matrix23} matrix - the matrix to render (Read Only)
      */
     RenderContext.prototype.updateTransform = function (target, matrix) {
-        return;
-
         // apply matrix
         if ( !this.isSceneView ) {
             if (target._renderObj) {
-                target._renderObj.worldTransform = mat;
-                target._renderObj.worldAlpha = target._color.a;
+                target._renderObj.setPosition(matrix.tx, matrix.ty);
+                target._renderObj.setScale(matrix.a, matrix.d);
+                target._renderObj.setOpacity(target._color.a * 255);
             }
         }
         // @ifdef EDITOR
-        else if (target._renderObjInScene) {
-            target._renderObjInScene.worldTransform = mat;
-            target._renderObjInScene.worldAlpha = target._color.a;
+        if (target._renderObjInScene) {
+            target._renderObjInScene.setPosition(matrix.tx, matrix.ty);
+            target._renderObjInScene.setScale(matrix.a, matrix.d);
+            target._renderObjInScene.setOpacity(target._color.a * 255);
         }
         // @endif
     };
