@@ -108,9 +108,9 @@
     /**
      * Transforms position from viewport space into screen space.
      * @method Fire.Camera#viewportToScreen
-     * @param {Fire.Vec2} position
-     * @param {Fire.Vec2} [out] - optional, the receiving vector
-     * @return {Fire.Vec2}
+     * @param {Vec2} position
+     * @param {Vec2} [out] - optional, the receiving vector
+     * @return {Vec2}
      */
     viewportToScreen: function (position, out) {
         out = this._renderContext.size.scale(position, out);
@@ -120,9 +120,9 @@
     /**
      * Transforms position from screen space into viewport space.
      * @method Fire.Camera#screenToViewport
-     * @param {Fire.Vec2} position
-     * @param {Fire.Vec2} [out] - optional, the receiving vector
-     * @return {Fire.Vec2}
+     * @param {Vec2} position
+     * @param {Vec2} [out] - optional, the receiving vector
+     * @return {Vec2}
      */
     screenToViewport: function (position, out) {
         out = out || new Vec2();
@@ -135,9 +135,9 @@
     /**
      * Transforms position from viewport space into world space.
      * @method Fire.Camera#viewportToWorld
-     * @param {Fire.Vec2} position
-     * @param {Fire.Vec2} [out] - optional, the receiving vector
-     * @return {Fire.Vec2}
+     * @param {Vec2} position
+     * @param {Vec2} [out] - optional, the receiving vector
+     * @return {Vec2}
      */
     viewportToWorld: function (position, out) {
         out = this.viewportToScreen(position, out);
@@ -147,9 +147,9 @@
     /**
      * Transforms position from screen space into world space.
      * @method Fire.Camera#screenToWorld
-     * @param {Fire.Vec2} position
-     * @param {Fire.Vec2} [out] - optional, the receiving vector
-     * @return {Fire.Vec2}
+     * @param {Vec2} position
+     * @param {Vec2} [out] - optional, the receiving vector
+     * @return {Vec2}
      */
     screenToWorld: function (position, out) {
         var halfScreenSize = (this._renderContext || Engine._renderContext).size.mulSelf(0.5);
@@ -167,9 +167,9 @@
     /**
      * Transforms position from world space into screen space.
      * @method Fire.Camera#worldToScreen
-     * @param {Fire.Vec2} position
-     * @param {Fire.Vec2} [out] - optional, the receiving vector
-     * @return {Fire.Vec2}
+     * @param {Vec2} position
+     * @param {Vec2} [out] - optional, the receiving vector
+     * @return {Vec2}
      */
     worldToScreen: function (position, out) {
         var mat = new Matrix23();
@@ -185,9 +185,9 @@
     /**
      * Transforms position from world space into viewport space.
      * @method Fire.Camera#worldToViewport
-     * @param {Fire.Vec2} position
-     * @param {Fire.Vec2} [out] - optional, the receiving vector
-     * @return {Fire.Vec2}
+     * @param {Vec2} position
+     * @param {Vec2} [out] - optional, the receiving vector
+     * @return {Vec2}
      */
     worldToViewport: function (position, out) {
         out = this.worldToScreen(position, out);

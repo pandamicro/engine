@@ -126,7 +126,7 @@ var RenderContext = (function () {
     };
 
     /**
-     * @param {Fire.Entity} entity
+     * @param {Entity} entity
      */
     RenderContext.prototype.onRootEntityCreated = function (entity) {
         entity._pixiObj = this._createNode();
@@ -149,7 +149,7 @@ var RenderContext = (function () {
 
     /**
      * removes a entity and all its children from scene
-     * @param {Fire.Entity} entity
+     * @param {Entity} entity
      */
     RenderContext.prototype.onEntityRemoved = function (entity) {
         this._removeNode(entity._pixiObj);
@@ -169,8 +169,8 @@ var RenderContext = (function () {
     };
 
     /**
-     * @param {Fire.Entity} entity
-     * @param {Fire.Entity} oldParent
+     * @param {Entity} entity
+     * @param {Entity} oldParent
      */
     RenderContext.prototype.onEntityParentChanged = function (entity, oldParent) {
         this._setParentNode(entity._pixiObj, entity._parent && entity._parent._pixiObj);
@@ -193,8 +193,8 @@ var RenderContext = (function () {
     };
 
     /**
-     * @param {Fire.Entity} entityParent
-     * @param {Fire.Entity} [customFirstChildEntity=null]
+     * @param {Entity} entityParent
+     * @param {Entity} [customFirstChildEntity=null]
      * @return {number}
      */
     RenderContext.prototype._getChildrenOffset = function (entityParent, customFirstChildEntity) {
@@ -225,7 +225,7 @@ var RenderContext = (function () {
     };
 
     /**
-     * @param {Fire.Entity} entity
+     * @param {Entity} entity
      * @param {number} oldIndex
      * @param {number} newIndex
      */
@@ -298,7 +298,7 @@ var RenderContext = (function () {
     /**
      * create child nodes recursively
      * 这个方法假定parent存在
-     * @param {Fire.Entity} entity - must have parent, and not scene gizmo
+     * @param {Entity} entity - must have parent, and not scene gizmo
      */
     var _onChildEntityCreated = function (entity, hasSceneView) {
         entity._pixiObj = new PIXI.DisplayObjectContainer();
@@ -353,7 +353,7 @@ var RenderContext = (function () {
     };
 
     /**
-     * @param {Fire.SpriteRenderer} target
+     * @param {SpriteRenderer} target
      */
     RenderContext.prototype.addSprite = function (target) {
         var tex = createTexture(target._sprite);
@@ -374,7 +374,7 @@ var RenderContext = (function () {
     };
 
     /**
-     * @param {Fire.SpriteRenderer} target
+     * @param {SpriteRenderer} target
      * @param {boolean} show
      */
     RenderContext.prototype.show = function (target, show) {
@@ -387,7 +387,7 @@ var RenderContext = (function () {
     };
 
     /**
-     * @param target {Fire.SpriteRenderer}
+     * @param target {SpriteRenderer}
      * @param show {boolean}
      */
     RenderContext.prototype.remove = function (target) {
@@ -417,7 +417,7 @@ var RenderContext = (function () {
     };
 
     /**
-     * @param target {Fire.SpriteRenderer}
+     * @param target {SpriteRenderer}
      */
     RenderContext.prototype.updateMaterial = function (target) {
         var tex = createTexture(target._sprite);
@@ -436,8 +436,8 @@ var RenderContext = (function () {
 
     /**
      * Set the final transform to render
-     * @param {Fire.SpriteRenderer} target
-     * @param {Fire.Matrix23} matrix - the matrix to render (Read Only)
+     * @param {SpriteRenderer} target
+     * @param {Matrix23} matrix - the matrix to render (Read Only)
      */
     RenderContext.prototype.updateTransform = function (target, matrix) {
         // caculate matrix for pixi
@@ -470,9 +470,9 @@ var RenderContext = (function () {
     };
 
     ///**
-    // * @param {Fire.SpriteRenderer} target
-    // * @param {Fire.SpriteRenderer} transform
-    // * @param {Fire.SpriteRenderer} oldParent
+    // * @param {SpriteRenderer} target
+    // * @param {SpriteRenderer} transform
+    // * @param {SpriteRenderer} oldParent
     // */
     //RenderContext.prototype.updateHierarchy = function (target, transform, oldParent) {
     //    if (target._renderObj || target._renderObjInScene) {
@@ -517,7 +517,7 @@ var RenderContext = (function () {
     //};
 
     /**
-     * @param sprite {Fire.Sprite}
+     * @param sprite {Sprite}
      */
     function createTexture(sprite) {
         if (sprite && sprite.texture && sprite.texture.image) {

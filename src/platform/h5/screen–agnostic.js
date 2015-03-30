@@ -16,9 +16,9 @@
 //
 ///**
 // * Function to apply this resolution policy.
-// * The return value is {scale: {Fire.Vec2}, viewport: {Fire.Rect}}.
-// * @param {Fire.Vec2} designedResolution - The user defined design resolution
-// * @returns {object} An object contains the scale X/Y values and the viewport rect
+// * The return value is {scale: {Vec2}, viewport: {Rect}}.
+// * @param {Vec2} designedResolution - The user defined design resolution
+// * @return {object} An object contains the scale X/Y values and the viewport rect
 // */
 //ResolutionPolicy.prototype.apply = function (designedResolution) {
 //    this._containerStrategy.apply(designedResolution);
@@ -28,15 +28,15 @@
 //ResolutionPolicy._registered = {};
 //
 ///**
-// * @param {Fire.ResolutionPolicyType} type
-// * @returns {Fire.ResolutionPolicy} the instance of ResolutionPolicy
+// * @param {ResolutionPolicyType} type
+// * @return {ResolutionPolicy} the instance of ResolutionPolicy
 // */
 //ResolutionPolicy.fromType = function (type) {
 //    return this._registered[type];
 //};
 //
 ///**
-// * @param {Fire.ResolutionPolicyType} type
+// * @param {ResolutionPolicyType} type
 // * @param instance
 // */
 //ResolutionPolicy.register = function (type, instance) {
@@ -95,8 +95,8 @@ function ContentStrategy () {}
 
 /**
  * Function to apply this strategy
- * The return value is {scale: {Fire.Vec2}, viewport: {Fire.Rect}},
- * @param {Fire.Vec2} designedResolution
+ * The return value is {scale: {Vec2}, viewport: {Rect}},
+ * @param {Vec2} designedResolution
  * @return {object} scaleAndViewportRect
  */
 ContentStrategy.prototype.apply = function (designedResolution) {
@@ -189,8 +189,8 @@ Fire.Screen.ContentStrategy = ContentStrategy;
     var contentStrategies = [new NoScale(), new FixedHeight()];
 
     /**
-     * @param {Fire.ContentStrategyType} type
-     * @returns {Fire.ContentStrategy}
+     * @param {ContentStrategyType} type
+     * @return {ContentStrategy}
      */
     ContentStrategy.fromType = function (type) {
         var res = contentStrategies[type];

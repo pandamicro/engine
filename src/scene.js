@@ -11,13 +11,13 @@
         properties: {
             /**
              * root entities
-             * @member {Fire.Entity[]} Fire.Scene#entities
+             * @property {Entity[]} Fire.Scene#entities
              */
             entities: [],
 
             /**
              * the active camera
-             * @member {Fire.Camera} Fire.Scene#camera
+             * @property {Camera} Fire.Scene#camera
              */
             camera: null
         }

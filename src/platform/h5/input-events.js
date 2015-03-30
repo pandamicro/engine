@@ -91,7 +91,7 @@ var MouseEvent = (function () {
         this.deltaY = 0;
 
         /**
-         * @property {Fire.EventTarget} relatedTarget - The secondary target for the event, if there is one.
+         * @property {EventTarget} relatedTarget - The secondary target for the event, if there is one.
          */
         this.relatedTarget = null;
     }

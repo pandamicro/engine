@@ -90,7 +90,7 @@
         /**
          * The parent of the entity.
          * Changing the parent will keep the transform's local space position, rotation and scale the same but modify the world space position, scale and rotation.
-         * @property {Fire.Entity} Fire.Entity#parent
+         * @property {Entity} Fire.Entity#parent
          */
         parent: {
             get: function () {
@@ -277,7 +277,7 @@
     /**
      * Send an event to this object directly, this method will not propagate the event to any other objects.
      *
-     * @param {Fire.Event} event - The Event object that is sent to this event target.
+     * @param {Event} event - The Event object that is sent to this event target.
      */
     _doSendEvent: function (event) {
         if (this._activeInHierarchy) {
@@ -478,7 +478,7 @@
      * Get the indexed sibling.
      * @method Fire.Entity#getSibling
      * @param {number} index
-     * @return {Fire.Entity}
+     * @return {Entity}
      */
     getSibling: function (index) {
         if (this._parent) {
@@ -639,7 +639,7 @@ Entity._defaultFlags = 0;
  * It is recommended to not use this function every frame instead cache the result at startup.
  * @method Fire.Entity.find
  * @param {string} path
- * @return {Fire.Entity} the entity or null if not found
+ * @return {Entity} the entity or null if not found
  */
 Entity.find = function (path) {
     if (!path && path !== '') {

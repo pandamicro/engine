@@ -12,6 +12,7 @@ var qunit = require('gulp-qunit');
 var rename = require('gulp-rename');
 var uglify = require('gulp-uglifyjs');
 var preprocess = require('gulp-preprocess');
+var header = require('gulp-header');
 
 var fb = require('gulp-fb');
 var del = require('del');
@@ -281,6 +282,29 @@ gulp.task('ref', ['cp-core'], function() {
     var files = paths.ref.src.concat(paths.src);
     var destPath = paths.ref.dest;
     return fb.generateReference(files, destPath);
+});
+
+// doc
+gulp.task('export-api-syntax', function (done) {
+
+    // 默认所有 engine 模块都在 Fire 下面
+    var DefaultModuleHeader = "/**\n" +
+                              " * @module Fire\n" +
+                              " * @class Fire\n" +
+                              " */\n";
+    var dest = '../../utils/api/engine';
+
+    del(dest + '/**/*', { force: true }, function (err) {
+        if (err) {
+            done(err);
+            return;
+        }
+
+        gulp.src(paths.src)
+            .pipe(header(DefaultModuleHeader))
+            .pipe(gulp.dest(dest))
+            .on('end', done);
+    });
 });
 
 // watch

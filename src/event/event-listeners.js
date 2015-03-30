@@ -9,7 +9,7 @@
     JS.extend(EventListeners, Fire._CallbacksHandler);
 
     /**
-     * @param {Fire.Event} event
+     * @param {Event} event
      */
     EventListeners.prototype.invoke = function (event) {
         var list = this._callbackTable[event.type];

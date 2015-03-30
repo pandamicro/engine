@@ -1,20 +1,36 @@
 ﻿var Transform = (function () {
 
     /**
-     * Position, rotation and scale of an object.
+     * Defines position, rotation and scale of an entity.
+     *
      * @class Transform
      * @extends Component
+     * @constructor
      */
-
     var Transform = Fire.extend('Fire.Transform', Component, function () {
+        /**
+         * @property _position;
+         * @type {Vec2}
+         * @default new Vec2(0, 0)
+         * @private
+         */
         this._position = new Vec2(0, 0);
+        /**
+         * @property _scale;
+         * @type {Vec2}
+         * @default new Vec2(1, 1)
+         * @private
+         */
         this._scale = new Vec2(1, 1);
 
         this._worldTransform = new Matrix23();
 
         /**
-         * @property {Fire.Transform} _parent - the cached reference to parent transform
+         * the cached reference to parent transform
+         * @property _parent
+         * @type {Transform}
          * @default null
+         * @private
          */
         this._parent = null;
 
@@ -33,8 +49,9 @@
 
     /**
      * The local position in its parent's coordinate system
-     * @member {Fire.Vec2} position
-     * @instance
+     * @property position
+     * @type {Vec2}
+     * @default new Vec2(0, 0)
      */
     Transform.getset('position',
         function () {
@@ -56,8 +73,9 @@
 
     /**
      * The local x position in its parent's coordinate system
-     * @member {number} x
-     * @instance
+     * @property x
+     * @type {number}
+     * @default 0
      */
     Object.defineProperty(Transform.prototype, 'x', {
         get: function () {
@@ -79,8 +97,9 @@
 
     /**
      * The local y position in its parent's coordinate system
-     * @member {number} y
-     * @instance
+     * @property y
+     * @type {number}
+     * @default 0
      */
     Object.defineProperty(Transform.prototype, 'y', {
         get: function () {
@@ -102,7 +121,9 @@
 
     /**
      * The position of the transform in world space
-     * @property {Fire.Vec2} Fire.Transform#worldPosition
+     * @property worldPosition
+     * @type {Vec2}
+     * @default new Vec2(0, 0)
      */
     Object.defineProperty(Transform.prototype, 'worldPosition', {
         get: function () {
@@ -129,8 +150,9 @@
 
     /**
      * The x position of the transform in world space
-     * @member {number} x
-     * @instance
+     * @property worldX
+     * @type {number}
+     * @default 0
      */
     Object.defineProperty(Transform.prototype, 'worldX', {
         get: function () {
@@ -169,8 +191,9 @@
 
     /**
      * The y position of the transform in world space
-     * @member {number} y
-     * @instance
+     * @property worldY
+     * @type {number}
+     * @default 0
      */
     Object.defineProperty(Transform.prototype, 'worldY', {
         get: function () {
@@ -203,7 +226,9 @@
 
     /**
      * The counterclockwise degrees of rotation relative to the parent
-     * @property {number} Fire.Transform#rotation
+     * @property rotation
+     * @type {number}
+     * @default 0
      */
     Transform.getset('rotation',
         function () {
@@ -222,7 +247,9 @@
 
     /**
      * The counterclockwise degrees of rotation in world space
-     * @property {number} Fire.Transform#worldRotation
+     * @property worldRotation
+     * @type {number}
+     * @default 0
      */
     Object.defineProperty(Transform.prototype, 'worldRotation', {
         get: function () {
@@ -250,7 +277,8 @@
 
     /**
      * The local scale factor relative to the parent
-     * @property {Fire.Vec2} Fire.Transform#scale
+     * @property scale
+     * @type {Vec2}
      * @default new Vec2(1, 1)
      */
     Transform.getset('scale',
@@ -273,8 +301,9 @@
 
     /**
      * The local x scale factor relative to the parent
-     * @member {number} x
-     * @instance
+     * @property scaleX
+     * @type {number}
+     * @default 1
      */
     Object.defineProperty(Transform.prototype, 'scaleX', {
         get: function () {
@@ -296,8 +325,9 @@
 
     /**
      * The local y scale factor relative to the parent
-     * @member {number} y
-     * @instance
+     * @property scaleY
+     * @type {number}
+     * @default 1
      */
     Object.defineProperty(Transform.prototype, 'scaleY', {
         get: function () {
@@ -319,7 +349,10 @@
 
     /**
      * The lossy scale of the transform in world space (Read Only)
-     * @property {Fire.Vec2} Fire.Transform#worldScale
+     * @property worldScale
+     * @type {Vec2}
+     * @default new Vec2(1, 1)
+     * @readOnly
      */
     Object.defineProperty(Transform.prototype, 'worldScale', {
         get: function () {
@@ -405,9 +438,9 @@
 
     /**
      * Get the local matrix that transforms a point from local space into parents space.
-     * @method Fire.Transform#getLocalMatrix
-     * @param {Fire.Matrix23} [out]
-     * @return {Fire.Matrix23}
+     * @method getLocalMatrix
+     * @param {Matrix23} [out] - optional, the receiving vector
+     * @return {Matrix23}
      */
     Transform.prototype.getLocalMatrix = function (out) {
         out = out || new Matrix23();
@@ -445,9 +478,9 @@
 
     /**
      * Get the world transform matrix that transforms a point from local space into world space.
-     * @method Transform#getLocalToWorldMatrix
-     * @param {Fire.Matrix23} [out]
-     * @return {Fire.Matrix23}
+     * @method getLocalToWorldMatrix
+     * @param {Matrix23} [out] - optional, the receiving vector
+     * @return {Matrix23}
      */
     Transform.prototype.getLocalToWorldMatrix = function (out) {
         // todo, merge with this._worldTransform
@@ -462,17 +495,18 @@
 
     /**
      * Get the inverse world transform matrix that transforms a point from world space into local space.
-     * @method Transform#getWorldToLocalMatrix
-     * @param {Fire.Matrix23} [out]
-     * @return {Fire.Matrix23}
+     * @method getWorldToLocalMatrix
+     * @param {Matrix23} [out] - optional, the receiving vector
+     * @return {Matrix23}
      */
     Transform.prototype.getWorldToLocalMatrix = function (out) {
         return this.getLocalToWorldMatrix(out).invert();
     };
 
     /**
-     * @method Transform#rotateAround
-     * @param {Fire.Vec2} point - the world point rotates through
+     * Rotates this transform through point in world space by angle degrees.
+     * @method rotateAround
+     * @param {Vec2} point - the world point rotates through
      * @param {number} angle - degrees
      */
     Transform.prototype.rotateAround = function (point, angle) {
@@ -484,8 +518,8 @@
 
     /**
      * Moves the transform in the direction and distance of translation. The movement is applied relative to the transform's local space.
-     * @method Transform#translate
-     * @param {Fire.Vec2} translation
+     * @method translate
+     * @param {Vec2} translation
      */
     Transform.prototype.translate = function (translation) {
         var rotated = translation.rotate(Math.deg2rad(this._rotation));
@@ -493,7 +527,9 @@
     };
 
     /**
-     * @property {Fire.Vec2} up - up direction in world space, point to the y(green) axis
+     * up direction in world space, point to the y(green) axis
+     * @property up
+     * @type {Vec2}
      */
     Object.defineProperty(Transform.prototype, 'up', {
         get: function () {
@@ -510,7 +546,9 @@
     });
 
     /**
-     * @property {Fire.Vec2} right - right direction in world space, point to the x(red) axis
+     * right direction in world space, point to the x(red) axis
+     * @property right
+     * @type {Vec2}
      */
     Object.defineProperty(Transform.prototype, 'right', {
         get: function () {
@@ -534,7 +572,7 @@
     // * 这里不支持自定义回调，因为如果忘了反注册很容易就会内存泄漏。
     // *
     // * @method Fire.Transform#_addListener
-    // * @param {Fire.Component} component - the component to be invoked.
+    // * @param {Component} component - the component to be invoked.
     // * @private
     // */
     //Transform.prototype._addListener = function (component) {

@@ -53,7 +53,7 @@ var AssetLibrary = (function () {
          * @param {function} callback
          * @param {boolean} [readMainCache=true] - If false, the asset and all its depends assets will reload and create new instances from library.
          * @param {boolean} [writeMainCache=true] - If true, the result will cache to AssetLibrary, and MUST be unload by user manually.
-         * @param {Fire.Asset} [existingAsset] - load to existing asset, this argument is only available in editor
+         * @param {Asset} [existingAsset] - load to existing asset, this argument is only available in editor
          */
         loadAsset: function (uuid, callback, readMainCache, writeMainCache, existingAsset) {
             readMainCache = typeof readMainCache !== 'undefined' ? readMainCache : true;
@@ -75,7 +75,7 @@ var AssetLibrary = (function () {
          * @param {string} uuid
          * @param {AssetLibrary~loadCallback} callback - the callback to receive the asset
          * @param {LoadingHandle} handle - the loading context which reserves all relevant parameters
-         * @param {Fire.Asset} [existingAsset] - load to existing asset, this argument is only available in editor
+         * @param {Asset} [existingAsset] - load to existing asset, this argument is only available in editor
          */
         _loadAssetByUuid: function (uuid, callback, handle, existingAsset) {
             if (typeof uuid !== 'string') {
@@ -145,7 +145,7 @@ var AssetLibrary = (function () {
          * @param {string} url
          * @param {function} callback
          * @param {object} handle - the loading context which reserves all relevant parameters
-         * @param {Fire.Asset} [existingAsset] - existing asset to reload
+         * @param {Asset} [existingAsset] - existing asset to reload
          */
         _deserializeWithDepends: function (json, url, callback, handle, existingAsset) {
             // deserialize asset
@@ -275,7 +275,7 @@ var AssetLibrary = (function () {
          * Get the exists asset by uuid.
          *
          * @param {string} uuid
-         * @return {Fire.Asset} - the existing asset, if not loaded, just returns null.
+         * @return {Asset} - the existing asset, if not loaded, just returns null.
          */
         getAssetByUuid: function (uuid) {
             return AssetLibrary._uuidToAsset[uuid] || null;
@@ -283,7 +283,7 @@ var AssetLibrary = (function () {
 
         /**
          * @callback AssetLibrary~loadCallback
-         * @param {Fire.Asset} asset - if failed, asset will be null
+         * @param {Asset} asset - if failed, asset will be null
          * @param {string} [error] - error info, if succeed, error will be empty or nil
          */
 
@@ -294,7 +294,7 @@ var AssetLibrary = (function () {
          * 如果还有地方引用到asset，除非destroyAsset为true，否则不应该执行这个方法，因为那样可能会导致 asset 被多次创建。
          *
          * @method Fire.AssetLibrary.unloadAsset
-         * @param {Fire.Asset|string} assetOrUuid
+         * @param {Asset|string} assetOrUuid
          * @param {boolean} [destroyImmediate=false] - When destroyAsset is true, if there are objects
          *                                         referencing the asset, the references will become invalid.
          */

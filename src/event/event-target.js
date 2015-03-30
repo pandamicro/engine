@@ -18,11 +18,28 @@
      * Event targets can implement the following methods:
      *  - _getCapturingTargets
      *  - _getBubblingTargets
+     *
+     * @class EventTarget
+     * @extends HashObject
+     * @constructor
      */
     function EventTarget() {
         HashObject.call(this);
 
+        /**
+         * @property _capturingListeners
+         * @type {EventListeners}
+         * @default null
+         * @private
+         */
         this._capturingListeners = null;
+
+        /**
+         * @property _bubblingListeners
+         * @type {EventListeners}
+         * @default null
+         * @private
+         */
         this._bubblingListeners = null;
     }
     JS.extend(EventTarget, HashObject);
@@ -31,6 +48,7 @@
      * Register an callback of a specific event type on the EventTarget.
      * This method is merely an alias to addEventListener.
      *
+     * @method on
      * @param {string} type - A string representing the event type to listen for.
      * @param {function} callback - The callback that will be invoked when the event is dispatched.
      *                              The callback is ignored if it is a duplicate (the callbacks are unique).
@@ -61,6 +79,7 @@
      * Removes the callback previously registered with the same type, callback, and capture.
      * This method is merely an alias to removeEventListener.
      *
+     * @method off
      * @param {string} type - A string representing the event type being removed.
      * @param {function} callback - The callback to remove.
      * @param {boolean} [useCapture=false] - Specifies whether the callback being removed was registered as a capturing callback or not.
@@ -82,6 +101,7 @@
     /**
      * Register an callback of a specific event type on the EventTarget, the callback will remove itself after the first time it is triggered.
      *
+     * @method once
      * @param {string} type - A string representing the event type to listen for.
      * @param {function} callback - The callback that will be invoked when the event is dispatched.
      *                              The callback is ignored if it is a duplicate (the callbacks are unique).
@@ -164,7 +184,8 @@
     /**
      * Dispatches an event into the event flow. The event target is the EventTarget object upon which the dispatchEvent() method is called.
      *
-     * @param {Fire.Event} event - The Event object that is dispatched into the event flow
+     * @method dispatchEvent
+     * @param {Event} event - The Event object that is dispatched into the event flow
      * @return {boolean} - returns true if either the event's preventDefault() method was not invoked,
      *                      or its cancelable attribute value is false, and false otherwise.
      */
@@ -179,7 +200,9 @@
     /**
      * Send an event to this object directly, this method will not propagate the event to any other objects.
      *
-     * @param {Fire.Event} event - The Event object that is sent to this event target.
+     * @method _doSendEvent
+     * @param {Event} event - The Event object that is sent to this event target.
+     * @private
      */
     EventTarget.prototype._doSendEvent = function (event) {
         // Event.AT_TARGET
@@ -199,7 +222,7 @@
     ///**
     // * Send an event to this object directly, this method will not propagate the event to any other objects.
     // *
-    // * @param {Fire.Event} event - The Event object that is sent to this event target.
+    // * @param {Event} event - The Event object that is sent to this event target.
     // * @return {boolean} - returns true if either the event's preventDefault() method was not invoked,
     // *                      or its cancelable attribute value is false, and false otherwise.
     // */
