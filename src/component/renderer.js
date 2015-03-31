@@ -3,7 +3,7 @@
     /**
      * The base for all renderer
      * @class Renderer
-     * @extends Component
+     * @extends HashObject
      * @constructor
      */
     var Renderer = Fire.extend('Fire.Renderer', Component);
@@ -50,8 +50,8 @@
      * @param {Vec2} [out_tl] - optional, the vector to receive the world position of top left
      * @param {Vec2} [out_tr] - optional, the vector to receive the world position of top right
      * @param {Vec2} [out_br] - optional, the vector to receive the world position of bottom right
-     * @return {Vec2[]} - the array contains vectors represented in world position,
-     *                    in the sequence of [BottomLeft, TopLeft, TopRight, BottomRight]
+     * @return {Vec2} - the array contains vectors represented in world position,
+     *                    in the sequence of BottomLeft, TopLeft, TopRight, BottomRight
      */
     Renderer.prototype.getWorldOrientedBounds = function (out_bl, out_tl, out_tr, out_br){
         out_bl = out_bl || new Vec2(0, 0);
