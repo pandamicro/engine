@@ -1,4 +1,9 @@
-﻿var Camera = Fire.Class({
+﻿/**
+ * @class Camera
+ * @extends Component
+ * @constructor
+ */
+var Camera = Fire.Class({
     name: 'Fire.Camera',
     extends: Component,
     constructor: function () {
@@ -12,6 +17,12 @@
             default: Fire.Color.black,
             visible: false
         },
+        /**
+         * The color of the screen background.
+         * @property background
+         * @type {Color}
+         * @default Fire.Color.black
+         */
         background: {
             get: function () {
                 return this._background;
@@ -28,6 +39,13 @@
             default: 800,
             visible: false
         },
+        /**
+         * The height of Design Resolution in pixels
+         * @property size
+         * @type {number}
+         * @default 800
+         * @beta
+         */
         size: {
             get: function () {
                 return this._size;
@@ -47,6 +65,12 @@
             default: Fire.ContentStrategyType.FixedHeight,
             visible: false
         },
+        /**
+         * The Content Strategy of the camera.
+         * @property contentStrategy
+         * @type {ContentStrategyType}
+         * @default Fire.ContentStrategyType.FixedHeight
+         */
         contentStrategy: {
             type: Fire.ContentStrategyType,
             get: function () {
@@ -60,6 +84,11 @@
             tooltip: "The type of scale strategy for this camera"
         },
 
+        /**
+         * @property viewportInfo
+         * @type {object}
+         * @private
+         */
         viewportInfo: {
             get: function (value) {
                 var viewportSize = (this._renderContext || Engine._renderContext).size;
@@ -68,7 +97,12 @@
             visible: false
         },
 
-        // save the render context this camera belongs to, if null, main render context will be used.
+        /**
+         * save the render context this camera belongs to, if null, main render context will be used.
+         * @property renderContext
+         * @type {RenderContext}
+         * @private
+         */
         renderContext: {
             set: function (value) {
                 this._renderContext = value;
@@ -107,7 +141,7 @@
 
     /**
      * Transforms position from viewport space into screen space.
-     * @method Fire.Camera#viewportToScreen
+     * @method viewportToScreen
      * @param {Vec2} position
      * @param {Vec2} [out] - optional, the receiving vector
      * @return {Vec2}
@@ -119,7 +153,7 @@
 
     /**
      * Transforms position from screen space into viewport space.
-     * @method Fire.Camera#screenToViewport
+     * @method screenToViewport
      * @param {Vec2} position
      * @param {Vec2} [out] - optional, the receiving vector
      * @return {Vec2}
@@ -134,7 +168,7 @@
 
     /**
      * Transforms position from viewport space into world space.
-     * @method Fire.Camera#viewportToWorld
+     * @method viewportToWorld
      * @param {Vec2} position
      * @param {Vec2} [out] - optional, the receiving vector
      * @return {Vec2}
@@ -146,7 +180,7 @@
 
     /**
      * Transforms position from screen space into world space.
-     * @method Fire.Camera#screenToWorld
+     * @method screenToWorld
      * @param {Vec2} position
      * @param {Vec2} [out] - optional, the receiving vector
      * @return {Vec2}
@@ -166,7 +200,7 @@
 
     /**
      * Transforms position from world space into screen space.
-     * @method Fire.Camera#worldToScreen
+     * @method worldToScreen
      * @param {Vec2} position
      * @param {Vec2} [out] - optional, the receiving vector
      * @return {Vec2}
@@ -184,7 +218,7 @@
 
     /**
      * Transforms position from world space into viewport space.
-     * @method Fire.Camera#worldToViewport
+     * @method worldToViewport
      * @param {Vec2} position
      * @param {Vec2} [out] - optional, the receiving vector
      * @return {Vec2}

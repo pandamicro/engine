@@ -1,8 +1,10 @@
 ﻿/**
  * !#en The interface to get time information from Fireball.
- * - See [Time](http://docs.fireball-x.com/en/scripting/time/)
+ *
+ * See [Time](http://docs.fireball-x.com/en/scripting/time/)
  * !#zh Time 模块用于获得游戏里的时间和帧率相关信息。直接使用 Fire.Time.*** 访问即可。
- * - 请参考教程[计时和帧率](http://docs.fireball-x.com/zh/scripting/time/)
+ *
+ * 请参考教程[计时和帧率](http://docs.fireball-x.com/zh/scripting/time/)
  *
  * @class Time
  * @static
@@ -20,7 +22,8 @@ var Time = (function () {
 
     /**
      * The time at the beginning of this frame. This is the real time in seconds since the start of the game.
-     * - `Time.realTime` not affected by time scale, and also keeps increasing while the player is paused in editor or in the background.
+     *
+     * `Time.realTime` not affected by time scale, and also keeps increasing while the player is paused in editor or in the background.
      * @property realTime
      * @type {number}
      * @readOnly

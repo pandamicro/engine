@@ -238,6 +238,7 @@
      * Get all the targets listening to the supplied type of event in the target's capturing phase.
      * The capturing phase comprises the journey from the root to the last node BEFORE the event target's node.
      * The result should save in the array parameter, and MUST SORT from child nodes to parent nodes.
+     *
      * Subclasses can override this method to make event propagable.
      *
      * @param {string} type - the event type
@@ -260,6 +261,7 @@
      * Get all the targets listening to the supplied type of event in the target's bubbling phase.
 	 * The bubbling phase comprises any SUBSEQUENT nodes encountered on the return trip to the root of the tree.
      * The result should save in the array parameter, and MUST SORT from child nodes to parent nodes.
+     *
      * Subclasses can override this method to make event propagable.
      *
      * @param {string} type - the event type

@@ -1,60 +1,18 @@
-﻿/**
- * !#en
- *
- * !#zh
- * ```
- * 本模块不含实际代码，仅仅为了声明本页面而定义。
- * ```
- *
- * 除了类已经定义的变量外，以下是其它 Fireball-x 中已经内部占用的变量名，请避免冲突。这些变量有一些只有特殊情况才会用到，有一些是将来可能会用到。
- *
- * ### 全局变量
- *
- * - `Fire`
- * - `Editor`
- * - `FireEditor`
- * - `PIXI`
- * - `require`
- *
- * ### 可能定义在任意对象上的变量
- *
- * - `__id__`
- * - `__type__`
- * - `_iN$t`
- * - `_rawext`
- *
- * ### 可能定义在任意类型或 prototype 上的变量
- *
- * - 任何以 `_attrs$` 开头的变量
- * - `__classname__`
- * - `__cid__`
- *
- * ### FireClass 上的静态变量
- *
- * - `get`
- * - `set`
- * - `getset`
- * - `prop`
- * - `$super`
- * - `__props__`
- *
- * ### FireClass 上的实例变量
- *
- * - `_observing`
- * - `_$erialized`
- *
- * ### 枚举定义上的变量
- *
- * - `__enums__`
- *
- *
- * @module Reserved-Words
- */
+﻿///**
+// * !#en
+// *
+// * !#zh
+// * ```
+// * 本模块不含实际代码，仅仅为了声明本页面而定义。
+// * ```
+// *
+// * @module Reserved-Words
+// */
 
-/**
- * @module Fire
- * @class Fire
- */
+///**
+// * @module Fire
+// * @class Fire
+// */
 
 var Destroying = Fire._ObjectFlags.Destroying;
 var DontDestroy = Fire._ObjectFlags.DontDestroy;

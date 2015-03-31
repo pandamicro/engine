@@ -1,15 +1,38 @@
 ﻿var Input = (function () {
 
+    /**
+     * Interface into the Input system.
+     * @class Input
+     * @static
+     * @beta
+     */
     var Input = {
         _eventListeners: new EventListeners()
     };
 
+    /**
+     * Returns whether the current device supports touch input
+     */
     Object.defineProperty(Input, 'hasTouch', {
         get: function () {
             return !!Engine._inputContext && Engine._inputContext.hasTouch;
         }
     });
 
+    /**
+     * !#en Register an callback of a specific input event type.
+     *
+     * For all supported event and type, please see [Input Events](/en/scripting/input-events)
+     *
+     * !#zh 注册输入事件的回调方法。
+     *
+     * 要查阅所有支持的输入事件，请访问[输入事件列表](/zh/scripting/input-events)。
+     *
+     * @method on
+     * @param {string} type - eg. "keydown", "click"
+     * @param {function} callback
+     * @beta
+     */
     Input.on = function (type, callback) {
         if (callback) {
             this._eventListeners.add(type, callback);
@@ -19,6 +42,13 @@
         }
     };
 
+    /**
+     * Removes the callback previously registered with the same type and callback.
+     * @method off
+     * @param {string} type
+     * @param {function} callback
+     * @beta
+     */
     Input.off = function (type, callback) {
         if (callback) {
             if (! this._eventListeners.remove(type, callback)) {

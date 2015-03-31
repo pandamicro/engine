@@ -1,27 +1,94 @@
 ﻿
 var BitmapText = (function () {
 
+    /**
+     * @class BitmapText
+     */
+    /**
+     * @namespace BitmapText
+     */
+    /**
+     * @class TextAlign
+     * @static
+     */
     var TextAlign = Fire.defineEnum({
+        /**
+         * @property left
+         * @number
+         */
         left: -1,
+        /**
+         * @property center
+         * @number
+         */
         center: -1,
+        /**
+         * @property right
+         * @number
+         */
         right: -1
     });
 
+    /**
+     * @class TextAnchor
+     * @static
+     */
     var TextAnchor = (function (t) {
+        /**
+         * @property topLeft
+         * @number
+         */
         t[t.topLeft = 0] = 'Top Left';
+        /**
+         * @property topCenter
+         * @number
+         */
         t[t.topCenter = 1] = 'Top Center';
+        /**
+         * @property topRight
+         * @number
+         */
         t[t.topRight = 2] = 'Top Right';
+        /**
+         * @property midLeft
+         * @number
+         */
         t[t.midLeft = 3] = 'Middle Left';
+        /**
+         * @property midCenter
+         * @number
+         */
         t[t.midCenter = 4] = 'Middle Center';
+        /**
+         * @property midRight
+         * @number
+         */
         t[t.midRight = 5] = 'Middle Right';
+        /**
+         * @property botLeft
+         * @number
+         */
         t[t.botLeft = 6] = 'Bottom Left';
+        /**
+         * @property botCenter
+         * @number
+         */
         t[t.botCenter = 7] = 'Bottom Center';
+        /**
+         * @property botRight
+         * @number
+         */
         t[t.botRight = 8] = 'Bottom Right';
         return t;
     })({});
 
 
-    //-- 增加 Bitmap Text 到 组件菜单上
+    /**
+     * The bitmap font renderer component.
+     * @class BitmapText
+     * @extends Renderer
+     * @constructor
+     */
     var BitmapText = Fire.extend("Fire.BitmapText", Renderer, function () {
         RenderContext.initRenderer(this);
     });
@@ -34,6 +101,12 @@ var BitmapText = (function () {
     Fire.executeInEditMode(BitmapText);
 
     BitmapText.prop('_bitmapFont', null, Fire.HideInInspector);
+    /**
+     * The font to render.
+     * @property bitmapFont
+     * @Type {BitmapFont}
+     * @default null
+     */
     BitmapText.getset('bitmapFont',
         function () {
             return this._bitmapFont;
@@ -46,6 +119,13 @@ var BitmapText = (function () {
     );
 
     BitmapText.prop('_text', 'Text', Fire.HideInInspector);
+
+    /**
+     * The text to render.
+     * @property text
+     * @Type {string}
+     * @default ""
+     */
     BitmapText.getset('text',
         function () {
             return this._text;
@@ -65,6 +145,13 @@ var BitmapText = (function () {
     );
 
     BitmapText.prop('_anchor', BitmapText.TextAnchor.midCenter, Fire.HideInInspector);
+
+    /**
+     * The anchor point of the text.
+     * @property anchor
+     * @Type {BitmapText.TextAnchor}
+     * @default BitmapText.TextAnchor.midCenter
+     */
     BitmapText.getset('anchor',
         function () {
             return this._anchor;
@@ -78,6 +165,13 @@ var BitmapText = (function () {
     );
 
     BitmapText.prop('_align', BitmapText.TextAlign.left, Fire.HideInInspector);
+
+    /**
+     * How lines of text are aligned (left, right, center).
+     * @property align
+     * @Type {BitmapText.TextAlign}
+     * @default BitmapText.TextAlign.left
+     */
     BitmapText.getset('align',
         function () {
             return this._align;

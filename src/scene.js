@@ -1,9 +1,5 @@
 ﻿var Scene = (function () {
-    /**
-     * @class Fire.Scene
-     * @extends Fire.Asset
-     * @private
-     */
+
     var Scene = Fire.Class({
         name: "Fire.Scene",
         extends: Asset,
@@ -11,13 +7,15 @@
         properties: {
             /**
              * root entities
-             * @property {Entity[]} Fire.Scene#entities
+             * @property entities
+             * @type {Entity[]}
              */
             entities: [],
 
             /**
              * the active camera
-             * @property {Camera} Fire.Scene#camera
+             * @property camera
+             * @type {Camera}
              */
             camera: null
         }

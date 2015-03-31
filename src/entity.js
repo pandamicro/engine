@@ -1,4 +1,10 @@
-﻿var Entity = Fire.Class({
+﻿/**
+ * Class of all entities in scenes.
+ * @class Entity
+ * @constructor
+ * @param {string} name - the name of the entity
+ */
+var Entity = Fire.Class({
 
     name: 'Fire.Entity', extends: EventTarget,
 
@@ -59,6 +65,12 @@
             }
         },
 
+        /**
+         * The local active state of this Entity.
+         * @property active
+         * @type {boolean}
+         * @default true
+         */
         active: {
             get: function () {
                 return this._active;
@@ -76,12 +88,23 @@
             }
         },
 
+        /**
+         * Indicates whether this entity is active in the scene.
+         * @property activeInHierarchy
+         * @type {boolean}
+         */
         activeInHierarchy: {
             get: function () {
                 return this._activeInHierarchy;
             }
         },
 
+        /**
+         * Returns the {% crosslink Fire.Transform Transform %} attached to the entity.
+         * @property transform
+         * @type {Transform}
+         * @readOnly
+         */
         transform: {
             default: null,
             visible: false
@@ -90,7 +113,9 @@
         /**
          * The parent of the entity.
          * Changing the parent will keep the transform's local space position, rotation and scale the same but modify the world space position, scale and rotation.
-         * @property {Entity} Fire.Entity#parent
+         * @property parent
+         * @type {Entity}
+         * @default null
          */
         parent: {
             get: function () {
@@ -149,7 +174,8 @@
 
         /**
          * Get the amount of children
-         * @property {number} Fire.Entity#childCount
+         * @property childCount
+         * @type {number}
          */
         childCount: {
             get: function () {
@@ -158,9 +184,15 @@
             visible: false
         },
 
+        /**
+         * If true, the entity will not be destroyed automatically when loading a new scene.
+         * @property dontDestroyOnLoad
+         * @type {boolean}
+         * @default false
+         */
         dontDestroyOnLoad: {
             get: function () {
-                return this.dontDestroyOnLoad;
+                return !!(this._objFlags | DontDestroy);
             },
             set: function (value) {
                 if (value) {
@@ -182,10 +214,25 @@
             default: null,
             visible: false
         },
+
+        /**
+         * @property _children
+         * @type {Entity[]}
+         * @default []
+         * @readOnly
+         * @private
+         */
         _children: {
             default: [],
             visible: false
         },
+        /**
+         * @property _components
+         * @type {Component[]}
+         * @default []
+         * @readOnly
+         * @private
+         */
         _components: {
             default: null,
             visible: false
@@ -240,15 +287,6 @@
         }
     },
 
-    /**
-     * Get all the targets listening to the supplied type of event in the target's capturing phase.
-     * The capturing phase comprises the journey from the root to the last node BEFORE the event target's node.
-     * The result should save in the array parameter, and MUST SORT from child nodes to parent nodes.
-     * Subclasses can override this method to make event propagable.
-     *
-     * @param {string} type - the event type
-     * @param {array} array - the array to receive targets
-     */
     _getCapturingTargets: function (type, array) {
         for (var target = this._parent; target; target = target._parent) {
             if (target._activeInHierarchy && target._capturingListeners && target._capturingListeners.has(type)) {
@@ -257,15 +295,6 @@
         }
     },
 
-    /**
-     * Get all the targets listening to the supplied type of event in the target's bubbling phase.
-     * The bubbling phase comprises any SUBSEQUENT nodes encountered on the return trip to the root of the hierarchy.
-     * The result should save in the array parameter, and MUST SORT from child nodes to parent nodes.
-     * Subclasses can override this method to make event propagable.
-     *
-     * @param {string} type - the event type
-     * @param {array} array - the array to receive targets
-     */
     _getBubblingTargets: function (type, array) {
         for (var target = this._parent; target; target = target._parent) {
             if (target._activeInHierarchy && target._bubblingListeners && target._bubblingListeners.has(type)) {
@@ -274,11 +303,6 @@
         }
     },
 
-    /**
-     * Send an event to this object directly, this method will not propagate the event to any other objects.
-     *
-     * @param {Event} event - The Event object that is sent to this event target.
-     */
     _doSendEvent: function (event) {
         if (this._activeInHierarchy) {
             Entity.$super.prototype._doSendEvent.call(this, event);
@@ -290,8 +314,11 @@
     ////////////////////////////////////////////////////////////////////
 
     /**
-     * @param {function|string} typeOrTypename
-     * @return {Component}
+     * Adds a component class to the entity. You can also add component to entity by passing in the name of the script.
+     *
+     * @method addComponent
+     * @param {function|string} typeOrName - the constructor or the class name of the component to add
+     * @return {Component} - the newly added component
      */
     addComponent: function (typeOrTypename) {
         var constructor;
@@ -338,7 +365,10 @@
     },
 
     /**
-     * @param {function|string} typeOrTypename
+     * Returns the component of supplied type if the entity has one attached, null if it doesn't. You can also get component in the entity by passing in the name of the script.
+     *
+     * @method getComponent
+     * @param {function|string} typeOrName
      * @return {Component}
      */
     getComponent: function (typeOrTypename) {
@@ -391,6 +421,15 @@
     // hierarchy methods
     ////////////////////////////////////////////////////////////////////
 
+    /**
+     * Finds an entity by name in all children of this entity. This function will still returns the entity even if it is inactive.
+     * It is recommended to not use this function every frame instead cache the result at startup.
+     *
+     * @method find
+     * @param {string} path
+     * @return {Entity} - If not found, null will be returned.
+     * @beta
+     */
     find: function (path) {
         if (!path && path !== '') {
             Fire.error('Argument must be non-nil');
@@ -434,16 +473,33 @@
         return match;
     },
 
+    /**
+     * Returns an entity child by index.
+     *
+     * @method getChild
+     * @param {number} index
+     * @return {Entity} - If not found, undefined will be returned.
+     */
     getChild: function (index) {
         return this._children[index];
     },
 
+    /**
+     * Returns a new arrays of all children.
+     *
+     * @method getChildren
+     * @return {Entity[]}
+     */
     getChildren: function () {
         return this._children.slice();
     },
 
     /**
-     * is or is child of
+     * Is this entity a child of the parent?
+     *
+     * @method isChildOf
+     * @param {Entity} parent
+     * @return {boolean} - Returns true if this entity is a child, deep child or identical to the given entity.
      */
     isChildOf: function (parent) {
         var child = this;
@@ -459,10 +515,11 @@
 
     /**
      * Get the sibling index.
+     *
      * NOTE: If this entity does not have parent and not belongs to the current scene,
      *       The return value will be -1
      *
-     * @method Fire.Entity#getSiblingIndex
+     * @method getSiblingIndex
      * @return {number}
      */
     getSiblingIndex: function () {
@@ -476,9 +533,10 @@
 
     /**
      * Get the indexed sibling.
-     * @method Fire.Entity#getSibling
+     *
+     * @method getSibling
      * @param {number} index
-     * @return {Entity}
+     * @return {Entity} - If not found, undefined will be returned.
      */
     getSibling: function (index) {
         if (this._parent) {
@@ -490,8 +548,9 @@
     },
 
     /**
-     * Set the sibling index.
-     * @method Fire.Entity#setSiblingIndex
+     * Set the sibling index of this entity.
+     *
+     * @method setSiblingIndex
      * @param {number} index
      */
     setSiblingIndex: function (index) {
@@ -520,7 +579,8 @@
 
     /**
      * Move the entity to the top.
-     * @method Fire.Entity#setAsFirstSibling
+     *
+     * @method setAsFirstSibling
      */
     setAsFirstSibling: function () {
         this.setSiblingIndex(0);
@@ -528,7 +588,8 @@
 
     /**
      * Move the entity to the bottom.
-     * @method Fire.Entity#setAsFirstSibling
+     *
+     * @method setAsLastSibling
      */
     setAsLastSibling: function () {
         this.setSiblingIndex(-1);
@@ -624,11 +685,13 @@
 ////////////////////////////////////////////////////////////////////
 
 /**
- * the temp property that indicates the current creating entity should
- * binded with supplied object flags.
- * only used in editor
+ * The temp property that indicates the current creating entity should
+ * binded with supplied object flags. This property only used in editor.
  *
- * @property {number} Entity._defaultFlags
+ * @property _defaultFlags
+ * @type {number}
+ * @default 0
+ * @static
  * @private
  */
 Entity._defaultFlags = 0;
@@ -637,18 +700,20 @@ Entity._defaultFlags = 0;
  * Finds an entity by hierarchy path, the path is case-sensitive, and must start with a '/' character.
  * It will traverse the hierarchy by splitting the path using '/' character.
  * It is recommended to not use this function every frame instead cache the result at startup.
- * @method Fire.Entity.find
+ *
+ * @method find
  * @param {string} path
  * @return {Entity} the entity or null if not found
+ * @static
  */
 Entity.find = function (path) {
     if (!path && path !== '') {
         Fire.error('Argument must be non-nil');
-        return;
+        return null;
     }
     if (path[0] !== '/') {
         Fire.error("Path must start with a '/' character");
-        return;
+        return null;
     }
     return Engine._scene.findEntity(path);
 };

@@ -64,6 +64,9 @@
     };
 
     /**
+     * !#zh 返回表示 renderer 的 width/height/pivot/skew/shear 等变换的 matrix，
+     * 这些变换不影响子物体，getLocalToWorldMatrix 返回的变换会影响子物体。
+     *
      * @method getSelfMatrix
      * @param {Matrix23} out - the receiving matrix
      */

@@ -22,7 +22,8 @@
 
     /**
      * Base class for everything attached to Entity.
-     * - NOTE: Not allowed to use construction parameters for Component's subclasses,
+     *
+     * NOTE: Not allowed to use construction parameters for Component's subclasses,
      *         because Component is created by the engine.
      *
      * @class Component
