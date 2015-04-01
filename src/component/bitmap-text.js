@@ -14,17 +14,17 @@ var BitmapText = (function () {
     var TextAlign = Fire.defineEnum({
         /**
          * @property left
-         * @number
+         * @type {number}
          */
         left: -1,
         /**
          * @property center
-         * @number
+         * @type {number}
          */
         center: -1,
         /**
          * @property right
-         * @number
+         * @type {number}
          */
         right: -1
     });
@@ -36,47 +36,47 @@ var BitmapText = (function () {
     var TextAnchor = (function (t) {
         /**
          * @property topLeft
-         * @number
+         * @type {number}
          */
         t[t.topLeft = 0] = 'Top Left';
         /**
          * @property topCenter
-         * @number
+         * @type {number}
          */
         t[t.topCenter = 1] = 'Top Center';
         /**
          * @property topRight
-         * @number
+         * @type {number}
          */
         t[t.topRight = 2] = 'Top Right';
         /**
          * @property midLeft
-         * @number
+         * @type {number}
          */
         t[t.midLeft = 3] = 'Middle Left';
         /**
          * @property midCenter
-         * @number
+         * @type {number}
          */
         t[t.midCenter = 4] = 'Middle Center';
         /**
          * @property midRight
-         * @number
+         * @type {number}
          */
         t[t.midRight = 5] = 'Middle Right';
         /**
          * @property botLeft
-         * @number
+         * @type {number}
          */
         t[t.botLeft = 6] = 'Bottom Left';
         /**
          * @property botCenter
-         * @number
+         * @type {number}
          */
         t[t.botCenter = 7] = 'Bottom Center';
         /**
          * @property botRight
-         * @number
+         * @type {number}
          */
         t[t.botRight = 8] = 'Bottom Right';
         return t;
