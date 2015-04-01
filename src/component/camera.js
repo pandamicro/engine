@@ -13,10 +13,8 @@ var Camera = Fire.Class({
 
     properties: {
 
-        _background: {
-            default: Fire.Color.black,
-            visible: false
-        },
+        _background: Fire.Color.black,
+
         /**
          * The color of the screen background.
          * @property background
@@ -35,10 +33,8 @@ var Camera = Fire.Class({
             }
         },
 
-        _size: {
-            default: 800,
-            visible: false
-        },
+        _size: 800,
+
         /**
          * The height of Design Resolution in pixels
          * @property size
@@ -61,10 +57,8 @@ var Camera = Fire.Class({
             }
         },
 
-        _contentStrategy: {
-            default: Fire.ContentStrategyType.FixedHeight,
-            visible: false
-        },
+        _contentStrategy: Fire.ContentStrategyType.FixedHeight,
+
         /**
          * The Content Strategy of the camera.
          * @property contentStrategy
@@ -255,7 +249,7 @@ var Camera = Fire.Class({
         }
         // @endif
         this._renderContext.background = this._background;
-    },
+    }
 });
 
 Fire.addComponentMenu(Camera, 'Camera');

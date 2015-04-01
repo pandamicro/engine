@@ -104,7 +104,7 @@ var BitmapText = (function () {
     /**
      * The font to render.
      * @property bitmapFont
-     * @Type {BitmapFont}
+     * @type {BitmapFont}
      * @default null
      */
     BitmapText.getset('bitmapFont',
@@ -123,7 +123,7 @@ var BitmapText = (function () {
     /**
      * The text to render.
      * @property text
-     * @Type {string}
+     * @type {string}
      * @default ""
      */
     BitmapText.getset('text',
@@ -149,7 +149,7 @@ var BitmapText = (function () {
     /**
      * The anchor point of the text.
      * @property anchor
-     * @Type {BitmapText.TextAnchor}
+     * @type {BitmapText.TextAnchor}
      * @default BitmapText.TextAnchor.midCenter
      */
     BitmapText.getset('anchor',
@@ -169,7 +169,7 @@ var BitmapText = (function () {
     /**
      * How lines of text are aligned (left, right, center).
      * @property align
-     * @Type {BitmapText.TextAlign}
+     * @type {BitmapText.TextAlign}
      * @default BitmapText.TextAlign.left
      */
     BitmapText.getset('align',

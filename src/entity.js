@@ -206,14 +206,8 @@ var Entity = Fire.Class({
 
         // internal properties
 
-        _active: {
-            default: true,
-            visible: false
-        },
-        _parent: {
-            default: null,
-            visible: false
-        },
+        _active: true,
+        _parent: null,
 
         /**
          * @property _children
@@ -222,10 +216,8 @@ var Entity = Fire.Class({
          * @readOnly
          * @private
          */
-        _children: {
-            default: [],
-            visible: false
-        },
+        _children: [],
+
         /**
          * @property _components
          * @type {Component[]}
@@ -233,10 +225,7 @@ var Entity = Fire.Class({
          * @readOnly
          * @private
          */
-        _components: {
-            default: null,
-            visible: false
-        }
+        _components: null
     },
 
     ////////////////////////////////////////////////////////////////////
