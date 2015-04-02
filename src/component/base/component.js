@@ -462,7 +462,7 @@ Fire.attr(Component, 'executeInEditMode', false);
  * By calling this function, each component will also have its callback executed in edit mode.
  *
  * @method executeInEditMode
- * @param {function} constructor - the class you want to register, must inherit from Component
+ * @param {Component} constructor - the class you want to register, must inherit from Component
  */
 Fire.executeInEditMode = function (constructor) {
     // @ifdef EDITOR

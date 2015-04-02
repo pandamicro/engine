@@ -125,6 +125,8 @@ function TextLoader(url, callback, onProgress) {
  * @method _JsonLoader
  * @param {string} url
  * @param {function} callback
+ * @param {string} callback.param error - null or the error info
+ * @param {object} callback.param data - the loaded json object or null
  * @async
  * @private
  */

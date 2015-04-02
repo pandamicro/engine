@@ -31,6 +31,7 @@
      * @method on
      * @param {string} type - eg. "keydown", "click"
      * @param {function} callback
+     * @param {Event} callback.param event - the input event
      * @beta
      */
     Input.on = function (type, callback) {

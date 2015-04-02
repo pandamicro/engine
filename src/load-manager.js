@@ -85,6 +85,8 @@ var LoadManager = (function () {
          * @param {function} loader
          * @param {string} url
          * @param {function} callback
+         * @param {string} callback.param error - null or the error info
+         * @param {any} callback.param data - the loaded data
          * @private
          */
         loadByLoader: function (loader, url, callback) {
@@ -109,6 +111,8 @@ var LoadManager = (function () {
          * @param {string} rawType
          * @param {string} [rawExtname]
          * @param {function} callback
+         * @param {string} callback.param error - null or the error info
+         * @param {any} callback.param data - the loaded data
          * @private
          */
         load: function (url, rawType, rawExtname, callback) {

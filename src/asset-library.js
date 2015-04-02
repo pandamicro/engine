@@ -56,6 +56,8 @@ var AssetLibrary = (function () {
          * @method loadAsset
          * @param {string} uuid
          * @param {function} callback
+         * @param {string} callback.param error - null or the error info
+         * @param {Asset} callback.param data - the loaded asset or null
          * @param {boolean} [readMainCache=true] - If false, the asset and all its depends assets will reload and create new instances from library.
          * @param {boolean} [writeMainCache=true] - If true, the result will cache to AssetLibrary, and MUST be unload by user manually.
          * @param {Asset} [existingAsset] - load to existing asset, this argument is only available in editor
@@ -142,6 +144,8 @@ var AssetLibrary = (function () {
          * @method loadJson
          * @param {string|object} json
          * @param {function} callback
+         * @param {string} callback.param error - null or the error info
+         * @param {object} callback.param data - the loaded object or null
          * @param {boolean} [dontCache=false] - If false, the result will cache to AssetLibrary, and MUST be unload by user manually.
          * @private
          */
@@ -155,6 +159,8 @@ var AssetLibrary = (function () {
          * @param {string|object} json
          * @param {string} url
          * @param {function} callback
+         * @param {string} callback.param error - null or the error info
+         * @param {object} callback.param data - the loaded object or null
          * @param {object} handle - the loading context which reserves all relevant parameters
          * @param {Asset} [existingAsset] - existing asset to reload
          * @private
