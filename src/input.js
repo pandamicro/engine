@@ -26,7 +26,9 @@
      *
      * !#zh 注册输入事件的回调方法。
      *
-     * 要查阅所有支持的输入事件，请访问[输入事件列表](/zh/scripting/input-events)。
+     * 请参考：
+     * - [获取用户输入](/zh/scripting/input)
+     * - [输入事件列表](/zh/scripting/input-events)
      *
      * @method on
      * @param {string} type - eg. "keydown", "click"
