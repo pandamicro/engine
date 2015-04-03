@@ -128,7 +128,9 @@ var Camera = Fire.Class({
         if (Engine._scene.camera === this) {
             Engine._scene.camera = null;
         }
-        this._renderContext.camera = null;
+        if (this._renderContext) {
+            this._renderContext.camera = null;
+        }
     },
 
     // other functions
@@ -141,6 +143,10 @@ var Camera = Fire.Class({
      * @return {Vec2}
      */
     viewportToScreen: function (position, out) {
+        if ( !this._renderContext ) {
+            Fire.error("Camera not yet inited.");
+            return;
+        }
         out = this._renderContext.size.scale(position, out);
         return out;
     },
@@ -154,6 +160,10 @@ var Camera = Fire.Class({
      */
     screenToViewport: function (position, out) {
         out = out || new Vec2();
+        if ( !this._renderContext ) {
+            Fire.error("Camera not yet inited.");
+            return;
+        }
         var size = this._renderContext.size;
         out.x = position.x / size.x;
         out.y = position.y / size.y;

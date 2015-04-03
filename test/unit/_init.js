@@ -44,7 +44,7 @@ Engine._reset = function (w, h) {
     else {
         Screen.size = new V2(w, h);
     }
-    Engine._setCurrentScene(new Fire._Scene());
+    Engine._launchScene(new Fire._Scene());
 
     Engine.stop();
 };

@@ -7,8 +7,14 @@ var libPath = projPath + '/library';
 Fire.AssetLibrary.init(libPath);
 
 asyncTest('load scene 1', function () {
-
+    var called = false;
     Engine._loadSceneByUuid('74325665', function (scene) {
+        if (called) {
+            ok(false, 'callback can only called once');
+            return;
+        }
+        called = true;
+
         clearTimeout(timerId);
         ok(scene, 'can load scene');
 
@@ -39,8 +45,7 @@ asyncTest('load scene 1', function () {
     }, 100);
 });
 
-asyncTest('load scene with camera', function () {
-
+asyncTest('load scene with camera', 1, function () {
     Engine._loadSceneByUuid('746548892', function (scene) {
         clearTimeout(timerId);
         ok(true, 'done');

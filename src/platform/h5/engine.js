@@ -309,9 +309,9 @@ var Engine = (function () {
         }
         requestId = Ticker.requestAnimationFrame(update);
 
-        if (isLoadingScene) {
-            return;
-        }
+        //if (isLoadingScene) {
+        //    return;
+        //}
 
         var updateLogic = !isPaused || stepOnce;
         stepOnce = false;
@@ -328,13 +328,13 @@ var Engine = (function () {
     Engine.update = update;
 
     /**
-     * Set current scene directly.
-     * @method _setCurrentScene
+     * Launch loaded scene.
+     * @method _launchScene
      * @param {Scene} scene
      * @param {function} [onBeforeLoadScene]
      * @private
      */
-    Engine._setCurrentScene = function (scene, onBeforeLoadScene) {
+    Engine._launchScene = function (scene, onBeforeLoadScene) {
         if (!scene) {
             Fire.error('Argument must be non-nil');
             return;
@@ -411,7 +411,6 @@ var Engine = (function () {
      * @private
      */
     Engine._loadSceneByUuid = function (uuid, onLaunched, onUnloaded) {
-        // TODO: lookup uuid by name
         isLoadingScene = true;
         AssetLibrary.unloadAsset(uuid);     // force reload
         AssetLibrary.loadAsset(uuid, function onSceneLoaded (error, scene) {
@@ -436,7 +435,7 @@ var Engine = (function () {
                 return;
             }
 
-            Engine._setCurrentScene(scene, onUnloaded);
+            Engine._launchScene(scene, onUnloaded);
 
             isLoadingScene = false;
             if (onLaunched) {

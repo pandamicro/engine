@@ -82,14 +82,16 @@ var AssetLibrary = (function () {
          *
          * @method _loadAssetByUuid
          * @param {string} uuid
-         * @param {AssetLibrary~loadCallback} callback - the callback to receive the asset
+         * @param {AssetLibrary~loadCallback} callback - the callback to receive the asset, can be null
          * @param {LoadingHandle} handle - the loading context which reserves all relevant parameters
          * @param {Asset} [existingAsset] - load to existing asset, this argument is only available in editor
          * @private
          */
         _loadAssetByUuid: function (uuid, callback, handle, existingAsset) {
             if (typeof uuid !== 'string') {
-                callback('[AssetLibrary] uuid must be string', null);
+                if (callback) {
+                    callback('[AssetLibrary] uuid must be string', null);
+                }
                 return;
             }
             // step 1
@@ -126,7 +128,7 @@ var AssetLibrary = (function () {
                         if ( canShareLoadingTask ) {
                             _uuidToCallbacks.invokeAndRemove(uuid, err, asset);
                         }
-                        else {
+                        else if (callback) {
                             callback(err, asset);
                         }
                     }
