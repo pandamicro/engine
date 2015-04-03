@@ -444,6 +444,27 @@ var Engine = (function () {
         });
     };
 
+    /**
+     * Preloads the scene to reduces loading time. You can call this method at any time you want.
+     *
+     * After calling this method, you still need to launch the scene by `Engine.loadScene` because the loading logic will not changed. It will be totally fine to call `Engine.loadScene` at any time even if the preloading is not yet finished, the scene will be launched after loaded automatically.
+     * @method preloadScene
+     * @param {string} sceneName - the name of the scene to preload
+     * @param {function} [onLoaded] - callback, will be called after the scene loaded
+     * @param {string} onLoaded.param error - null or the error info
+     * @param {Asset} onLoaded.param data - the loaded scene or null
+     */
+    Engine.preloadScene = function (sceneName, onLoaded) {
+        var uuid = Engine._sceneInfos[sceneName];
+        if (uuid) {
+            AssetLibrary.unloadAsset(uuid);     // force reload
+            AssetLibrary.loadAsset(uuid, onLoaded);
+        }
+        else {
+            Fire.error('[Engine.preloadScene] The scene "%s" could not be loaded because it has not been added to the build settings.', sceneName);
+        }
+    };
+
     return Engine;
 })();
 
