@@ -65,7 +65,7 @@
             }
         },
         Fire.DisplayName("Script"),
-        Fire.ObjectType(Fire.ScriptAsset, true)
+        Fire._ScriptUuid
     );
 
     // @endif
