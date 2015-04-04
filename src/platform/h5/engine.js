@@ -16,7 +16,7 @@ var Engine = (function () {
     var isPlaying = false;
     var isPaused = false;
     var stepOnce = false;
-    var isLoadingScene = false;
+    var loadingScene = '';
 
     // We should use this id to cancel ticker, otherwise if the engine stop and replay immediately,
     // last ticker will not cancel correctly.
@@ -104,9 +104,9 @@ var Engine = (function () {
      * @type {boolean}
      * @readOnly
      */
-    Object.defineProperty(Engine, 'isLoadingScene', {
+    Object.defineProperty(Engine, 'loadingScene', {
         get: function () {
-            return isLoadingScene;
+            return loadingScene;
         }
     });
 
@@ -242,7 +242,7 @@ var Engine = (function () {
             // reset states
             isPlaying = false;
             isPaused = false;
-            isLoadingScene = false; // TODO: what if loading scene ?
+            loadingScene = ''; // TODO: what if loading scene ?
             if (requestId !== -1) {
                 Ticker.cancelAnimationFrame(requestId);
                 requestId = -1;
@@ -309,7 +309,7 @@ var Engine = (function () {
         }
         requestId = Ticker.requestAnimationFrame(update);
 
-        //if (isLoadingScene) {
+        //if (sceneLoadingQueue) {
         //    return;
         //}
 
@@ -391,14 +391,22 @@ var Engine = (function () {
      * @param {string} sceneName - the name of the scene to load
      * @param {function} [onLaunched] - callback, will be called after scene launched
      * @param {function} [onUnloaded] - callback, will be called when the previous scene was unloaded
+     * @return {boolean} if error, return false
      */
     Engine.loadScene = function (sceneName, onLaunched, onUnloaded) {
+        if (loadingScene) {
+            Fire.error('[Engine.loadScene] Failed to load scene "%s" because "%s" is already loading', sceneName, loadingScene);
+            return false;
+        }
         var uuid = Engine._sceneInfos[sceneName];
         if (uuid) {
+            loadingScene = sceneName;
             Engine._loadSceneByUuid(uuid, onLaunched, onUnloaded);
+            return true;
         }
         else {
-            Fire.error('[Engine.loadScene] The scene "%s" could not be loaded because it has not been added to the build settings.', sceneName);
+            Fire.error('[Engine.loadScene] The scene "%s" can not be loaded because it has not been added to the build settings.', sceneName);
+            return false;
         }
     };
 
@@ -411,35 +419,27 @@ var Engine = (function () {
      * @private
      */
     Engine._loadSceneByUuid = function (uuid, onLaunched, onUnloaded) {
-        isLoadingScene = true;
         AssetLibrary.unloadAsset(uuid);     // force reload
         AssetLibrary.loadAsset(uuid, function onSceneLoaded (error, scene) {
             if (error) {
-                Fire.error('Failed to load scene: ' + error);
+                error = 'Failed to load scene: ' + error;
                 // @ifdef EDITOR
                 console.throw('[test] Failed to load scene');
                 // @endif
-                isLoadingScene = false;
-                if (onLaunched) {
-                    onLaunched(null, error);
-                }
-                return;
             }
-            if (!(scene instanceof Fire._Scene)) {
+            else if (!(scene instanceof Fire._Scene)) {
                 error = 'The asset ' + uuid + ' is not a scene';
-                Fire.error(error);
-                isLoadingScene = false;
-                if (onLaunched) {
-                    onLaunched(null, error);
-                }
-                return;
+                scene = null;
             }
-
-            Engine._launchScene(scene, onUnloaded);
-
-            isLoadingScene = false;
+            if (scene) {
+                Engine._launchScene(scene, onUnloaded);
+            }
+            else {
+                Fire.error(error);
+            }
+            loadingScene = '';
             if (onLaunched) {
-                onLaunched(scene);
+                onLaunched(scene, error);
             }
         });
     };
