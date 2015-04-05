@@ -226,7 +226,7 @@
             c.onEnable();
         }
         catch (e) {
-            Fire.error(e);
+            Fire._throw(e);
         }
     }
     function callOnDisableInTryCatch (c) {
@@ -234,7 +234,7 @@
             c.onDisable();
         }
         catch (e) {
-            Fire.error(e);
+            Fire._throw(e);
         }
     }
     function callOnLoadInTryCatch (c) {
@@ -242,7 +242,7 @@
             c.onLoad();
         }
         catch (e) {
-            Fire.error(e);
+            Fire._throw(e);
         }
     }
     function callOnStartInTryCatch (c) {
@@ -250,7 +250,7 @@
             c.onStart();
         }
         catch (e) {
-            Fire.error(e);
+            Fire._throw(e);
         }
     }
     function callOnDestroyInTryCatch (c) {
@@ -258,7 +258,7 @@
             c.onDestroy();
         }
         catch (e) {
-            Fire.error(e);
+            Fire._throw(e);
         }
     }
 // @endif

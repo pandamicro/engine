@@ -55,7 +55,7 @@
             c._FUNC_();
         }
         catch (e) {
-            Fire.error(e);
+            Fire._throw(e);
         }
     }
     visitFunctionTmpl = "(function () {" +
