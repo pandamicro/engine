@@ -221,46 +221,22 @@
     };
 
 // @ifdef EDITOR
-    function callOnEnableInTryCatch (c) {
+    function call_FUNC_InTryCatch (c) {
         try {
-            c.onEnable();
+            c._FUNC_();
         }
         catch (e) {
             Fire._throw(e);
         }
     }
-    function callOnDisableInTryCatch (c) {
-        try {
-            c.onDisable();
-        }
-        catch (e) {
-            Fire._throw(e);
-        }
-    }
-    function callOnLoadInTryCatch (c) {
-        try {
-            c.onLoad();
-        }
-        catch (e) {
-            Fire._throw(e);
-        }
-    }
-    function callOnStartInTryCatch (c) {
-        try {
-            c.onStart();
-        }
-        catch (e) {
-            Fire._throw(e);
-        }
-    }
-    function callOnDestroyInTryCatch (c) {
-        try {
-            c.onDestroy();
-        }
-        catch (e) {
-            Fire._throw(e);
-        }
-    }
+    var execInTryCatchTmpl = '(' + call_FUNC_InTryCatch + ')';
+    // jshint evil: true
+    var callOnEnableInTryCatch = eval(execInTryCatchTmpl.replace(/_FUNC_/g, 'onEnable'));
+    var callOnDisableInTryCatch = eval(execInTryCatchTmpl.replace(/_FUNC_/g, 'onDisable'));
+    var callOnLoadInTryCatch = eval(execInTryCatchTmpl.replace(/_FUNC_/g, 'onLoad'));
+    var callOnStartInTryCatch = eval(execInTryCatchTmpl.replace(/_FUNC_/g, 'onStart'));
+    var callOnDestroyInTryCatch = eval(execInTryCatchTmpl.replace(/_FUNC_/g, 'onDestroy'));
+    // jshint evil: false
 // @endif
 
     // Should not call onEnable/onDisable in other place
