@@ -52,7 +52,7 @@ var ModifierKeyStates = (function () {
 
 Fire.ModifierKeyStates = ModifierKeyStates;
 
-Fire.KeyboardEvent = KeyboardEvent;
+Fire.KeyboardEvent = window.KeyboardEvent;  // should use window for Safari
 
 var MouseEvent = (function () {
 

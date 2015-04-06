@@ -54,6 +54,11 @@
         }
     };
 
+    function convertToRetina (event) {
+        event.screenX *= Fire.Screen.devicePixelRatio;
+        event.screenY *= Fire.Screen.devicePixelRatio;
+    }
+
     InputContext.prototype.simulateMouseEvent = function () {
         var scope = this;
         // get canvas page offset
@@ -70,7 +75,7 @@
             var event = new MouseEvent(type);
             event.bubbles = true;
             // event.cancelable = eventInfo.cancelable; (NYI)
-            var first = touchEvent.touches[0];  // changedTouches[0]
+            var first = touchEvent.changedTouches[0] || touchEvent.touches[0];
             event.button = 0;
             event.buttonStates = 1;
             if (first) {
@@ -85,6 +90,7 @@
                 return function (touchEvent) {
                     // gen mouse event
                     var event = createMouseEvent(type, touchEvent);
+                    convertToRetina(event);
 
                     // inner dispatch
                     Input._dispatchEvent(event, scope);
@@ -144,6 +150,7 @@
         }
         event.bubbles = eventInfo.bubbles;
         // event.cancelable = eventInfo.cancelable; (NYI)
+        convertToRetina(event);
 
         // inner dispatch
         Input._dispatchEvent(event, this);

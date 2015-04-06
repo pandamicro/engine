@@ -45,17 +45,15 @@
             Fire.error('Callback of event must be non-nil');
             return;
         }
+        var listeners = null;
         if (useCapture) {
-            this._capturingListeners = this._capturingListeners || new EventListeners();
-            if ( ! this._capturingListeners.has(type, callback) ) {
-                this._capturingListeners.add(type, callback);
-            }
+            listeners = this._capturingListeners = this._capturingListeners || new EventListeners();
         }
         else {
-            this._bubblingListeners = this._bubblingListeners || new EventListeners();
-            if ( ! this._bubblingListeners.has(type, callback) ) {
-                this._bubblingListeners.add(type, callback);
-            }
+            listeners = this._bubblingListeners = this._bubblingListeners || new EventListeners();
+        }
+        if ( ! listeners.has(type, callback) ) {
+            listeners.add(type, callback);
         }
     };
 

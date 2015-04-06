@@ -25,14 +25,12 @@ var Component = Fire.Component;
 var LoadManager = Fire.LoadManager;
 var AssetLibrary = Fire.AssetLibrary;
 var SpriteRenderer = Fire.SpriteRenderer;
+var Screen = Fire.Screen;
 
 var FO = Fire.FObject;
 var V2 = Fire.Vec2;
+var v2 = Fire.v2;
 var M3 = Fire.Matrix23;
-
-function v2 (x, y) {
-    return new Fire.Vec2(x, y);
-}
 
 // Test helpers
 
@@ -44,7 +42,7 @@ Engine._reset = function (w, h) {
         var canvas = Engine.init(w, h).renderer.view;
     }
     else {
-        Engine.screenSize = new V2(w, h);
+        Screen.size = new V2(w, h);
     }
     Engine._setCurrentScene(new Fire._Scene());
 

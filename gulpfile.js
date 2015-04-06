@@ -22,6 +22,10 @@ var paths = {
         // runtime pre-defines
         'src/platform/editor/asset-watcher.js',
         'src/platform/editor/editor-callbacks.js',
+
+        // mockers for editor-core
+        'src/platform/editor-core/**/*',
+
         // runtime engine
         'src/definition.js',
         'src/time.js',
@@ -30,13 +34,15 @@ var paths = {
         'src/event/event-target.js',
         'src/platform/h5/ticker.js',
         'src/platform/h5/pixi-render-context.js',
-        'src/bitmapfont/pixi-bitmap-font-util.js',
+        'src/platform/h5/pixi-bitmap-font-util.js',
         'src/platform/h5/loaders.js',
-        'src/component/component.js',
+        'src/component/base/component.js',
+        'src/component/base/component-requiring-frames.js',
+        'src/component/base/component-define.js',
         'src/component/transform.js',
         'src/component/renderer.js',
         'src/component/sprite-renderer.js',
-        "src/bitmapfont/bitmap-text.js",
+        'src/component/bitmap-text.js',
         'src/component/camera.js',
         'src/component/missing.js',
         'src/interaction-context.js',
@@ -47,6 +53,9 @@ var paths = {
         'src/platform/h5/engine.js',
         'src/platform/h5/input-events.js',
         'src/platform/h5/input-context.js',
+        'src/platform/h5/browser.js',
+        'src/platform/h5/screen.js',
+        'src/platform/h5/screen–agnostic.js',
         'src/event/event-register.js',
         'src/input.js',
     ],
@@ -79,6 +88,7 @@ var paths = {
     engine_min: 'engine.js',
     engine_player_dev: 'engine.player.dev.js',
     engine_player: 'engine.player.js',
+    engine_editor_core: 'engine.editor-core.js',
 
     // references
     ref: {
@@ -159,7 +169,7 @@ var insertCoreShortcut = function (path, moduleName, filter) {
 };
 
 gulp.task('js-dev', function() {
-    return gulp.src(paths.src)
+    return gulp.src(paths.src.concat('!**/platform/editor-core/**'))
                // .pipe(insertCoreShortcut('./ext/fire-core/bin/core.min.js', 'Fire'))
                .pipe(jshint({
                    multistr: true,
@@ -175,7 +185,7 @@ gulp.task('js-dev', function() {
 });
 
 gulp.task('js-min', function() {
-    return gulp.src(paths.src)
+    return gulp.src(paths.src.concat('!**/platform/editor-core/**'))
     // .pipe(insertCoreShortcut('./ext/fire-core/bin/core.min.js', 'Fire'))
         .pipe(concat(paths.engine_min))
         .pipe(embedIntoModule(paths.index))
@@ -191,7 +201,7 @@ gulp.task('js-min', function() {
 });
 
 gulp.task('js-player-dev', function() {
-    return gulp.src(paths.src.concat('!**/{Editor,editor}/**'))
+    return gulp.src(paths.src.concat('!**/platform/{editor|editor-core}/**'))
         // .pipe(insertCoreShortcut('./ext/fire-core/bin/core.min.js', 'Fire'))
         .pipe(concat(paths.engine_player_dev))
         .pipe(embedIntoModule(paths.index))
@@ -201,7 +211,7 @@ gulp.task('js-player-dev', function() {
 });
 
 gulp.task('js-player', function() {
-    return gulp.src(paths.src.concat('!**/{Editor,editor}/**'))
+    return gulp.src(paths.src.concat('!**/platform/{editor|editor-core}/**'))
         // .pipe(insertCoreShortcut('./ext/fire-core/bin/core.min.js', 'Fire'))
         .pipe(concat(paths.engine_player))
         .pipe(embedIntoModule(paths.index))
@@ -210,7 +220,17 @@ gulp.task('js-player', function() {
         ;
 });
 
-gulp.task('js-all', ['js-dev', 'js-min', 'js-player-dev', 'js-player']);
+gulp.task('js-editor-core', function() {
+    return gulp.src(paths.src.concat('!**/platform/h5/**'))
+        // .pipe(insertCoreShortcut('./ext/fire-core/bin/core.min.js', 'Fire'))
+        .pipe(concat(paths.engine_editor_core))
+        .pipe(embedIntoModule(paths.index))
+        .pipe(preprocess({context: { EDITOR: true, EDITOR_CORE: true, DEBUG: true, DEV: true }}))
+        .pipe(gulp.dest(paths.output))
+        ;
+});
+
+gulp.task('js-all', ['js-dev', 'js-min', 'js-player-dev', 'js-player', 'js-editor-core']);
 
 /////////////////////////////////////////////////////////////////////////////
 // test
@@ -231,7 +251,7 @@ gulp.task('unit-runner', function() {
                ;
 });
 
-gulp.task('test', ['cp-core', 'js-min', 'unit-runner'], function() {
+gulp.task('test', ['cp-core', 'js-min', 'js-dev', 'unit-runner'], function() {
     gutil.log("please run " + gutil.colors.green("'bower install'") + " before running this task.");
     var timeOutInSeconds = 5;
     return gulp.src('test/unit/runner.html', { read: false })
@@ -269,8 +289,8 @@ gulp.task('watch', function() {
 });
 
 // tasks
-gulp.task('min', ['js-min', 'js-player-dev', 'js-player']);
-gulp.task('dev', ['js-dev', 'js-player-dev', 'js-player']);
+gulp.task('min', ['js-min', 'js-player-dev', 'js-player', 'js-editor-core']);
+gulp.task('dev', ['js-dev', 'js-player-dev', 'js-player', 'js-editor-core']);
 gulp.task('all', ['dev', 'test', 'ref'] );
 gulp.task('ci', ['test'] );
 gulp.task('default', ['dev', 'min']);

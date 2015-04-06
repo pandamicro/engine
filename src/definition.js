@@ -1,15 +1,57 @@
-﻿var Destroying = Fire._ObjectFlags.Destroying;
+﻿/**
+ * !#en
+ *
+ * !#zh 除了类已经定义的变量外，以下是其它 Fireball-x 中已经使用的变量名，请避免冲突。这些变量有一些是保留用途，只有特殊情况才会声明。
+ * ### 全局变量
+ * - `Fire`
+ * - `PIXI`
+ * - `require`
+ * ### 可能定义在任意对象上的变量
+ *
+ * - `__id__`
+ * - `__type__`
+ * - `_iN$t`
+ * - `_rawext`
+ *
+ * ### 可能定义在任意类型或 prototype 上的变量
+ *
+ * - 任何以 `_attrs$` 开头的变量
+ * - `__classname__`
+ * - `__cid__`
+ *
+ * ### FireClass 上的静态变量
+ *
+ * - `get`
+ * - `set`
+ * - `getset`
+ * - `prop`
+ * - `$super`
+ * - `__props__`
+ *
+ * ### FireClass 上的成员变量
+ *
+ * - `_observing`
+ * - `_$erialized`
+ *
+ * @module Reserved-Words
+ */
+
+var Destroying = Fire._ObjectFlags.Destroying;
+var DontDestroy = Fire._ObjectFlags.DontDestroy;
 var Hide = Fire._ObjectFlags.Hide;
 var HideInGame = Fire._ObjectFlags.HideInGame;
 var HideInEditor = Fire._ObjectFlags.HideInEditor;
 
-/**
- * used in _callOnEnable to ensure onEnable and onDisable will be called alternately
- * 从逻辑上来说OnEnable和OnDisable的交替调用不需要由额外的变量进行保护，但那样会使设计变得复杂
- * 例如Entity.destory调用后但还未真正销毁时，会调用所有Component的OnDisable。
- * 这时如果又有addComponent，Entity需要对这些新来的Component特殊处理。将来调度器做了之后可以尝试去掉这个标记。
- */
-var IsOnEnableCalled = Fire._ObjectFlags.IsOnEnableCalled;
 
-var IsOnLoadCalled = Fire._ObjectFlags.IsOnLoadCalled;
-var IsOnStartCalled = Fire._ObjectFlags.IsOnStartCalled;
+var ContentStrategyType = Fire.defineEnum({
+
+    NoScale: -1,
+
+    /**
+     * The application takes the height of the design resolution size and modifies the width of the internal canvas,
+     * so that it fits the aspect ratio of the device and no distortion will occur,
+     * however you must make sure your application works on different aspect ratios
+     */
+    FixedHeight: -1
+});
+Fire.ContentStrategyType = ContentStrategyType;

@@ -162,6 +162,23 @@ var LoadManager = (function () {
         reset: function () {
             this._rawTypes = getBuiltinRawTypes();
         },
+        
+        isLoading: function (url, alsoCheckRaw) {
+            if (this._curConcurrent === 0) {
+                return false;
+            }
+            if (urlToCallbacks.has(url)) {
+                return true;
+            }
+            if (alsoCheckRaw) {
+                for (var u in urlToCallbacks._callbackTable) {
+                    if (u.indexOf(url) === 0) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        },
 // @endif
 
         _loadFromXHR: _LoadFromXHR

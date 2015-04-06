@@ -61,6 +61,15 @@ var editorCallback = {
     onEntityRenamed: null,
 
     /**
+     * @callback Fire.Engine._editorCallback~onStartUnloadScene
+     * @param {Scene} scene
+     */
+    /**
+     * @property {Fire.Engine._editorCallback~onStartUnloadScene} Fire.Engine._editorCallback.onStartUnloadScene
+     */
+    onStartUnloadScene: null,
+
+    /**
      * @callback Fire.Engine._editorCallback~onSceneLaunched
      * @param {Scene} scene
      */

@@ -19,7 +19,7 @@ asyncTest('load asset with raw', function () {
     //texture.width = 321;
     //Fire.log(Fire.serialize(texture));
 
-    AssetLibrary._loadAssetByUuid(grossini_uuid, function (err, asset) {
+    AssetLibrary.loadAsset(grossini_uuid, function (err, asset) {
         clearTimeout(timerId);
         ok(asset, 'can load asset by uuid');
         strictEqual(asset.width, 321, 'can get width');
@@ -39,7 +39,7 @@ asyncTest('load asset with depends asset', function () {
     //sprite.texture._uuid = grossini_uuid;
     //Fire.log(Fire.serialize(sprite));
 
-    AssetLibrary._loadAssetByUuid(grossiniSprite_uuid, function (err, asset) {
+    AssetLibrary.loadAsset(grossiniSprite_uuid, function (err, asset) {
         clearTimeout(timerId);
         ok(asset.texture, 'can load depends asset');
         strictEqual(asset.texture.height, 123, 'can get height');

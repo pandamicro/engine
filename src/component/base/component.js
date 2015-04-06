@@ -1,5 +1,18 @@
 ﻿var Component = (function () {
 
+    /**
+     * used in _callOnEnable to ensure onEnable and onDisable will be called alternately
+     * 从逻辑上来说OnEnable和OnDisable的交替调用不需要由额外的变量进行保护，但那样会使设计变得复杂
+     * 例如Entity.destroy调用后但还未真正销毁时，会调用所有Component的OnDisable。
+     * 这时如果又有addComponent，Entity需要对这些新来的Component特殊处理。将来调度器做了之后可以尝试去掉这个标记。
+     */
+    var IsOnEnableCalled = Fire._ObjectFlags.IsOnEnableCalled;
+
+    // IsOnEnableCalled 会收到 executeInEditMode 的影响，IsEditorOnEnabledCalled 不会
+    var IsEditorOnEnabledCalled = Fire._ObjectFlags.IsEditorOnEnabledCalled;
+    var IsOnLoadCalled = Fire._ObjectFlags.IsOnLoadCalled;
+    var IsOnStartCalled = Fire._ObjectFlags.IsOnStartCalled;
+
     var compCtor;
 // @ifdef EDITOR
     compCtor = function () {
@@ -19,6 +32,37 @@
     var Component = Fire.extend('Fire.Component', HashObject, compCtor);
 
     Component.prop('entity', null, Fire.HideInInspector);
+
+    // @ifdef EDITOR
+
+    // 如果不带有 uuid，则返回空字符串
+    Component.getset('_scriptUuid',
+        function () {
+            return this._cacheUuid || '';
+        },
+        function (value) {
+            if (this._cacheUuid !== value) {
+                if (value && Fire.isUuid(value)) {
+                    var classId = Fire.compressUuid(value);
+                    var newComp = Fire.JS._getClassById(classId);
+                    if (newComp) {
+                        Fire.warn('Sorry, replacing component script is not yet implemented.');
+                        //Fire.sendToWindows('reload:window-scripts', Fire._Sandbox.compiled);
+                    }
+                    else {
+                        Fire.error('Can not find a component in the script which uuid is "%s".', value);
+                    }
+                }
+                else {
+                    Fire.error('invalid script');
+                }
+            }
+        },
+        Fire.DisplayName("Script"),
+        Fire.ObjectType(Fire.ScriptAsset, true)
+    );
+
+    // @endif
 
     // enabled self
     Component.prop('_enabled', true, Fire.HideInInspector);
@@ -91,6 +135,23 @@
     Component.prototype.onDestroy = null;
     Component.prototype.onPreRender = null;
 
+
+    /**
+     * @param {function|string} typeOrTypename
+     * @return {Component}
+     */
+    Component.prototype.addComponent = function (typeOrTypename) {
+        return this.entity.addComponent(typeOrTypename);
+    };
+
+    /**
+     * @param {function|string} typeOrTypename
+     * @return {Component}
+     */
+    Component.prototype.getComponent = function (typeOrTypename) {
+        return this.entity.getComponent(typeOrTypename);
+    };
+
     /**
      * This method will be invoked when the scene graph changed, which is means the parent of its transform changed,
      * or one of its ancestor's parent changed, or one of their sibling index changed.
@@ -158,6 +219,22 @@
     // Should not call onEnable/onDisable in other place
     function _callOnEnable (self, enable) {
 // @ifdef EDITOR
+        if ( enable ) {
+            if ( !(self._objFlags & IsEditorOnEnabledCalled) ) {
+                self._objFlags |= IsEditorOnEnabledCalled;
+                if ( editorCallback.onComponentEnabled ) {
+                    editorCallback.onComponentEnabled(self);
+                }
+            }
+        }
+        else {
+            if ( self._objFlags & IsEditorOnEnabledCalled ) {
+                self._objFlags &= ~IsEditorOnEnabledCalled;
+                if ( editorCallback.onComponentDisabled ) {
+                    editorCallback.onComponentDisabled(self);
+                }
+            }
+        }
         if ( !(Fire.Engine.isPlaying || Fire.attr(self, 'executeInEditMode')) ) {
             return;
         }
@@ -173,12 +250,8 @@
                     self.onEnable();
 // @endif
                 }
-// @ifdef EDITOR
-                if ( editorCallback.onComponentEnabled ) {
-                    editorCallback.onComponentEnabled(self);
-                }
-// @endif
             }
+
         }
         else {
             if ( self._objFlags & IsOnEnableCalled ) {
@@ -191,11 +264,6 @@
                     self.onDisable();
 // @endif
                 }
-// @ifdef EDITOR
-                if ( editorCallback.onComponentDisabled ) {
-                    editorCallback.onComponentDisabled(self);
-                }
-// @endif
             }
         }
     }
@@ -303,6 +371,9 @@
 
 Fire.Component = Component;
 
+////////////////////////////////////////////////////////////////////////////////
+// Component helpers
+
 // Register Component Menu
 
 // @ifdef EDITOR
@@ -346,103 +417,4 @@ Fire.executeInEditMode = function (constructor) {
     // @ifdef EDITOR
     Fire.attr(constructor, 'executeInEditMode', true);
     // @endif
-};
-
-var _requiringFrame = [];  // the requiring frame infos
-
-Fire._RFpush = function (uuid, script) {
-    if (arguments.length === 1) {
-        script = uuid;
-        uuid = '';
-    }
-    _requiringFrame.push({
-        uuid: uuid,
-        script: script
-    });
-};
-Fire._RFpop = function () {
-    _requiringFrame.pop();
-};
-
-function doDefineComp (base, ctor) {
-    var frame = _requiringFrame[_requiringFrame.length - 1];
-    if (frame) {
-        var className = frame.script;
-        var cls = Fire.extend(className, base, ctor);
-        if (frame.uuid) {
-            JS._setClassId(frame.uuid, cls);
-        }
-        return cls;
-    }
-// @ifdef DEV
-    else {
-        Fire.error('Sorry, defining Component dynamically is not allowed, define during loading script please.');
-        return null;
-    }
-// @endif
-}
-
-// @ifdef DEV
-function checkCompCtor (constructor, scopeName) {
-    if (constructor) {
-        if (typeof constructor !== 'function') {
-            Fire.error(scopeName + ' Constructor must be function type');
-            return false;
-        }
-        if (Fire.isChildClassOf(constructor, Component)) {
-            Fire.error(scopeName + ' Constructor can not be another Component');
-            return false;
-        }
-        if (Fire._isFireClass(constructor)) {
-            Fire.error(scopeName + ' Constructor can not be another FireClass');
-            return false;
-        }
-        if (constructor.length > 0) {
-            // To make a unified FireClass serialization process,
-            // we don't allow parameters for constructor when creating instances of FireClass.
-            // For advance user, construct arguments can get from 'arguments'.
-            Fire.error(scopeName + ' Can not instantiate FireClass with arguments.');
-            return false;
-        }
-    }
-    return true;
-}
-// @endif
-
-/**
- * @method defineComponent
- * @static
- * @param {function} [constructor]
- */
-Fire.defineComponent = function (constructor) {
-// @ifdef DEV
-    if ( !checkCompCtor(constructor, '[Fire.defineComponent]') ) {
-        return;
-    }
-// @endif
-    return doDefineComp(Component, constructor);
-};
-
-/**
- * @method extendComponent
- * @static
- * @param {function} baseClass
- * @param {function} [constructor]
- */
-Fire.extendComponent = function (baseClass, constructor) {
-// @ifdef DEV
-    if ( !baseClass ) {
-        Fire.error('[Fire.extendComponent] baseClass must be non-nil, or use Fire.defineComponent instead.');
-        return;
-    }
-    if ( !Fire.isChildClassOf(baseClass, Component) ) {
-        Fire.error('[Fire.extendComponent] Base class must inherit from Component');
-        return;
-    }
-    if ( !checkCompCtor(constructor, '[Fire.extendComponent]') ) {
-        return;
-    }
-// @endif
-    return doDefineComp(baseClass, constructor);
-    //var superCtorCalled = this.hasOwnProperty('_name');
 };

@@ -85,6 +85,24 @@ var RenderContext = (function () {
         }
     });
 
+    Object.defineProperty(RenderContext.prototype, 'width', {
+        get: function () {
+            return this.renderer.width;
+        },
+        set: function (value) {
+            this.renderer.resize(value, this.renderer.height);
+        }
+    });
+
+    Object.defineProperty(RenderContext.prototype, 'height', {
+        get: function () {
+            return this.renderer.height;
+        },
+        set: function (value) {
+            this.renderer.resize(this.renderer.width, value);
+        }
+    });
+
     Object.defineProperty(RenderContext.prototype, 'size', {
         get: function () {
             var winSize = this.game.director.getWinSize();

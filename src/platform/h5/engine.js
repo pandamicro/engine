@@ -34,6 +34,9 @@ var Engine = (function () {
     // the game
     Engine._game = null;
 
+    // temp array contains persistent entities
+    Engine._dontDestroyEntities = [];
+
     // main render context
     Engine._renderContext = null;
 
@@ -96,22 +99,6 @@ var Engine = (function () {
         }
     });
 
-    /**
-     * @param {Fire.Vec2} value
-     * @return {Fire.Vec2}
-     */
-    Object.defineProperty(Engine, 'screenSize', {
-        get: function () {
-            return cc.winSize;
-        },
-        set: function (value) {
-            Engine._renderContext.setDesignResolutionSize(value.width, value.height, Engine._renderContext.getResolutionPolicy());
-            //if ( !isPlaying ) {
-            //    render();
-            //}
-        }
-    });
-
     var inited = false;
     Object.defineProperty(Engine, 'inited', {
         get: function () {
@@ -119,15 +106,22 @@ var Engine = (function () {
         }
     });
 
+    /**
+     * Scene name to uuid
+     * @private
+     */
+    Engine._sceneInfos = {};
+
     // functions
 
     /**
      * @param {number} [w]
      * @param {number} [h]
      * @param {Canvas} [canvas]
+     * @param {object} [options]
      * @return {RenderContext}
      */
-    Engine.init = function ( w, h, canvas ) {
+    Engine.init = function ( w, h, canvas, options ) {
         if (inited) {
             Fire.error('Engine already inited');
             return;
@@ -156,6 +150,9 @@ var Engine = (function () {
 
         inited = true;
 
+        if (options) {
+            JS.mixin(Engine._sceneInfos, options.scenes);
+        }
         return Engine._renderContext;
     };
 
@@ -193,21 +190,22 @@ var Engine = (function () {
             Engine._inputContext.destruct();
             Engine._inputContext = null;
             Input._reset();
-        }
-        // reset states
-        isPlaying = false;
-        isPaused = false;
-        isLoadingScene = false; // TODO: what if loading scene ?
-        if (requestId !== -1) {
-            Ticker.cancelAnimationFrame(requestId);
-            requestId = -1;
-        }
+
+            // reset states
+            isPlaying = false;
+            isPaused = false;
+            isLoadingScene = false; // TODO: what if loading scene ?
+            if (requestId !== -1) {
+                Ticker.cancelAnimationFrame(requestId);
+                requestId = -1;
+            }
 
 // @ifdef EDITOR
-        if (editorCallback.onEngineStopped) {
-            editorCallback.onEngineStopped();
-        }
+            if (editorCallback.onEngineStopped) {
+                editorCallback.onEngineStopped();
+            }
 // @endif
+        }
     };
 
     Engine.pause = function () {
@@ -286,10 +284,16 @@ var Engine = (function () {
             Fire.error('Argument must be non-nil');
             return;
         }
+        Engine._dontDestroyEntities.length = 0;
 
-        // TODO: allow dont destroy behaviours
         // unload scene
         var oldScene = Engine._scene;
+// @ifdef EDITOR
+        if (editorCallback.onStartUnloadScene) {
+            editorCallback.onStartUnloadScene(oldScene);
+        }
+// @endif
+
         if (Fire.isValid(oldScene)) {
             // destroyed and unload
             AssetLibrary.unloadAsset(oldScene, true);
@@ -305,7 +309,6 @@ var Engine = (function () {
         }
 
         // init scene
-        //scene.onReady();
         Engine._renderContext.onSceneLoaded(scene);
 // @ifdef EDITOR
         //if (editorCallback.onSceneLoaded) {
@@ -314,6 +317,8 @@ var Engine = (function () {
 // @endif
 
         // launch scene
+        scene.entities = scene.entities.concat(Engine._dontDestroyEntities);
+        Engine._dontDestroyEntities.length = 0;
         Engine._scene = scene;
         Engine._renderContext.onSceneLaunched(scene);
 // @ifdef EDITOR
@@ -326,17 +331,34 @@ var Engine = (function () {
     };
 
     /**
-     * Load scene sync
+     * Loads the scene by its name.
      * @method Fire.Engine.loadScene
-     * @param {string} uuid - the uuid of scene asset
+     * @param {string} sceneName - the name of the scene to load
      * @param {function} [onLaunched]
      * @param {function} [onUnloaded] - will be called when the previous scene was unloaded
      */
-    Engine.loadScene = function (uuid, onLaunched, onUnloaded) {
+    Engine.loadScene = function (sceneName, onLaunched, onUnloaded) {
+        var uuid = Engine._sceneInfos[sceneName];
+        if (uuid) {
+            Engine._loadSceneByUuid(uuid, onLaunched, onUnloaded);
+        }
+        else {
+            Fire.error('[Engine.loadScene] The scene "%s" could not be loaded because it has not been added to the build settings.', sceneName);
+        }
+    };
+
+    /**
+     * Load scene
+     * @method Fire.Engine.loadScene
+     * @param {string} uuid - the uuid of the scene asset to load
+     * @param {function} [onLaunched]
+     * @param {function} [onUnloaded] - will be called when the previous scene was unloaded
+     */
+    Engine._loadSceneByUuid = function (uuid, onLaunched, onUnloaded) {
         // TODO: lookup uuid by name
         isLoadingScene = true;
         AssetLibrary.unloadAsset(uuid);     // force reload
-        AssetLibrary._loadAssetByUuid(uuid, function onSceneLoaded (error, scene) {
+        AssetLibrary.loadAsset(uuid, function onSceneLoaded (error, scene) {
             if (error) {
                 Fire.error('Failed to load scene: ' + error);
                 // @ifdef EDITOR

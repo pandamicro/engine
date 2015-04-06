@@ -1,34 +1,29 @@
 ﻿var Scene = (function () {
-    var _super = Asset;
     /**
      * @class Fire.Scene
      * @extends Fire.Asset
      * @private
      */
-    function Scene () {
-        _super.call(this);
+    var Scene = Fire.Class({
+        name: "Fire.Scene",
+        extends: Asset,
 
-        /**
-         * root entities
-         * @member {Fire.Entity[]} Fire.Scene#entities
-         */
-        this.entities = [];
+        properties: {
+            /**
+             * root entities
+             * @member {Fire.Entity[]} Fire.Scene#entities
+             */
+            entities: [],
 
-        /**
-         * the active camera
-         * @member {Fire.Camera} Fire.Scene#camera
-         */
-        this.camera = null;
+            /**
+             * the active camera
+             * @member {Fire.Camera} Fire.Scene#camera
+             */
+            camera: null,
 
-        this._ccNode = new cc.Scene();
-    }
-    JS.extend(Scene, _super);
-    JS.setClassName("Fire.Scene", Scene);
-
-    ////////////////////////////////////////////////////////////////////
-    // static
-    ////////////////////////////////////////////////////////////////////
-
+            _ccNode: new cc.Scene()
+        }
+    });
 
     ////////////////////////////////////////////////////////////////////
     // traversal operations
@@ -242,17 +237,15 @@
         for (var i = 0, len = entities.length; i < len; ++i) {
             var entity = entities[i];
             if (entity.isValid) {
-                entity.destroy();
+                if (entity._objFlags & DontDestroy) {
+                    Engine._dontDestroyEntities.push(entity);
+                }
+                else {
+                    entity.destroy();
+                }
             }
         }
-        _super.prototype.destroy.call(this);
-    };
-
-    Scene.prototype._instantiate = function () {
-        var uuid = this._uuid;
-        var result = Fire._doInstantiate(this);
-        result._uuid = uuid;
-        return result;
+        Asset.prototype.destroy.call(this);
     };
 
     return Scene;
