@@ -21,7 +21,11 @@
              */
             camera: null,
 
-            _ccNode: new cc.Scene()
+            _ccNode: null
+        },
+
+        constructor: function () {
+            this._ccNode = new cc.Scene();
         }
     });
 

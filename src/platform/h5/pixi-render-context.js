@@ -43,6 +43,7 @@ var RenderContext = (function () {
             "jsList" : []
         }, function () {
             self.root = self.stage = new cc.Scene();
+            this.view.setResolutionPolicy( cc.ResolutionPolicy.SHOW_ALL );
             this.director.runScene(self.stage);
         });
         this.game.run();
@@ -455,12 +456,10 @@ var RenderContext = (function () {
      */
     RenderContext.prototype.updateTransform = function (target, matrix) {
         // apply matrix
-        if ( !this.isSceneView ) {
-            if (target._renderObj) {
-                target._renderObj.setPosition(matrix.tx, matrix.ty);
-                target._renderObj.setScale(matrix.a, matrix.d);
-                target._renderObj.setOpacity(target._color.a * 255);
-            }
+        if (target._renderObj) {
+            target._renderObj.setPosition(matrix.tx, matrix.ty);
+            target._renderObj.setScale(matrix.a, matrix.d);
+            target._renderObj.setOpacity(target._color.a * 255);
         }
         // @ifdef EDITOR
         if (target._renderObjInScene) {
