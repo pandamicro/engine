@@ -117,15 +117,6 @@ gulp.task('cp-core', function() {
 // build
 /////////////////////////////////////////////////////////////////////////////
 
-var embedIntoModule = function (template) {
-    template = fs.readFileSync(template);
-    return es.map(function(file, callback) {
-        var data = { file: file, contents: '\n\n' + file.contents.toString() };
-        file.contents = new Buffer(gutil.template(template, data));
-        callback(null, file);
-    });
-};
-
 var insertCoreShortcut = function (path, moduleName, filter) {
     var finished = false;
     filter = filter || function (key) {
@@ -179,7 +170,7 @@ gulp.task('js-dev', function() {
                }))
                .pipe(jshint.reporter(stylish))
                .pipe(concat(paths.engine_dev))
-               .pipe(embedIntoModule(paths.index))
+               .pipe(fb.wrapModule(paths.index))
                .pipe(preprocess({context: { EDITOR: true, DEBUG: true, DEV: true }}))
                .pipe(gulp.dest(paths.output_dev))
                ;
@@ -189,7 +180,7 @@ gulp.task('js-min', function() {
     return gulp.src(paths.src.concat('!**/platform/editor-core/**'))
     // .pipe(insertCoreShortcut('./ext/fire-core/bin/core.min.js', 'Fire'))
         .pipe(concat(paths.engine_min))
-        .pipe(embedIntoModule(paths.index))
+        .pipe(fb.wrapModule(paths.index))
         .pipe(preprocess({context: { EDITOR: true, DEV: true }}))
         .pipe(uglify({
             compress: {
@@ -205,7 +196,7 @@ gulp.task('js-player-dev', function() {
     return gulp.src(paths.src.concat('!**/platform/{editor|editor-core}/**'))
         // .pipe(insertCoreShortcut('./ext/fire-core/bin/core.min.js', 'Fire'))
         .pipe(concat(paths.engine_player_dev))
-        .pipe(embedIntoModule(paths.index))
+        .pipe(fb.wrapModule(paths.index))
         .pipe(preprocess({context: { PLAYER: true, DEBUG: true, DEV: true }}))
         .pipe(gulp.dest(paths.output))
         ;
@@ -215,7 +206,7 @@ gulp.task('js-player', function() {
     return gulp.src(paths.src.concat('!**/platform/{editor|editor-core}/**'))
         // .pipe(insertCoreShortcut('./ext/fire-core/bin/core.min.js', 'Fire'))
         .pipe(concat(paths.engine_player))
-        .pipe(embedIntoModule(paths.index))
+        .pipe(fb.wrapModule(paths.index))
         .pipe(preprocess({context: { PLAYER: true }}))
         .pipe(gulp.dest(paths.output))
         ;
@@ -225,7 +216,7 @@ gulp.task('js-editor-core', function() {
     return gulp.src(paths.src.concat('!**/platform/h5/**'))
         // .pipe(insertCoreShortcut('./ext/fire-core/bin/core.min.js', 'Fire'))
         .pipe(concat(paths.engine_editor_core))
-        .pipe(embedIntoModule(paths.index))
+        .pipe(fb.wrapModule(paths.index))
         .pipe(preprocess({context: { EDITOR: true, EDITOR_CORE: true, DEBUG: true, DEV: true }}))
         .pipe(gulp.dest(paths.output))
         ;

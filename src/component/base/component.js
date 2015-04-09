@@ -16,7 +16,7 @@
     var compCtor;
 // @ifdef EDITOR
     compCtor = function () {
-        Fire._AssetsWatcher.initComponent(this);
+        Editor._AssetsWatcher.initComponent(this);
     };
 // @endif
 
@@ -48,12 +48,12 @@
         },
         function (value) {
             if (this._cacheUuid !== value) {
-                if (value && Fire.isUuid(value)) {
-                    var classId = Fire.compressUuid(value);
+                if (value && Editor.isUuid(value)) {
+                    var classId = Editor.compressUuid(value);
                     var newComp = Fire.JS._getClassById(classId);
                     if (newComp) {
                         Fire.warn('Sorry, replacing component script is not yet implemented.');
-                        //Fire.sendToWindows('reload:window-scripts', Fire._Sandbox.compiled);
+                        //Editor.sendToWindows('reload:window-scripts', Editor._Sandbox.compiled);
                     }
                     else {
                         Fire.error('Can not find a component in the script which uuid is "%s".', value);
@@ -298,7 +298,7 @@
             if (this.onLoad) {
                 callOnLoadInTryCatch(this);
             }
-            Fire._AssetsWatcher.start(this);
+            Editor._AssetsWatcher.start(this);
             //if (this.onHierarchyChanged) {
             //    this.entity.transform._addListener(this);
             //}
@@ -372,7 +372,7 @@
         _callOnEnable(this, false);
         // onDestroy
 // @ifdef EDITOR
-        Fire._AssetsWatcher.stop(this);
+        Editor._AssetsWatcher.stop(this);
         if (Fire.Engine.isPlaying || Fire.attr(this, 'executeInEditMode')) {
             if (this.onDestroy) {
                 callOnDestroyInTryCatch(this);

@@ -5,4 +5,4 @@ var AssetsWatcher = {
     stop: function () { }
 };
 
-Fire._AssetsWatcher = AssetsWatcher;
+Editor._AssetsWatcher = AssetsWatcher;

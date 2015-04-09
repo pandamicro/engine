@@ -36,7 +36,7 @@ Fire._doDefine = function (className, baseClass, constructor) {
             if (frame.uuid) {
                 // project component
                 if (className) {
-                    Fire.warn('Sorry, specifying class name for Component in project scripts is not allowed. Just use Fire.extend(baseComponent, constructor) please.');
+                    Fire.warn('Sorry, specifying class name for Component in project scripts is not allowed.');
                 }
             }
             //else {
