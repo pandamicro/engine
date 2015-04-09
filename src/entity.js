@@ -28,24 +28,28 @@ var Entity = Fire.Class({
             transform.entity = this;
             this._components = [transform];
             this.transform = transform;
+
             // add to scene
             if (Engine._scene) {
                 Engine._scene.appendRoot(this);
             }
-            // invoke callbacks
-            Engine._renderContext.onRootEntityCreated(this);
 
-            // activate componet
-            transform._onEntityActivated(true);     // 因为是刚刚创建，所以 activeInHierarchy 肯定为 true
+            if ( Engine._canModifyCurrentScene ) {
+                // invoke callbacks
+                Engine._renderContext.onRootEntityCreated(this);
+
+                // activate componet
+                transform._onEntityActivated(true);     // 因为是刚刚创建，所以 activeInHierarchy 肯定为 true
 
 // @ifdef EDITOR
-            if (editorCallback.onEntityCreated) {
-                editorCallback.onEntityCreated(this);
-            }
-            if (editorCallback.onComponentAdded) {
-                editorCallback.onComponentAdded(this, transform);
-            }
+                if (editorCallback.onEntityCreated) {
+                    editorCallback.onEntityCreated(this);
+                }
+                if (editorCallback.onComponentAdded) {
+                    editorCallback.onComponentAdded(this, transform);
+                }
 // @endif
+            }
         }
     },
 
