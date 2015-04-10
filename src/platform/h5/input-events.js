@@ -190,6 +190,23 @@ var MouseEvent = (function () {
         this.relatedTarget = nativeEvent.relatedTarget;
     };
 
+    MouseEvent.prototype.clone = function () {
+        var event = new MouseEvent(this.type);
+        event.bubbles = this.bubbles;
+        event.ctrlKey = this.ctrlKey;
+        event.shiftKey = this.shiftKey;
+        event.altKey = this.altKey;
+        event.metaKey = this.metaKey;
+        event.button = this.button;
+        event.buttonStates = this.buttonStates;
+        event.screenX = this.screenX;
+        event.screenY = this.screenY;
+        event.deltaX = this.deltaX;
+        event.deltaY = this.deltaY;
+        event.relatedTarget = this.relatedTarget;
+        return event;
+    };
+
     MouseEvent.prototype._reset = function () {
         ModifierKeyStates.prototype._reset.call(this);
 

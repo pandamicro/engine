@@ -54,16 +54,16 @@ var EventRegister = {
         //    bubbles: true,
         //    cancelable: true
         //}
-        //mouseenter: {
-        //    constructor: FireMouseEvent,
-        //    bubbles: false,
-        //    cancelable: false,
-        //},
-        //mouseleave: {
-        //    constructor: FireMouseEvent,
-        //    bubbles: false,
-        //    cancelable: false,
-        //},
+        mouseenter: {
+            constructor: FireMouseEvent,
+            bubbles: false,
+            cancelable: false
+        },
+        mouseleave: {
+            constructor: FireMouseEvent,
+            bubbles: false,
+            cancelable: false
+        }
         //mouseout: {
         //    constructor: FireMouseEvent,
         //    bubbles: true,
