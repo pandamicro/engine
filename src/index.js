@@ -2,6 +2,7 @@
 (function () {
     var root = typeof global !== 'undefined' ? global : this;
     var Fire = root.Fire || {};
+    var Editor = root.Editor || {};
 // @endif
 
 // @ifdef DEV
@@ -40,5 +41,6 @@
     }
     else {
         root.Fire = Fire;
+        root.Editor = Editor;
     }
 }).call(this);

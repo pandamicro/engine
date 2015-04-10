@@ -260,7 +260,7 @@ var AssetLibrary = (function () {
                     return function (error, dependsAsset) {
                         if (error) {
                             // @ifdef EDITOR
-                            if (Fire.AssetDB && Fire.AssetDB.isValidUuid(dependsUuid)) {
+                            if (Editor.AssetDB && Editor.AssetDB.isValidUuid(dependsUuid)) {
                                 Fire.error('[AssetLibrary] Failed to load "%s", %s', dependsUuid, error);
                             }
                             // @endif
