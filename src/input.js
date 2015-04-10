@@ -7,7 +7,8 @@
      * @beta
      */
     var Input = {
-        _eventListeners: new EventListeners()
+        _eventListeners: new EventListeners(),
+        _lastTarget: null
     };
 
     /**
@@ -65,15 +66,34 @@
 
     Input._reset = function () {
         this._eventListeners = new EventListeners();
+        this._lastTarget = null;
     };
 
     Input._dispatchMouseEvent = function (event, inputContext) {
         var camera = inputContext.renderContext.camera || Engine._scene.camera;
         var worldMousePos = camera.screenToWorld(new Vec2(event.screenX, event.screenY));
         var target = Engine._interactionContext.pick(worldMousePos);
+        //
+        if (this._lastTarget && this._lastTarget !== target) {
+            // 鼠标离开事件
+            var eventInfo = EventRegister.inputEvents["mouseleave"];
+            var mouseleaveEvent = event.clone();
+            mouseleaveEvent.bubbles = eventInfo.bubbles;
+            mouseleaveEvent.type = 'mouseleave';
+            this._lastTarget.dispatchEvent(mouseleaveEvent);
+        }
         if (target) {
             target.dispatchEvent(event);
+            // 鼠标进入事件
+            if (this._lastTarget !== target) {
+                eventInfo = EventRegister.inputEvents["mouseenter"];
+                var mouseenterEvent = event.clone();
+                mouseenterEvent.bubbles = eventInfo.bubbles;
+                mouseenterEvent.type = 'mouseenter';
+                target.dispatchEvent(mouseenterEvent);
+            }
         }
+        this._lastTarget = target;
     };
 
     Input._dispatchEvent = function (event, inputContext) {
