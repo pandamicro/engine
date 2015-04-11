@@ -73,10 +73,11 @@
         var camera = inputContext.renderContext.camera || Engine._scene.camera;
         var worldMousePos = camera.screenToWorld(new Vec2(event.screenX, event.screenY));
         var target = Engine._interactionContext.pick(worldMousePos);
+        var eventInfo;
         //
         if (this._lastTarget && this._lastTarget !== target) {
             // 鼠标离开事件
-            var eventInfo = EventRegister.inputEvents["mouseleave"];
+            eventInfo = EventRegister.inputEvents.mouseleave;
             var mouseleaveEvent = event.clone();
             mouseleaveEvent.bubbles = eventInfo.bubbles;
             mouseleaveEvent.type = 'mouseleave';
@@ -86,7 +87,7 @@
             target.dispatchEvent(event);
             // 鼠标进入事件
             if (this._lastTarget !== target) {
-                eventInfo = EventRegister.inputEvents["mouseenter"];
+                eventInfo = EventRegister.inputEvents.mouseenter;
                 var mouseenterEvent = event.clone();
                 mouseenterEvent.bubbles = eventInfo.bubbles;
                 mouseenterEvent.type = 'mouseenter';
