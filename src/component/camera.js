@@ -94,7 +94,7 @@ var Camera = Fire.Class({
         /**
          * save the render context this camera belongs to, if null, main render context will be used.
          * @property renderContext
-         * @type {RenderContext}
+         * @type {_Runtime.RenderContext}
          * @private
          */
         renderContext: {

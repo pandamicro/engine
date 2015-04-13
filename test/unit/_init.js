@@ -34,9 +34,8 @@ var M3 = Fire.Matrix23;
 
 // Test helpers
 
-/**
- * force reset the engine
- */
+// force reset the engine
+
 Engine._reset = function (w, h) {
     if (!Engine.inited) {
         Engine.init(w, h);
@@ -63,3 +62,14 @@ var TestEnv = {
         Engine._renderContext.checkMatchCurrentScene(true);
     }
 };
+
+//// output test states
+//
+//QUnit.testStart = function(test) {
+//    console.log('#' + (test.module || '') + ": " + test.name + ": started.");
+//};
+//
+//QUnit.testDone = function(test) {
+//    console.log('#' + (test.module || '') + ": " + test.name + ": done.");
+//    console.log('----------------------------------------');
+//};

@@ -35,8 +35,7 @@ var paths = {
         'src/event/event-listeners.js',
         'src/event/event-target.js',
         'src/platform/h5/ticker.js',
-        'src/platform/h5/pixi-render-context.js',
-        'src/platform/h5/pixi-bitmap-font-util.js',
+        'src/render-context.js',
         'src/platform/h5/loaders.js',
         'src/component/base/component.js',
         'src/component/base/component-requiring-frames.js',
@@ -76,12 +75,10 @@ var paths = {
         src: 'test/unit/**/*.js',
         runner: 'test/lib/runner.html',
         lib_dev: [
-            'ext/pixi/bin/pixi.dev.js',
             'ext/fire-core/bin/dev/core.js',
             'bin/dev/engine.js',
         ],
         lib_min: [
-            'ext/pixi/bin/pixi.js',
             'ext/fire-core/bin/min/core.js',
             'bin/min/engine.js',
         ],
@@ -202,7 +199,6 @@ gulp.task('js-player-dev', function() {
     return gulp.src(paths.src.concat('!**/platform/{editor|editor-core}/**'))
         // .pipe(insertCoreShortcut('./ext/fire-core/bin/core.min.js', 'Fire'))
         .pipe(concat(paths.engine_player_dev))
-        .pipe(fb.wrapModule(paths.index))
         .pipe(preprocess({context: { PLAYER: true, DEBUG: true, DEV: true }}))
         .pipe(gulp.dest(paths.output))
         ;
@@ -212,7 +208,6 @@ gulp.task('js-player', function() {
     return gulp.src(paths.src.concat('!**/platform/{editor|editor-core}/**'))
         // .pipe(insertCoreShortcut('./ext/fire-core/bin/core.min.js', 'Fire'))
         .pipe(concat(paths.engine_player))
-        .pipe(fb.wrapModule(paths.index))
         .pipe(preprocess({context: { PLAYER: true }}))
         .pipe(gulp.dest(paths.output))
         ;

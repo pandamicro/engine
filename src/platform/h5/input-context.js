@@ -64,7 +64,7 @@
         // get canvas page offset
         var canvasPageX = 0,
             canvasPageY = 0;
-        var elem = scope.renderContext.renderer.view;
+        var elem = scope.renderContext.canvas;
         while (elem) {
             canvasPageX += parseInt(elem.offsetLeft);
             canvasPageY += parseInt(elem.offsetTop);

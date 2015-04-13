@@ -210,7 +210,7 @@ var BitmapText = (function () {
     BitmapText.prototype.onPreRender = function () {
         this.getSelfMatrix(tempMatrix);
         tempMatrix.prepend(this.transform._worldTransform);
-        PixiBitmapFontUtil.updateTransform(this, tempMatrix);
+        RenderContext.updateBitmapTextTransform(this, tempMatrix);
     };
 
     BitmapText.prototype.getSelfMatrix = function (out) {

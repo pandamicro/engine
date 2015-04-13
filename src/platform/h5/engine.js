@@ -45,7 +45,7 @@ var Engine = (function () {
     /**
      * The RenderContext attached to game or game view.
      * @property _renderContext
-     * @type {RenderContext}
+     * @type {_Runtime.RenderContext}
      * @private
      */
     Engine._renderContext = null;
@@ -61,7 +61,7 @@ var Engine = (function () {
     /**
      * the render context currently rendering
      * @property _curRenderContext
-     * @type {RenderContext}
+     * @type {_Runtime.RenderContext}
      * @private
      */
     Engine._curRenderContext = null;
@@ -165,7 +165,7 @@ var Engine = (function () {
      * @param {number} [height]
      * @param {Canvas} [canvas]
      * @param {object} [options]
-     * @return {RenderContext}
+     * @return {_Runtime.RenderContext}
      */
     Engine.init = function ( w, h, canvas, options ) {
         if (inited) {
@@ -174,7 +174,7 @@ var Engine = (function () {
         }
         inited = true;
 
-        Engine._renderContext = new RenderContext( w, h, canvas );
+        Engine._renderContext = new Fire._Runtime.RenderContext( w, h, canvas );
         Engine._interactionContext = new InteractionContext();
 
 // @ifdef EDITOR

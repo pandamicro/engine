@@ -1,5 +1,5 @@
 /**
- * show error stacks in editor
+ * show error stacks in unit tests
  * @method _throw
  * @param {Error} error
  * @private
