@@ -59,6 +59,11 @@ var paths = {
         'src/platform/h5/screen–agnostic.js',
         'src/event/event-register.js',
         'src/input.js',
+
+        'src/audio/audio-fix-ios.js',
+        'src/audio/audio-legacy.js',
+        'src/audio/audio-source.js',
+        'src/audio/audio-web-audio.js',
     ],
     index: 'src/index.js',
 
