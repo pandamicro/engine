@@ -8,7 +8,7 @@ var CallbackTester = Fire.extend('', Fire.Component, function () {
 });
 
 CallbackTester.OnLoad = 'onLoad';
-CallbackTester.OnStart = 'onStart';
+CallbackTester.start = 'start';
 CallbackTester.OnEnable = 'onEnable';
 CallbackTester.OnDisable = 'onDisable';
 CallbackTester.OnDestroy = 'onDestroy';
@@ -94,8 +94,8 @@ CallbackTester.prototype.onLoad = function () {
     this._assert(CallbackTester.OnLoad);
 };
 
-CallbackTester.prototype.onStart = function () {
-    this._assert(CallbackTester.OnStart);
+CallbackTester.prototype.start = function () {
+    this._assert(CallbackTester.start);
 };
 
 CallbackTester.prototype.onEnable = function () {

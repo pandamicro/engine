@@ -89,9 +89,9 @@ test('component', function () {
     var obj = new Entity();
     var comp = obj.addComponent(MyComponent); // onEnable
 
-    comp.expect(CallbackTester.OnStart, 'call onStart after onEnable');
+    comp.expect(CallbackTester.start, 'call start after onEnable');
     Engine.step();
-    comp.notExpect(CallbackTester.OnStart, 'onStart should called only once');
+    comp.notExpect(CallbackTester.start, 'start should called only once');
     Engine.step();
 
     strictEqual(comp.entity, obj, 'can get entity from component');

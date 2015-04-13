@@ -148,9 +148,9 @@
 
     /**
      * Called before all scripts' update if the Component is enabled
-     * @event onStart
+     * @event start
      */
-    Component.prototype.onStart = null;
+    Component.prototype.start = null;
 
     /**
      * Called when this component becomes enabled and its entity becomes active
@@ -234,7 +234,7 @@
     var callOnEnableInTryCatch = eval(execInTryCatchTmpl.replace(/_FUNC_/g, 'onEnable'));
     var callOnDisableInTryCatch = eval(execInTryCatchTmpl.replace(/_FUNC_/g, 'onDisable'));
     var callOnLoadInTryCatch = eval(execInTryCatchTmpl.replace(/_FUNC_/g, 'onLoad'));
-    var callOnStartInTryCatch = eval(execInTryCatchTmpl.replace(/_FUNC_/g, 'onStart'));
+    var callOnStartInTryCatch = eval(execInTryCatchTmpl.replace(/_FUNC_/g, 'start'));
     var callOnDestroyInTryCatch = eval(execInTryCatchTmpl.replace(/_FUNC_/g, 'onDestroy'));
     // jshint evil: false
 // @endif
@@ -334,12 +334,12 @@
                 comp = entity._components[c];
                 if ( !(comp._objFlags & IsOnStartCalled) ) {
                     comp._objFlags |= IsOnStartCalled;
-                    if (comp.onStart) {
+                    if (comp.start) {
                         // @ifdef EDITOR
                         callOnStartInTryCatch(comp);
                         // @endif
                         // @ifndef EDITOR
-                        comp.onStart();
+                        comp.start();
                         // @endif
                     }
                 }
@@ -351,7 +351,7 @@
                 comp = entity._components[c];
                 if ( !(comp._objFlags & IsOnStartCalled) && Fire.attr(comp, 'executeInEditMode')) {
                     comp._objFlags |= IsOnStartCalled;
-                    if (comp.onStart) {
+                    if (comp.start) {
                         callOnStartInTryCatch(comp);
                     }
                 }
