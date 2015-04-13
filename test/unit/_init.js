@@ -39,7 +39,7 @@ var M3 = Fire.Matrix23;
  */
 Engine._reset = function (w, h) {
     if (!Engine.inited) {
-        var canvas = Engine.init(w, h).renderer.view;
+        Engine.init(w, h);
     }
     else {
         Screen.size = new V2(w, h);

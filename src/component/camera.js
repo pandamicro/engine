@@ -190,7 +190,7 @@ var Camera = Fire.Class({
      * @return {Vec2}
      */
     screenToWorld: function (position, out) {
-        var halfScreenSize = (this._renderContext || Engine._renderContext).size.mulSelf(0.5);
+        var halfScreenSize = (this._renderContext || Engine._renderContext).size.mul(0.5);
         var pivotToScreen = position.sub(halfScreenSize, halfScreenSize);
         pivotToScreen.y = -pivotToScreen.y; // 屏幕坐标的Y和世界坐标的Y朝向是相反的
         var mat = new Matrix23();

@@ -2,7 +2,7 @@
 var es = require('event-stream');
 var stylish = require('jshint-stylish');
 var fs = require('fs');
-var through = require('through');
+//var through = require('through');
 
 var gulp = require('gulp');
 var concat = require('gulp-concat');
@@ -21,6 +21,7 @@ var paths = {
     // source
     src: [
         // runtime pre-defines
+        'src/platform/editor/misc.js',
         'src/platform/editor/asset-watcher.js',
         'src/platform/editor/editor-callbacks.js',
 
@@ -122,48 +123,48 @@ gulp.task('cp-core', function() {
 // build
 /////////////////////////////////////////////////////////////////////////////
 
-var insertCoreShortcut = function (path, moduleName, filter) {
-    var finished = false;
-    filter = filter || function (key) {
-        return this[key].prototype && this[key].prototype.__classname__;
-    };
-    function createShortcut(path, moduleName, filter) {
-        var m = require(path);
-        var keys = Object.getOwnPropertyNames(m);
-        var code = '';
-
-        if ('readable') {
-            for (var i = 0; i < keys.length; i++) {
-                var key = keys[i];
-                if (filter.call(m, key)) {
-                    code += 'var ' + key + ' = ' + moduleName + '.' + key + ';\n';
-                }
-            }
-        }
-        else {
-            code =
-"// declare shortcuts of core\n\
-(function () {\n\
-    var shortcuts = '" + keys.filter(filter, m).join(',') + "'.split(',');\n\
-    for (var i = 0; i < shortcuts.length; i++) {\n\
-        this[shortcuts[i]] = " + moduleName + "[shortcuts[i]];\n\
-    }\n\
-})();\n";
-        }
-        return code;
-    }
-    function write(file) {
-        if (file.isStream()) return this.emit('error', new gutil.PluginError('insertCoreShortcut', 'Streaming not supported'));
-        if (!finished) {
-            var shortcut = file.clone();
-            shortcut.contents = new Buffer(createShortcut(path, moduleName, filter));
-            this.emit('data', shortcut);
-            finished = true;
-        }
-        this.emit('data', file);
-    }
-    return through(write);
-};
+//var insertCoreShortcut = function (path, moduleName, filter) {
+//    var finished = false;
+//    filter = filter || function (key) {
+//        return this[key].prototype && this[key].prototype.__classname__;
+//    };
+//    function createShortcut(path, moduleName, filter) {
+//        var m = require(path);
+//        var keys = Object.getOwnPropertyNames(m);
+//        var code = '';
+//
+//        if ('readable') {
+//            for (var i = 0; i < keys.length; i++) {
+//                var key = keys[i];
+//                if (filter.call(m, key)) {
+//                    code += 'var ' + key + ' = ' + moduleName + '.' + key + ';\n';
+//                }
+//            }
+//        }
+//        else {
+//            code =
+//"// declare shortcuts of core\n\
+//(function () {\n\
+//    var shortcuts = '" + keys.filter(filter, m).join(',') + "'.split(',');\n\
+//    for (var i = 0; i < shortcuts.length; i++) {\n\
+//        this[shortcuts[i]] = " + moduleName + "[shortcuts[i]];\n\
+//    }\n\
+//})();\n";
+//        }
+//        return code;
+//    }
+//    function write(file) {
+//        if (file.isStream()) return this.emit('error', new gutil.PluginError('insertCoreShortcut', 'Streaming not supported'));
+//        if (!finished) {
+//            var shortcut = file.clone();
+//            shortcut.contents = new Buffer(createShortcut(path, moduleName, filter));
+//            this.emit('data', shortcut);
+//            finished = true;
+//        }
+//        this.emit('data', file);
+//    }
+//    return through(write);
+//};
 
 gulp.task('js-dev', function() {
     return gulp.src(paths.src.concat('!**/platform/editor-core/**'))
