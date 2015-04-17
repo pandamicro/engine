@@ -144,13 +144,23 @@
     InputContext.prototype.onDomInputEvent = function (domEvent) {
         // wrap event
         var eventInfo = EventRegister.inputEvents[domEvent.type];
-        var event = new eventInfo.constructor(domEvent.type);
-        if (event.initFromNativeEvent) {
-            event.initFromNativeEvent(domEvent);
+        var fireEventCtor = eventInfo.constructor(domEvent.type);
+
+        var event;
+        if (fireEventCtor) {
+            event = new fireEventCtor();
+            if (event.initFromNativeEvent) {
+                event.initFromNativeEvent(domEvent);
+            }
+            event.bubbles = eventInfo.bubbles;
+            // event.cancelable = eventInfo.cancelable; (NYI)
         }
-        event.bubbles = eventInfo.bubbles;
-        // event.cancelable = eventInfo.cancelable; (NYI)
-        convertToRetina(event);
+        else {
+            event = domEvent;
+        }
+        if (event instanceof MouseEvent) {
+            convertToRetina(event);
+        }
 
         // inner dispatch
         Input._dispatchEvent(event, this);
