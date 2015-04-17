@@ -1,75 +1,4 @@
 var Text = (function () {
-
-    var TextAlign = Fire.defineEnum({
-        /**
-         * @property left
-         * @type {number}
-         */
-        left: -1,
-        /**
-         * @property center
-         * @type {number}
-         */
-        center: -1,
-        /**
-         * @property right
-         * @type {number}
-         */
-        right: -1
-    });
-
-    /**
-     * @class TextAnchor
-     * @static
-     */
-    var TextAnchor = Fire.defineEnum({
-        /**
-         * @property topLeft
-         * @type {number}
-         */
-        topLeft  : -1,
-        /**
-         * @property topCenter
-         * @type {number}
-         */
-        topCenter: -1,
-        /**
-         * @property topRight
-         * @type {number}
-         */
-        topRight : -1,
-        /**
-         * @property midLeft
-         * @type {number}
-         */
-        midLeft  : -1,
-        /**
-         * @property midCenter
-         * @type {number}
-         */
-        midCenter: -1,
-        /**
-         * @property midRight
-         * @type {number}
-         */
-        midRight : -1,
-        /**
-         * @property botLeft
-         * @type {number}
-         */
-        botLeft  : -1,
-        /**
-         * @property botCenter
-         * @type {number}
-         */
-        botCenter: -1,
-        /**
-         * @property botRight
-         * @type {number}
-         */
-        botRight : -1
-    });
-
     /**
      * @class FontType
      * @static
@@ -168,7 +97,7 @@ var Text = (function () {
                 }
             },
             // 字体对齐方式
-            _align: TextAlign.left,
+            _align: Fire.TextAlign.left,
             align: {
                 get: function() {
                     return this._align;
@@ -177,10 +106,10 @@ var Text = (function () {
                     this._align = value;
                     Engine._renderContext.setTextStyle(this);
                 },
-                type: TextAlign
+                type: Fire.TextAlign
             },
             // 字体锚点
-            _anchor: TextAnchor.midCenter,
+            _anchor: Fire.TextAnchor.midCenter,
             anchor: {
                 get: function() {
                     return this._anchor;
@@ -190,7 +119,7 @@ var Text = (function () {
                         this._anchor = value;
                     }
                 },
-                type: TextAnchor
+                type: Fire.TextAnchor
             }
         },
         onLoad: function () {
@@ -217,33 +146,33 @@ var Text = (function () {
             var anchorOffsetY = 0;
 
             switch (this._anchor) {
-                case TextAnchor.topLeft:
+                case Fire.TextAnchor.topLeft:
                     break;
-                case TextAnchor.topCenter:
+                case Fire.TextAnchor.topCenter:
                     anchorOffsetX = w * -0.5;
                     break;
-                case TextAnchor.topRight:
+                case Fire.TextAnchor.topRight:
                     anchorOffsetX = -w;
                     break;
-                case TextAnchor.midLeft:
+                case Fire.TextAnchor.midLeft:
                     anchorOffsetY = h * 0.5;
                     break;
-                case TextAnchor.midCenter:
+                case Fire.TextAnchor.midCenter:
                     anchorOffsetX = w * -0.5;
                     anchorOffsetY = h * 0.5;
                     break;
-                case TextAnchor.midRight:
+                case Fire.TextAnchor.midRight:
                     anchorOffsetX = -w;
                     anchorOffsetY = h * 0.5;
                     break;
-                case TextAnchor.botLeft:
+                case Fire.TextAnchor.botLeft:
                     anchorOffsetY = h;
                     break;
-                case TextAnchor.botCenter:
+                case Fire.TextAnchor.botCenter:
                     anchorOffsetX = w * -0.5;
                     anchorOffsetY = h;
                     break;
-                case TextAnchor.botRight:
+                case Fire.TextAnchor.botRight:
                     anchorOffsetX = -w;
                     anchorOffsetY = h;
                     break;
@@ -264,7 +193,6 @@ var Text = (function () {
         }
     });
 
-    Text.TextAlign = TextAlign;
     Text.FontType = FontType;
 
     //-- 增加 Text 到 组件菜单上
