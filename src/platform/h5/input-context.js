@@ -144,11 +144,11 @@
     InputContext.prototype.onDomInputEvent = function (domEvent) {
         // wrap event
         var eventInfo = EventRegister.inputEvents[domEvent.type];
-        var fireEventCtor = eventInfo.constructor(domEvent.type);
+        var fireEventCtor = eventInfo.constructor;
 
         var event;
         if (fireEventCtor) {
-            event = new fireEventCtor();
+            event = new fireEventCtor(domEvent.type);
             if (event.initFromNativeEvent) {
                 event.initFromNativeEvent(domEvent);
             }
