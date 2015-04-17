@@ -73,36 +73,39 @@
         var camera = inputContext.renderContext.camera || Engine._scene.camera;
         var worldMousePos = camera.screenToWorld(new Vec2(event.screenX, event.screenY));
         var target = Engine._interactionContext.pick(worldMousePos);
-        var eventInfo;
-        //
+
+        // dispatch global mouse event
+        event.target = target;
+        this._eventListeners.invoke(event);
+
         if (this._lastTarget && this._lastTarget !== target) {
-            // 鼠标离开事件
-            eventInfo = EventRegister.inputEvents.mouseleave;
-            var mouseleaveEvent = event.clone();
-            mouseleaveEvent.bubbles = eventInfo.bubbles;
-            mouseleaveEvent.type = 'mouseleave';
-            this._lastTarget.dispatchEvent(mouseleaveEvent);
+            // mouse leave event
+            var leaveEvent = event.clone();
+            leaveEvent.type = 'mouseleave';
+            leaveEvent.bubbles = EventRegister.inputEvents.mouseleave.bubbles;
+            this._lastTarget.dispatchEvent(leaveEvent);
         }
         if (target) {
+            // dispatch mouse event
             target.dispatchEvent(event);
-            // 鼠标进入事件
+            // mouse enter event
             if (this._lastTarget !== target) {
-                eventInfo = EventRegister.inputEvents.mouseenter;
-                var mouseenterEvent = event.clone();
-                mouseenterEvent.bubbles = eventInfo.bubbles;
-                mouseenterEvent.type = 'mouseenter';
-                target.dispatchEvent(mouseenterEvent);
+                var enterEvent = event.clone();
+                enterEvent.type = 'mouseenter';
+                enterEvent.bubbles = EventRegister.inputEvents.mouseenter.bubbles;
+                target.dispatchEvent(enterEvent);
             }
         }
         this._lastTarget = target;
     };
 
     Input._dispatchEvent = function (event, inputContext) {
-        // dispatch global event
-        this._eventListeners.invoke(event);
-        // dispatch mouse event through hierarchy
         if (event instanceof Fire.MouseEvent) {
             this._dispatchMouseEvent(event, inputContext);
+        }
+        else {
+            // dispatch global event
+            this._eventListeners.invoke(event);
         }
     };
 
