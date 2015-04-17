@@ -2,88 +2,6 @@
 var BitmapText = (function () {
 
     /**
-     * @class BitmapText
-     */
-    /**
-     * @namespace BitmapText
-     */
-    /**
-     * @class TextAlign
-     * @static
-     */
-    var TextAlign = Fire.defineEnum({
-        /**
-         * @property left
-         * @type {number}
-         */
-        left: -1,
-        /**
-         * @property center
-         * @type {number}
-         */
-        center: -1,
-        /**
-         * @property right
-         * @type {number}
-         */
-        right: -1
-    });
-
-    /**
-     * @class TextAnchor
-     * @static
-     */
-    var TextAnchor = (function (t) {
-        /**
-         * @property topLeft
-         * @type {number}
-         */
-        t[t.topLeft = 0] = 'Top Left';
-        /**
-         * @property topCenter
-         * @type {number}
-         */
-        t[t.topCenter = 1] = 'Top Center';
-        /**
-         * @property topRight
-         * @type {number}
-         */
-        t[t.topRight = 2] = 'Top Right';
-        /**
-         * @property midLeft
-         * @type {number}
-         */
-        t[t.midLeft = 3] = 'Middle Left';
-        /**
-         * @property midCenter
-         * @type {number}
-         */
-        t[t.midCenter = 4] = 'Middle Center';
-        /**
-         * @property midRight
-         * @type {number}
-         */
-        t[t.midRight = 5] = 'Middle Right';
-        /**
-         * @property botLeft
-         * @type {number}
-         */
-        t[t.botLeft = 6] = 'Bottom Left';
-        /**
-         * @property botCenter
-         * @type {number}
-         */
-        t[t.botCenter = 7] = 'Bottom Center';
-        /**
-         * @property botRight
-         * @type {number}
-         */
-        t[t.botRight = 8] = 'Bottom Right';
-        return t;
-    })({});
-
-
-    /**
      * The bitmap font renderer component.
      * @class BitmapText
      * @extends Renderer
@@ -92,9 +10,6 @@ var BitmapText = (function () {
     var BitmapText = Fire.extend("Fire.BitmapText", Renderer, function () {
         RenderContext.initRenderer(this);
     });
-
-    BitmapText.TextAlign = TextAlign;
-    BitmapText.TextAnchor = TextAnchor;
 
     //-- 增加 Bitmap Text 到 组件菜单上
     Fire.addComponentMenu(BitmapText, 'BitmapText');
@@ -144,7 +59,7 @@ var BitmapText = (function () {
         Fire.MultiText
     );
 
-    BitmapText.prop('_anchor', BitmapText.TextAnchor.midCenter, Fire.HideInInspector);
+    BitmapText.prop('_anchor', Fire.TextAnchor.midCenter, Fire.HideInInspector);
 
     /**
      * The anchor point of the text.
@@ -161,10 +76,10 @@ var BitmapText = (function () {
                 this._anchor = value;
             }
         },
-        Fire.Enum(BitmapText.TextAnchor)
+        Fire.Enum(Fire.TextAnchor)
     );
 
-    BitmapText.prop('_align', BitmapText.TextAlign.left, Fire.HideInInspector);
+    BitmapText.prop('_align', Fire.TextAlign.left, Fire.HideInInspector);
 
     /**
      * How lines of text are aligned (left, right, center).
@@ -182,7 +97,7 @@ var BitmapText = (function () {
                 Engine._renderContext.setAlign(this, value);
             }
         },
-        Fire.Enum(BitmapText.TextAlign)
+        Fire.Enum(Fire.TextAlign)
     );
 
     BitmapText.prototype.onLoad = function () {
@@ -222,33 +137,33 @@ var BitmapText = (function () {
         var anchorOffsetY = 0;
 
         switch (this._anchor) {
-            case BitmapText.TextAnchor.topLeft:
+            case Fire.TextAnchor.topLeft:
                 break;
-            case BitmapText.TextAnchor.topCenter:
+            case Fire.TextAnchor.topCenter:
                 anchorOffsetX = w * -0.5;
                 break;
-            case BitmapText.TextAnchor.topRight:
+            case Fire.TextAnchor.topRight:
                 anchorOffsetX = -w;
                 break;
-            case BitmapText.TextAnchor.midLeft:
+            case Fire.TextAnchor.midLeft:
                 anchorOffsetY = h * 0.5;
                 break;
-            case BitmapText.TextAnchor.midCenter:
+            case Fire.TextAnchor.midCenter:
                 anchorOffsetX = w * -0.5;
                 anchorOffsetY = h * 0.5;
                 break;
-            case BitmapText.TextAnchor.midRight:
+            case Fire.TextAnchor.midRight:
                 anchorOffsetX = -w;
                 anchorOffsetY = h * 0.5;
                 break;
-            case BitmapText.TextAnchor.botLeft:
+            case Fire.TextAnchor.botLeft:
                 anchorOffsetY = h;
                 break;
-            case BitmapText.TextAnchor.botCenter:
+            case Fire.TextAnchor.botCenter:
                 anchorOffsetX = w * -0.5;
                 anchorOffsetY = h;
                 break;
-            case BitmapText.TextAnchor.botRight:
+            case Fire.TextAnchor.botRight:
                 anchorOffsetX = -w;
                 anchorOffsetY = h;
                 break;
