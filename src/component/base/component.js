@@ -360,7 +360,7 @@
         // @endif
         // activate its children recursively
         for (var i = 0, children = entity._children, len = children.length; i < len; ++i) {
-            var child = [i];
+            var child = children[i];
             if (child._active) {
                 Component._invokeStarts(child);
             }
