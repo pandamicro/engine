@@ -52,6 +52,7 @@ var paths = {
         'src/scene.js',
         'src/load-manager.js',
         'src/asset-library.js',
+        'src/resources.js',
         'src/platform/h5/engine.js',
         'src/platform/h5/input-events.js',
         'src/platform/h5/input-context.js',

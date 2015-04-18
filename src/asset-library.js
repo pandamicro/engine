@@ -114,10 +114,17 @@ var AssetLibrary = (function () {
                 return;
             }
 
-            // step 4
+            // step 3
+
+            // @ifdef EDITOR
+            if (!_libraryBase) {
+                callback('Cannot load ' + uuid + ' in editor because AssetLibrary not yet initialized!', null);
+                return;
+            }
+            // @endif
             var url = _libraryBase + uuid.substring(0, 2) + Fire.Path.sep + uuid;
 
-            // step 5
+            // step 4
             LoadManager.loadByLoader(JsonLoader, url,
                 function (error, json) {
                     function onDeserializedWithDepends (err, asset) {

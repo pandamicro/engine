@@ -192,6 +192,7 @@ var Engine = (function () {
 
         if (options) {
             JS.mixin(Engine._sceneInfos, options.scenes);
+            Resources._resBundle.init(options.resBundle);
         }
         return Engine._renderContext;
     };
