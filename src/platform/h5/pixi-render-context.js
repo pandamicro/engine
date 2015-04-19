@@ -110,7 +110,7 @@ var RenderContext = (function () {
             return new Vec2(winSize.width, winSize.height);
         },
         set: function (value) {
-            this.view.setDesignResolutionSize(value.x, value.y, this.game.view.getResolutionPolicy());
+            this.setDesignResolutionSize(value.x, value.y, this.game.view.getResolutionPolicy());
         }
     });
 
@@ -456,14 +456,17 @@ var RenderContext = (function () {
      */
     RenderContext.prototype.updateTransform = function (target, matrix) {
         // apply matrix
+        var rot = 360 * (matrix.getRotation() / Math.PI);
         if (target._renderObj) {
             target._renderObj.setPosition(matrix.tx, matrix.ty);
+            target._renderObj.setRotation(rot);
             target._renderObj.setScale(matrix.a, matrix.d);
             target._renderObj.setOpacity(target._color.a * 255);
         }
         // @ifdef EDITOR
         if (target._renderObjInScene) {
             target._renderObjInScene.setPosition(matrix.tx, matrix.ty);
+            target._renderObjInScene.setRotation(rot);
             target._renderObjInScene.setScale(matrix.a, matrix.d);
             target._renderObjInScene.setOpacity(target._color.a * 255);
         }
