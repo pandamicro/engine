@@ -1,9 +1,24 @@
-
+/**
+ * Screen class can be used to access display information.
+ * @class Screen
+ * @static
+ */
 var Screen = {
-    // The device's pixel ratio (for retina displays)
+    /**
+     * The current device's pixel ratio (for retina displays)
+     * @property devicePixelRatio
+     * @type {number}
+     * @default 1
+     * @readOnly
+     */
     devicePixelRatio: (Fire.isRetinaEnabled && window.devicePixelRatio) || 1
 };
 
+/**
+ * The current size of the screen window in pixels
+ * @property size
+ * @type {Vec2}
+ */
 Object.defineProperty(Screen, 'size', {
     get: function () {
         return Engine._renderContext.size;//.div(this.devicePixelRatio);
@@ -25,6 +40,11 @@ Object.defineProperty(Screen, 'size', {
 //    }
 //});
 
+/**
+ * The current width of the screen window in pixels
+ * @property width
+ * @type {number}
+ */
 Object.defineProperty(Screen, 'width', {
     get: function () {
         return Engine._renderContext.width;
@@ -34,6 +54,11 @@ Object.defineProperty(Screen, 'width', {
     }
 });
 
+/**
+ * The current height of the screen window in pixels
+ * @property height
+ * @type {number}
+ */
 Object.defineProperty(Screen, 'height', {
     get: function () {
         return Engine._renderContext.height;
@@ -43,8 +68,12 @@ Object.defineProperty(Screen, 'height', {
     }
 });
 
-
-
+/**
+ * The canvas's parent node in dom.
+ * @property _container
+ * @type {HTMLElement}
+ * @private
+ */
 Object.defineProperty(Screen, '_container', {
     get: function () {
         var canvas = Fire.Engine._renderContext.canvas;
@@ -52,6 +81,12 @@ Object.defineProperty(Screen, '_container', {
     }
 });
 
+/**
+ * The container's parent node in dom.
+ * @property _frame
+ * @type {HTMLElement}
+ * @private
+ */
 Object.defineProperty(Screen, '_frame', {
     get: function () {
         var container = this._container;
@@ -59,7 +94,12 @@ Object.defineProperty(Screen, '_frame', {
     }
 });
 
-// Size of parent node that contains container and _canvas
+/**
+ * Size of parent node that contains container and _canvas
+ * @property _frameSize
+ * @type {Vec2}
+ * @private
+ */
 Object.defineProperty(Screen, '_frameSize', {
     get: function () {
         var frame = this._frame;

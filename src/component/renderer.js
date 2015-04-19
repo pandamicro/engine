@@ -2,6 +2,9 @@
 
     /**
      * The base for all renderer
+     * @class Renderer
+     * @extends HashObject
+     * @constructor
      */
     var Renderer = Fire.extend('Fire.Renderer', Component);
 
@@ -10,8 +13,8 @@
     // * The returned box is relative only to its parent.
     // *
     // * @function Fire.Renderer#getLocalBounds
-    // * @param {Fire.Rect} [out] - optional, the receiving rect
-    // * @return {Fire.Rect}
+    // * @param {Rect} [out] - optional, the receiving rect
+    // * @return {Rect}
     // */
     //Renderer.prototype.getLocalBounds = function (out) {
     //    Fire.warn('interface not yet implemented');
@@ -23,9 +26,9 @@
     /**
      * Returns a "world" axis aligned bounding box(AABB) of the renderer.
      *
-     * @function Fire.Renderer#getWorldBounds
-     * @param {Fire.Rect} [out] - optional, the receiving rect
-     * @return {Fire.Rect} - the rect represented in world position
+     * @method getWorldBounds
+     * @param {Rect} [out] - optional, the receiving rect
+     * @return {Rect} - the rect represented in world position
      */
     Renderer.prototype.getWorldBounds = function (out) {
         var worldMatrix = this.entity.transform.getLocalToWorldMatrix();
@@ -42,23 +45,38 @@
     /**
      * Returns a "world" oriented bounding box(OBB) of the renderer.
      *
-     * @function Fire.Renderer#getWorldOrientedBounds
-     * @param {...Fire.Vec2} [out] - optional, the vector to receive the world position
-     * @return {Fire.Vec2[]} - the array contains vectors represented in world position
+     * @method getWorldOrientedBounds
+     * @param {Vec2} [out_bl] - optional, the vector to receive the world position of bottom left
+     * @param {Vec2} [out_tl] - optional, the vector to receive the world position of top left
+     * @param {Vec2} [out_tr] - optional, the vector to receive the world position of top right
+     * @param {Vec2} [out_br] - optional, the vector to receive the world position of bottom right
+     * @return {Vec2} - the array contains vectors represented in world position,
+     *                    in the sequence of BottomLeft, TopLeft, TopRight, BottomRight
      */
-    Renderer.prototype.getWorldOrientedBounds = function (out1, out2, out3, out4){
-        out1 = out1 || new Vec2(0, 0);
-        out2 = out2 || new Vec2(0, 0);
-        out3 = out3 || new Vec2(0, 0);
-        out4 = out4 || new Vec2(0, 0);
+    Renderer.prototype.getWorldOrientedBounds = function (out_bl, out_tl, out_tr, out_br){
+        out_bl = out_bl || new Vec2(0, 0);
+        out_tl = out_tl || new Vec2(0, 0);
+        out_tr = out_tr || new Vec2(0, 0);
+        out_br = out_br || new Vec2(0, 0);
         var worldMatrix = this.entity.transform.getLocalToWorldMatrix();
-        _doGetOrientedBounds.call(this, worldMatrix, out1, out2, out3, out4);
-        return [out1, out2, out3, out4];
+        _doGetOrientedBounds.call(this, worldMatrix, out_bl, out_tl, out_tr, out_br);
+        return [out_bl, out_tl, out_tr, out_br];
     };
 
+    /**
+     * !#zh 返回表示 renderer 的 width/height/pivot/skew/shear 等变换的 matrix，
+     * 这些变换不影响子物体，getLocalToWorldMatrix 返回的变换会影响子物体。
+     *
+     * @method getSelfMatrix
+     * @param {Matrix23} out - the receiving matrix
+     */
     Renderer.prototype.getSelfMatrix = function (out) {
     };
 
+    /**
+     * @method getWorldSize
+     * @return {Vec2}
+     */
     Renderer.prototype.getWorldSize = function () {
         return new Vec2(0, 0);
     };

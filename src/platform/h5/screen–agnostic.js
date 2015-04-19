@@ -16,9 +16,9 @@
 //
 ///**
 // * Function to apply this resolution policy.
-// * The return value is {scale: {Fire.Vec2}, viewport: {Fire.Rect}}.
-// * @param {Fire.Vec2} designedResolution - The user defined design resolution
-// * @returns {object} An object contains the scale X/Y values and the viewport rect
+// * The return value is {scale: {Vec2}, viewport: {Rect}}.
+// * @param {Vec2} designedResolution - The user defined design resolution
+// * @return {object} An object contains the scale X/Y values and the viewport rect
 // */
 //ResolutionPolicy.prototype.apply = function (designedResolution) {
 //    this._containerStrategy.apply(designedResolution);
@@ -28,15 +28,15 @@
 //ResolutionPolicy._registered = {};
 //
 ///**
-// * @param {Fire.ResolutionPolicyType} type
-// * @returns {Fire.ResolutionPolicy} the instance of ResolutionPolicy
+// * @param {ResolutionPolicyType} type
+// * @return {ResolutionPolicy} the instance of ResolutionPolicy
 // */
 //ResolutionPolicy.fromType = function (type) {
 //    return this._registered[type];
 //};
 //
 ///**
-// * @param {Fire.ResolutionPolicyType} type
+// * @param {ResolutionPolicyType} type
 // * @param instance
 // */
 //ResolutionPolicy.register = function (type, instance) {
@@ -51,12 +51,21 @@
 
 ///////////////////////////////////////////////////////////////////////////////////////
 
+// 这里的类不能声明 @namespace，否则会影响到整个文件。
 /**
  * ContainerStrategy class is the root strategy class of container's scale strategy,
  * it controls the behavior of how to scale the container and canvas.
+ * @class Screen.ContainerStrategy
+ * @constructor
+ * @beta
  */
 function ContainerStrategy () {}
 
+/**
+ * @method setupContainer
+ * @param {Vec2} size
+ * @private
+ */
 ContainerStrategy.prototype.setupContainer = function (size) {
     var canvas = Fire.Engine._renderContext.canvas;
     var container = Fire.Screen._container;
@@ -89,19 +98,30 @@ Fire.Screen.ContainerStrategy = ContainerStrategy;
 
 /**
  * ContentStrategy class is the root strategy class of content's scale strategy,
- * it controls the behavior of how to scale the scene and setup the viewport for the game
+ * it controls the behavior of how to scale the scene and setup the viewport for the game.
+ * @class Screen.ContentStrategy
+ * @constructor
+ * @beta
  */
 function ContentStrategy () {}
 
 /**
  * Function to apply this strategy
- * The return value is {scale: {Fire.Vec2}, viewport: {Fire.Rect}},
- * @param {Fire.Vec2} designedResolution
- * @return {object} scaleAndViewportRect
+ * @method apply
+ * @param {Vec2} designedResolution
+ * @return {object} scaleAndViewportRect {scale: {Vec2}, viewport: {Rect}}
  */
 ContentStrategy.prototype.apply = function (designedResolution) {
 };
 
+/**
+ * Helper function for apply.
+ * @method buildResult
+ * @param {Vec2} container - size of container
+ * @param {Vec2} content - size of content
+ * @param {Vec2} scale
+ * @return {object} scaleAndViewportRect {scale: *, viewport: Fire.Rect}
+ */
 ContentStrategy.prototype.buildResult = function (container, content, scale) {
     // Makes content fit better the canvas
     if (Math.abs(container.x - content.x) < 2) {
@@ -129,6 +149,10 @@ ContentStrategy.prototype.buildResult = function (container, content, scale) {
 //    container.style.top = top + "px";
 //};
 
+/**
+ * @method getContainerSize
+ * @returns {Vec2}
+ */
 ContentStrategy.prototype.getContainerSize = function () {
     var container = Fire.Scene._container;
     return Fire.v2(container.clientWidth, container.clientHeight);
@@ -142,6 +166,12 @@ Fire.Screen.ContentStrategy = ContentStrategy;
 
 // Container scale strategies
 
+    /**
+     * Strategy that makes the container's size equals to the frame's size
+     * @class EqualToFrame
+     * @extends Screen.ContainerStrategy
+     * @constructor
+     */
     function EqualToFrame () {
         ContainerStrategy.call(this);
     }
@@ -153,13 +183,23 @@ Fire.Screen.ContentStrategy = ContentStrategy;
     };
 
     /**
+     * @class Screen.ContainerStrategy
+     */
+    /**
      * Strategy that makes the container's size equals to the frame's size
+     * @property EqualToFrame
      * @type {EqualToFrame}
+     * @static
      */
     ContainerStrategy.EqualToFrame = new EqualToFrame();
 
 // Content scale strategies
 
+    /**
+     * @class NoScale
+     * @extends Screen.ContentStrategy
+     * @constructor
+     */
     function NoScale () {
         ContentStrategy.call(this);
     }
@@ -170,7 +210,10 @@ Fire.Screen.ContentStrategy = ContentStrategy;
     };
 
     /**
-     * Strategy to scale the content's height to container's height and proportionally scale its width
+     * Strategy to scale the content's height to container's height and proportionally scale its width.
+     * @class FixedHeight
+     * @extends Screen.ContentStrategy
+     * @constructor
      */
     function FixedHeight () {
         ContentStrategy.call(this);
@@ -189,8 +232,13 @@ Fire.Screen.ContentStrategy = ContentStrategy;
     var contentStrategies = [new NoScale(), new FixedHeight()];
 
     /**
-     * @param {Fire.ContentStrategyType} type
-     * @returns {Fire.ContentStrategy}
+     * @class Screen.ContentStrategy
+     */
+    /**
+     * Get the content strategy instance by type
+     * @param {ContentStrategyType} type
+     * @return {Screen.ContentStrategy}
+     * @static
      */
     ContentStrategy.fromType = function (type) {
         var res = contentStrategies[type];

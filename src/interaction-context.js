@@ -17,8 +17,8 @@ var InteractionContext = (function () {
 
     /**
      * Pick the top most entity, using their oriented bounding boxes.
-     * @param {Fire.Vec2} worldPosition
-     * @return {Fire.Entity}
+     * @param {Vec2} worldPosition
+     * @return {Entity}
      */
     InteractionContext.prototype.pick = function (worldPosition) {
         for (var i = this.entities.length - 1; i >= 0; --i) {

@@ -1,6 +1,6 @@
 {
   "name": "fireball-engine",
-  "version": "0.1.7",
+  "version": "0.2.1",
   "homepage": "https://github.com/fireball-x/engine",
   "authors": [
     "Johnny Wu <KarasAya@gmail.com>",
@@ -18,8 +18,6 @@
     "tests"
   ],
   "dependencies": {
-    "fire-core": "fireball-x/core#master",
-    "pixi": "2.2.3"
-  },
-  "devDependencies": {}
+    "fire-core": "fireball-x/core#master"
+  }
 }

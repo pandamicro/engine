@@ -121,6 +121,15 @@ function TextLoader(url, callback, onProgress) {
     _LoadFromXHR(url, cb, onProgress);
 }
 
+/**
+ * @method _JsonLoader
+ * @param {string} url
+ * @param {function} callback
+ * @param {string} callback.param error - null or the error info
+ * @param {object} callback.param data - the loaded json object or null
+ * @async
+ * @private
+ */
 function JsonLoader(url, callback, onProgress) {
     var cb = callback && function(error, xhr) {
         if (xhr && xhr.responseText) {

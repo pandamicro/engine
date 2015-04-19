@@ -1,5 +1,11 @@
 ﻿var SpriteRenderer = (function () {
 
+    /**
+     * Renders a sprite in the scene.
+     * @class SpriteRenderer
+     * @extends Renderer
+     * @constructor
+     */
     var SpriteRenderer = Fire.extend('Fire.SpriteRenderer', Renderer, function () {
         RenderContext.initRenderer(this);
         this._hasRenderObj = false;
@@ -8,6 +14,12 @@
     Fire.executeInEditMode(SpriteRenderer);
 
     SpriteRenderer.prop('_sprite', null, Fire.HideInInspector);
+    /**
+     * The sprite to render.
+     * @property sprite
+     * @type {Sprite}
+     * @default null
+     */
     SpriteRenderer.getset('sprite',
         function () {
             return this._sprite;
@@ -22,6 +34,13 @@
     );
 
     SpriteRenderer.prop('_color', new Fire.Color(1, 1, 1, 1), Fire.HideInInspector);
+    /**
+     * !#en The rendering color.
+     * !#zh Sprite 渲染的颜色，其中 alpha 为 1 时表示不透明，0.5 表示半透明，0 则全透明。
+     * @property color
+     * @type Color
+     * @default new Color(1, 1, 1, 1)
+     */
     SpriteRenderer.getset('color',
         function () {
             return this._color;
@@ -35,6 +54,17 @@
     );
 
     SpriteRenderer.prop('customSize_', false, Fire.HideInInspector);
+
+    /**
+     * !#en Indicates that this renderer uses custom width and height to render the sprite.
+     * !#zh 是否使用自定义尺寸渲染。
+     * - 为 true 时将忽略 sprite 的大小，使用 renderer 的 width 和 height 进行渲染。
+     * - 为 false 则使用 sprite 原有的 width 和 height 进行渲染。
+     *
+     * @property customSize
+     * @type {boolean}
+     * @default false
+     */
     SpriteRenderer.getset('customSize',
         function () {
             return this.customSize_;
@@ -48,6 +78,14 @@
                         Fire.Watch( 'customSize_', function ( obj, propEL ) {
                             propEL.disabled = !obj.customSize_;
                         } ));
+    /**
+     * !#en The custom width of this renderer.
+     * !#zh 获取该 Renderer 的渲染宽度，如果使用的是 customSize，获取到的是 custom width，否则是 sprite width。
+     * 设置这个值时，会修改 custom width。
+     * @property width
+     * @type {number}
+     * @beta
+     */
     SpriteRenderer.getset('width',
         function () {
             if ( !this.customSize_ ) {
@@ -67,6 +105,15 @@
                         Fire.Watch( 'customSize_', function ( obj, propEL) {
                             propEL.disabled = !obj.customSize;
                         } ));
+
+    /**
+     * !#en The custom height of this renderer.
+     * !#zh 获取该 Renderer 的渲染高度，如果使用的是 customSize，获取到的是 custom height，否则是 sprite height。
+     * 设置这个值时，会修改 custom height。
+     * @property height
+     * @type {number}
+     * @beta
+     */
     SpriteRenderer.getset('height',
         function () {
             if ( !this.customSize_ ) {
@@ -124,8 +171,6 @@
         Engine._renderContext.remove(this);
     };
 
-    // 返回表示 sprite 的 width/height/pivot/skew/shear 等变换的 matrix，
-    // 由于这些变换不影响子物体，所以不能放到 getLocalToWorldMatrix
     SpriteRenderer.prototype.getSelfMatrix = function (out) {
         var w = this.width;
         var h = this.height;

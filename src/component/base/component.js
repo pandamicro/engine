@@ -16,21 +16,27 @@
     var compCtor;
 // @ifdef EDITOR
     compCtor = function () {
-        Fire._AssetsWatcher.initComponent(this);
+        Editor._AssetsWatcher.initComponent(this);
     };
 // @endif
 
     /**
+     * Base class for everything attached to Entity.
      *
-     * Base class for everything attached to Entity
      * NOTE: Not allowed to use construction parameters for Component's subclasses,
-     *       because Component is created by the engine.
-     * @class Component
-     * @static
+     *         because Component is created by the engine.
      *
+     * @class Component
+     * @extends HashObject
+     * @constructor
      */
     var Component = Fire.extend('Fire.Component', HashObject, compCtor);
 
+    /**
+     * The entity this component is attached to. A component is always attached to an entity.
+     * @property entity
+     * @type {Entity}
+     */
     Component.prop('entity', null, Fire.HideInInspector);
 
     // @ifdef EDITOR
@@ -42,12 +48,12 @@
         },
         function (value) {
             if (this._cacheUuid !== value) {
-                if (value && Fire.isUuid(value)) {
-                    var classId = Fire.compressUuid(value);
+                if (value && Editor.isUuid(value)) {
+                    var classId = Editor.compressUuid(value);
                     var newComp = Fire.JS._getClassById(classId);
                     if (newComp) {
                         Fire.warn('Sorry, replacing component script is not yet implemented.');
-                        //Fire.sendToWindows('reload:window-scripts', Fire._Sandbox.compiled);
+                        //Editor.sendToWindows('reload:window-scripts', Editor._Sandbox.compiled);
                     }
                     else {
                         Fire.error('Can not find a component in the script which uuid is "%s".', value);
@@ -59,19 +65,25 @@
             }
         },
         Fire.DisplayName("Script"),
-        Fire.ObjectType(Fire.ScriptAsset, true)
+        Fire._ScriptUuid
     );
 
     // @endif
 
-    // enabled self
+    /**
+     * @property _enabled
+     * @type boolean
+     * @private
+     */
     Component.prop('_enabled', true, Fire.HideInInspector);
 
     // properties
+
     /**
-     * If component is enabled.
+     * indicates whether this component is enabled or not.
      * @property enabled
      * @type boolean
+     * @default true
      */
     Object.defineProperty(Component.prototype, 'enabled', {
         get: function () {
@@ -90,9 +102,10 @@
     });
 
     /**
-     * If the component is enabled in hierarchy.
+     * indicates whether this component is enabled and its entity is also active in the hierarchy.
      * @property enabledInHierarchy
-     * @type Transform
+     * @type {boolean}
+     * @readOnly
      */
     Object.defineProperty(Component.prototype, 'enabledInHierarchy', {
         get: function () {
@@ -103,7 +116,8 @@
     /**
      * Returns the {% crosslink Fire.Transform Transform %} attached to the entity.
      * @property transform
-     * @type Transform
+     * @type {Transform}
+     * @readOnly
      */
     Object.defineProperty(Component.prototype, 'transform', {
         get: function () {
@@ -112,6 +126,7 @@
     });
 
     // callback functions
+
     /**
      * Update is called every frame, if the Component is enabled.
      * @event update
@@ -124,43 +139,75 @@
      */
     Component.prototype.lateUpdate = null;
     //(NYI) Component.prototype.onCreate = null;  // customized constructor for template
+
     /**
      * When attaching to an active entity or its entity first activated
      * @event onLoad
      */
-    Component.prototype.onLoad = null;    //
-    Component.prototype.onStart = null;   // called before all scripts' update if the Component is enabled
+    Component.prototype.onLoad = null;
+
+    /**
+     * Called before all scripts' update if the Component is enabled
+     * @event start
+     */
+    Component.prototype.start = null;
+
+    /**
+     * Called when this component becomes enabled and its entity becomes active
+     * @event onEnable
+     */
     Component.prototype.onEnable = null;
+
+    /**
+     * Called when this component becomes disabled or its entity becomes inactive
+     * @event onDisable
+     */
     Component.prototype.onDisable = null;
+
+    /**
+     * Called when this component will be destroyed.
+     * @event onDestroy
+     */
     Component.prototype.onDestroy = null;
+
+    /**
+     * Called when the engine starts rendering the scene.
+     * @event onPreRender
+     */
     Component.prototype.onPreRender = null;
 
 
     /**
-     * @param {function|string} typeOrTypename
-     * @return {Component}
+     * Adds a component class to the entity. You can also add component to entity by passing in the name of the script.
+     *
+     * @method addComponent
+     * @param {function|string} typeOrName - the constructor or the class name of the component to add
+     * @return {Component} - the newly added component
      */
     Component.prototype.addComponent = function (typeOrTypename) {
         return this.entity.addComponent(typeOrTypename);
     };
 
     /**
-     * @param {function|string} typeOrTypename
+     * Returns the component of supplied type if the entity has one attached, null if it doesn't. You can also get component in the entity by passing in the name of the script.
+     *
+     * @method getComponent
+     * @param {function|string} typeOrName
      * @return {Component}
      */
     Component.prototype.getComponent = function (typeOrTypename) {
         return this.entity.getComponent(typeOrTypename);
     };
 
-    /**
-     * This method will be invoked when the scene graph changed, which is means the parent of its transform changed,
-     * or one of its ancestor's parent changed, or one of their sibling index changed.
-     * NOTE: This callback only available after onLoad.
-     *
-     * @param {Fire.Transform} transform - the transform which is changed, can be any of this transform's ancestor.
-     * @param {Fire.Transform} oldParent - the transform's old parent, if not changed, its sibling index changed.
-     * @return {boolean} return whether stop propagation to this component's child components.
-     */
+    ///**
+    // * This method will be invoked when the scene graph changed, which is means the parent of its transform changed,
+    // * or one of its ancestor's parent changed, or one of their sibling index changed.
+    // * NOTE: This callback only available after onLoad.
+    // *
+    // * @param {Transform} transform - the transform which is changed, can be any of this transform's ancestor.
+    // * @param {Transform} oldParent - the transform's old parent, if not changed, its sibling index changed.
+    // * @return {boolean} return whether stop propagation to this component's child components.
+    // */
     //Component.prototype.onHierarchyChanged = function (transform, oldParent) {};
 
     // overrides
@@ -174,46 +221,22 @@
     };
 
 // @ifdef EDITOR
-    function callOnEnableInTryCatch (c) {
+    function call_FUNC_InTryCatch (c) {
         try {
-            c.onEnable();
+            c._FUNC_();
         }
         catch (e) {
-            Fire.error(e);
+            Fire._throw(e);
         }
     }
-    function callOnDisableInTryCatch (c) {
-        try {
-            c.onDisable();
-        }
-        catch (e) {
-            Fire.error(e);
-        }
-    }
-    function callOnLoadInTryCatch (c) {
-        try {
-            c.onLoad();
-        }
-        catch (e) {
-            Fire.error(e);
-        }
-    }
-    function callOnStartInTryCatch (c) {
-        try {
-            c.onStart();
-        }
-        catch (e) {
-            Fire.error(e);
-        }
-    }
-    function callOnDestroyInTryCatch (c) {
-        try {
-            c.onDestroy();
-        }
-        catch (e) {
-            Fire.error(e);
-        }
-    }
+    var execInTryCatchTmpl = '(' + call_FUNC_InTryCatch + ')';
+    // jshint evil: true
+    var callOnEnableInTryCatch = eval(execInTryCatchTmpl.replace(/_FUNC_/g, 'onEnable'));
+    var callOnDisableInTryCatch = eval(execInTryCatchTmpl.replace(/_FUNC_/g, 'onDisable'));
+    var callOnLoadInTryCatch = eval(execInTryCatchTmpl.replace(/_FUNC_/g, 'onLoad'));
+    var callOnStartInTryCatch = eval(execInTryCatchTmpl.replace(/_FUNC_/g, 'start'));
+    var callOnDestroyInTryCatch = eval(execInTryCatchTmpl.replace(/_FUNC_/g, 'onDestroy'));
+    // jshint evil: false
 // @endif
 
     // Should not call onEnable/onDisable in other place
@@ -275,7 +298,7 @@
             if (this.onLoad) {
                 callOnLoadInTryCatch(this);
             }
-            Fire._AssetsWatcher.start(this);
+            Editor._AssetsWatcher.start(this);
             //if (this.onHierarchyChanged) {
             //    this.entity.transform._addListener(this);
             //}
@@ -299,8 +322,7 @@
 
     /**
      * invoke starts on entities
-     * @method _invokeStarts
-     * @param {Fire.Entity} entity
+     * @param {Entity} entity
      */
     Component._invokeStarts = function (entity) {
         var countBefore = entity._components.length;
@@ -312,12 +334,12 @@
                 comp = entity._components[c];
                 if ( !(comp._objFlags & IsOnStartCalled) ) {
                     comp._objFlags |= IsOnStartCalled;
-                    if (comp.onStart) {
+                    if (comp.start) {
                         // @ifdef EDITOR
                         callOnStartInTryCatch(comp);
                         // @endif
                         // @ifndef EDITOR
-                        comp.onStart();
+                        comp.start();
                         // @endif
                     }
                 }
@@ -329,7 +351,7 @@
                 comp = entity._components[c];
                 if ( !(comp._objFlags & IsOnStartCalled) && Fire.attr(comp, 'executeInEditMode')) {
                     comp._objFlags |= IsOnStartCalled;
-                    if (comp.onStart) {
+                    if (comp.start) {
                         callOnStartInTryCatch(comp);
                     }
                 }
@@ -338,7 +360,7 @@
         // @endif
         // activate its children recursively
         for (var i = 0, children = entity._children, len = children.length; i < len; ++i) {
-            var child = [i];
+            var child = children[i];
             if (child._active) {
                 Component._invokeStarts(child);
             }
@@ -350,7 +372,7 @@
         _callOnEnable(this, false);
         // onDestroy
 // @ifdef EDITOR
-        Fire._AssetsWatcher.stop(this);
+        Editor._AssetsWatcher.stop(this);
         if (Fire.Engine.isPlaying || Fire.attr(this, 'executeInEditMode')) {
             if (this.onDestroy) {
                 callOnDestroyInTryCatch(this);
@@ -381,16 +403,22 @@ Fire._componentMenuItems = [];
 // @endif
 
 /**
+ * @class Fire
+ */
+/**
  * Register a component to the "Component" menu.
  *
  * @method addComponentMenu
- * @static
  * @param {function} constructor - the class you want to register, must inherit from Component
  * @param {string} menuPath - the menu path name. Eg. "Rendering/Camera"
  * @param {number} [priority] - the order which the menu item are displayed
  */
 Fire.addComponentMenu = function (constructor, menuPath, priority) {
     // @ifdef EDITOR
+    if ( !Fire.isChildClassOf(constructor, Component) ) {
+        Fire.error('[Fire.addComponentMenu] constructor must inherit from Component');
+        return;
+    }
     Fire._componentMenuItems.push({
         component: constructor,
         menuPath: menuPath,
@@ -410,11 +438,14 @@ Fire.attr(Component, 'executeInEditMode', false);
  * By calling this function, each component will also have its callback executed in edit mode.
  *
  * @method executeInEditMode
- * @static
- * @param {function} constructor - the class you want to register, must inherit from Component
+ * @param {Component} constructor - the class you want to register, must inherit from Component
  */
 Fire.executeInEditMode = function (constructor) {
     // @ifdef EDITOR
+    if ( !Fire.isChildClassOf(constructor, Component) ) {
+        Fire.error('[Fire.executeInEditMode] constructor must inherit from Component');
+        return;
+    }
     Fire.attr(constructor, 'executeInEditMode', true);
     // @endif
 };

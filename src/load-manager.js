@@ -8,6 +8,8 @@
  * - It will NOT:
  *   - cache what has being loaded
  *   - load depends of resource
+ * @class LoadManager
+ * @static
  */
 var LoadManager = (function () {
 
@@ -63,19 +65,29 @@ var LoadManager = (function () {
 
         /**
          * Max allowed concurrent request count
-         * @property {number} LoadManager.maxConcurrent
+         * @property maxConcurrent
+         * @type {number}
+         * @default 2
          */
         maxConcurrent: 2,
 
         /**
          * Current concurrent request count
-         * @property {number} LoadManager._curConcurrent
-         * @private
+         * @property _curConcurrent
+         * @type {number}
+         * @readOnly
          */
         _curConcurrent: 0,
 
         /**
-         * NOTE: Request the same url with different loader for same url is not allowed
+         * NOTE: Request the same url with different loader is disallowed
+         * @method loadByLoader
+         * @param {function} loader
+         * @param {string} url
+         * @param {function} callback
+         * @param {string} callback.param error - null or the error info
+         * @param {any} callback.param data - the loaded data
+         * @private
          */
         loadByLoader: function (loader, url, callback) {
             if (urlToCallbacks.add(url, callback)) {
@@ -94,10 +106,14 @@ var LoadManager = (function () {
         },
 
         /**
+         * @method load
          * @param {string} url
          * @param {string} rawType
          * @param {string} [rawExtname]
          * @param {function} callback
+         * @param {string} callback.param error - null or the error info
+         * @param {any} callback.param data - the loaded data
+         * @private
          */
         load: function (url, rawType, rawExtname, callback) {
             if (typeof rawExtname === 'function') {
@@ -122,6 +138,7 @@ var LoadManager = (function () {
         _rawTypes: getBuiltinRawTypes(),
 
         /**
+         * @method registerRawTypes
          * @param {string} rawType
          * @param {function} loader
          * @param {string} defaultExtname

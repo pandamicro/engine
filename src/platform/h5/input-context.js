@@ -64,7 +64,7 @@
         // get canvas page offset
         var canvasPageX = 0,
             canvasPageY = 0;
-        var elem = scope.renderContext.renderer.view;
+        var elem = scope.renderContext.canvas;
         while (elem) {
             canvasPageX += parseInt(elem.offsetLeft);
             canvasPageY += parseInt(elem.offsetTop);
@@ -144,13 +144,23 @@
     InputContext.prototype.onDomInputEvent = function (domEvent) {
         // wrap event
         var eventInfo = EventRegister.inputEvents[domEvent.type];
-        var event = new eventInfo.constructor(domEvent.type);
-        if (event.initFromNativeEvent) {
-            event.initFromNativeEvent(domEvent);
+        var fireEventCtor = eventInfo.constructor;
+
+        var event;
+        if (fireEventCtor) {
+            event = new fireEventCtor(domEvent.type);
+            if (event.initFromNativeEvent) {
+                event.initFromNativeEvent(domEvent);
+            }
+            event.bubbles = eventInfo.bubbles;
+            // event.cancelable = eventInfo.cancelable; (NYI)
         }
-        event.bubbles = eventInfo.bubbles;
-        // event.cancelable = eventInfo.cancelable; (NYI)
-        convertToRetina(event);
+        else {
+            event = domEvent;
+        }
+        if (event instanceof MouseEvent) {
+            convertToRetina(event);
+        }
 
         // inner dispatch
         Input._dispatchEvent(event, this);

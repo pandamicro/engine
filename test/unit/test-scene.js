@@ -27,7 +27,7 @@ test('findEntity', function () {
 // This function has moved to editor
 //test('createEntity in other scene', function () {
 //    var previewScene = new Fire._Scene();
-//    var ent = previewScene.createEntity('preview entity');
+//    var ent = previewScene.addEntity('preview entity');
 //    ok(Entity.find('/preview entity') === null, 'should not create in main scene');
 //    ok(previewScene.findEntity('/preview entity') === ent, 'should create in preview scene');
 //});

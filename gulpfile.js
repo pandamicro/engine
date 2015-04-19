@@ -2,7 +2,7 @@
 var es = require('event-stream');
 var stylish = require('jshint-stylish');
 var fs = require('fs');
-var through = require('through');
+//var through = require('through');
 
 var gulp = require('gulp');
 var concat = require('gulp-concat');
@@ -12,6 +12,7 @@ var qunit = require('gulp-qunit');
 var rename = require('gulp-rename');
 var uglify = require('gulp-uglifyjs');
 var preprocess = require('gulp-preprocess');
+var header = require('gulp-header');
 
 var fb = require('gulp-fb');
 var del = require('del');
@@ -20,6 +21,7 @@ var paths = {
     // source
     src: [
         // runtime pre-defines
+        'src/platform/editor/misc.js',
         'src/platform/editor/asset-watcher.js',
         'src/platform/editor/editor-callbacks.js',
 
@@ -33,8 +35,7 @@ var paths = {
         'src/event/event-listeners.js',
         'src/event/event-target.js',
         'src/platform/h5/ticker.js',
-        'src/platform/h5/pixi-render-context.js',
-        'src/platform/h5/pixi-bitmap-font-util.js',
+        'src/render-context.js',
         'src/platform/h5/loaders.js',
         'src/component/base/component.js',
         'src/component/base/component-requiring-frames.js',
@@ -43,6 +44,7 @@ var paths = {
         'src/component/renderer.js',
         'src/component/sprite-renderer.js',
         'src/component/bitmap-text.js',
+        'src/component/text.js',
         'src/component/camera.js',
         'src/component/missing.js',
         'src/interaction-context.js',
@@ -58,6 +60,11 @@ var paths = {
         'src/platform/h5/screen–agnostic.js',
         'src/event/event-register.js',
         'src/input.js',
+
+        'src/audio/audio-fix-ios.js',
+        'src/audio/audio-legacy.js',
+        'src/audio/audio-source.js',
+        'src/audio/audio-web-audio.js',
     ],
     index: 'src/index.js',
 
@@ -69,12 +76,10 @@ var paths = {
         src: 'test/unit/**/*.js',
         runner: 'test/lib/runner.html',
         lib_dev: [
-            'ext/pixi/bin/pixi.dev.js',
             'ext/fire-core/bin/dev/core.js',
             'bin/dev/engine.js',
         ],
         lib_min: [
-            'ext/pixi/bin/pixi.js',
             'ext/fire-core/bin/min/core.js',
             'bin/min/engine.js',
         ],
@@ -116,57 +121,48 @@ gulp.task('cp-core', function() {
 // build
 /////////////////////////////////////////////////////////////////////////////
 
-var embedIntoModule = function (template) {
-    template = fs.readFileSync(template);
-    return es.map(function(file, callback) {
-        var data = { file: file, contents: '\n\n' + file.contents.toString() };
-        file.contents = new Buffer(gutil.template(template, data));
-        callback(null, file);
-    });
-};
-
-var insertCoreShortcut = function (path, moduleName, filter) {
-    var finished = false;
-    filter = filter || function (key) {
-        return this[key].prototype && this[key].prototype.__classname__;
-    };
-    function createShortcut(path, moduleName, filter) {
-        var m = require(path);
-        var keys = Object.getOwnPropertyNames(m);
-        var code = '';
-
-        if ('readable') {
-            for (var i = 0; i < keys.length; i++) {
-                var key = keys[i];
-                if (filter.call(m, key)) {
-                    code += 'var ' + key + ' = ' + moduleName + '.' + key + ';\n';
-                }
-            }
-        }
-        else {
-            code =
-"// declare shortcuts of core\n\
-(function () {\n\
-    var shortcuts = '" + keys.filter(filter, m).join(',') + "'.split(',');\n\
-    for (var i = 0; i < shortcuts.length; i++) {\n\
-        this[shortcuts[i]] = " + moduleName + "[shortcuts[i]];\n\
-    }\n\
-})();\n";
-        }
-        return code;
-    }
-    function write(file) {
-        if (file.isStream()) return this.emit('error', new gutil.PluginError('insertCoreShortcut', 'Streaming not supported'));
-        if (!finished) {
-            var shortcut = file.clone();
-            shortcut.contents = new Buffer(createShortcut(path, moduleName, filter));
-            this.emit('data', shortcut);
-            finished = true;
-        }
-        this.emit('data', file);
-    }
-    return through(write);
-};
+//var insertCoreShortcut = function (path, moduleName, filter) {
+//    var finished = false;
+//    filter = filter || function (key) {
+//        return this[key].prototype && this[key].prototype.__classname__;
+//    };
+//    function createShortcut(path, moduleName, filter) {
+//        var m = require(path);
+//        var keys = Object.getOwnPropertyNames(m);
+//        var code = '';
+//
+//        if ('readable') {
+//            for (var i = 0; i < keys.length; i++) {
+//                var key = keys[i];
+//                if (filter.call(m, key)) {
+//                    code += 'var ' + key + ' = ' + moduleName + '.' + key + ';\n';
+//                }
+//            }
+//        }
+//        else {
+//            code =
+//"// declare shortcuts of core\n\
+//(function () {\n\
+//    var shortcuts = '" + keys.filter(filter, m).join(',') + "'.split(',');\n\
+//    for (var i = 0; i < shortcuts.length; i++) {\n\
+//        this[shortcuts[i]] = " + moduleName + "[shortcuts[i]];\n\
+//    }\n\
+//})();\n";
+//        }
+//        return code;
+//    }
+//    function write(file) {
+//        if (file.isStream()) return this.emit('error', new gutil.PluginError('insertCoreShortcut', 'Streaming not supported'));
+//        if (!finished) {
+//            var shortcut = file.clone();
+//            shortcut.contents = new Buffer(createShortcut(path, moduleName, filter));
+//            this.emit('data', shortcut);
+//            finished = true;
+//        }
+//        this.emit('data', file);
+//    }
+//    return through(write);
+//};
 
 gulp.task('js-dev', function() {
     return gulp.src(paths.src.concat('!**/platform/editor-core/**'))
@@ -178,7 +174,7 @@ gulp.task('js-dev', function() {
                }))
                .pipe(jshint.reporter(stylish))
                .pipe(concat(paths.engine_dev))
-               .pipe(embedIntoModule(paths.index))
+               .pipe(fb.wrapModule(paths.index))
                .pipe(preprocess({context: { EDITOR: true, DEBUG: true, DEV: true }}))
                .pipe(gulp.dest(paths.output_dev))
                ;
@@ -188,7 +184,7 @@ gulp.task('js-min', function() {
     return gulp.src(paths.src.concat('!**/platform/editor-core/**'))
     // .pipe(insertCoreShortcut('./ext/fire-core/bin/core.min.js', 'Fire'))
         .pipe(concat(paths.engine_min))
-        .pipe(embedIntoModule(paths.index))
+        .pipe(fb.wrapModule(paths.index))
         .pipe(preprocess({context: { EDITOR: true, DEV: true }}))
         .pipe(uglify({
             compress: {
@@ -204,7 +200,6 @@ gulp.task('js-player-dev', function() {
     return gulp.src(paths.src.concat('!**/platform/{editor|editor-core}/**'))
         // .pipe(insertCoreShortcut('./ext/fire-core/bin/core.min.js', 'Fire'))
         .pipe(concat(paths.engine_player_dev))
-        .pipe(embedIntoModule(paths.index))
         .pipe(preprocess({context: { PLAYER: true, DEBUG: true, DEV: true }}))
         .pipe(gulp.dest(paths.output))
         ;
@@ -214,7 +209,6 @@ gulp.task('js-player', function() {
     return gulp.src(paths.src.concat('!**/platform/{editor|editor-core}/**'))
         // .pipe(insertCoreShortcut('./ext/fire-core/bin/core.min.js', 'Fire'))
         .pipe(concat(paths.engine_player))
-        .pipe(embedIntoModule(paths.index))
         .pipe(preprocess({context: { PLAYER: true }}))
         .pipe(gulp.dest(paths.output))
         ;
@@ -224,7 +218,7 @@ gulp.task('js-editor-core', function() {
     return gulp.src(paths.src.concat('!**/platform/h5/**'))
         // .pipe(insertCoreShortcut('./ext/fire-core/bin/core.min.js', 'Fire'))
         .pipe(concat(paths.engine_editor_core))
-        .pipe(embedIntoModule(paths.index))
+        .pipe(fb.wrapModule(paths.index))
         .pipe(preprocess({context: { EDITOR: true, EDITOR_CORE: true, DEBUG: true, DEV: true }}))
         .pipe(gulp.dest(paths.output))
         ;
@@ -272,8 +266,8 @@ gulp.task('test', ['cp-core', 'js-min', 'js-dev', 'unit-runner'], function() {
 /////////////////////////////////////////////////////////////////////////////
 
 // clean
-gulp.task('clean', function() {
-    del('bin/');
+gulp.task('clean', function(cb) {
+    del('bin/', cb);
 });
 
 // ref
@@ -281,6 +275,29 @@ gulp.task('ref', ['cp-core'], function() {
     var files = paths.ref.src.concat(paths.src);
     var destPath = paths.ref.dest;
     return fb.generateReference(files, destPath);
+});
+
+// doc
+gulp.task('export-api-syntax', function (done) {
+
+    // 默认所有 engine 模块都在 Fire 下面
+    var DefaultModuleHeader = "/**\n" +
+                              " * @module Fire\n" +
+                              " * @class Fire\n" +
+                              " */\n";
+    var dest = '../../utils/api/engine';
+
+    del(dest + '/**/*', { force: true }, function (err) {
+        if (err) {
+            done(err);
+            return;
+        }
+
+        gulp.src(paths.src)
+            .pipe(header(DefaultModuleHeader))
+            .pipe(gulp.dest(dest))
+            .on('end', done);
+    });
 });
 
 // watch

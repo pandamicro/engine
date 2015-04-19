@@ -1,5 +1,9 @@
-﻿// A asset library which managing loading/unloading assets in project
-
+﻿/**
+ * The asset library which managing loading/unloading assets in project.
+ *
+ * @class AssetLibrary
+ * @static
+ */
 var AssetLibrary = (function () {
 
     // configs
@@ -49,11 +53,15 @@ var AssetLibrary = (function () {
     var AssetLibrary = {
 
         /**
+         * @method loadAsset
          * @param {string} uuid
          * @param {function} callback
+         * @param {string} callback.param error - null or the error info
+         * @param {Asset} callback.param data - the loaded asset or null
          * @param {boolean} [readMainCache=true] - If false, the asset and all its depends assets will reload and create new instances from library.
          * @param {boolean} [writeMainCache=true] - If true, the result will cache to AssetLibrary, and MUST be unload by user manually.
-         * @param {Fire.Asset} [existingAsset] - load to existing asset, this argument is only available in editor
+         * @param {Asset} [existingAsset] - load to existing asset, this argument is only available in editor
+         * @private
          */
         loadAsset: function (uuid, callback, readMainCache, writeMainCache, existingAsset) {
             readMainCache = typeof readMainCache !== 'undefined' ? readMainCache : true;
@@ -66,20 +74,24 @@ var AssetLibrary = (function () {
         _LoadingHandle: LoadingHandle,
 
         /**
-         * uuid加载流程：
+         * !#zh uuid加载流程：
          * 1. 查找_uuidToAsset，如果已经加载过，直接返回
          * 2. 查找_uuidToCallbacks，如果已经在加载，则注册回调，直接返回
          * 3. 如果没有url，则将uuid直接作为路径
          * 4. 递归加载Asset及其引用到的其它Asset
          *
+         * @method _loadAssetByUuid
          * @param {string} uuid
-         * @param {AssetLibrary~loadCallback} callback - the callback to receive the asset
+         * @param {AssetLibrary~loadCallback} callback - the callback to receive the asset, can be null
          * @param {LoadingHandle} handle - the loading context which reserves all relevant parameters
-         * @param {Fire.Asset} [existingAsset] - load to existing asset, this argument is only available in editor
+         * @param {Asset} [existingAsset] - load to existing asset, this argument is only available in editor
+         * @private
          */
         _loadAssetByUuid: function (uuid, callback, handle, existingAsset) {
             if (typeof uuid !== 'string') {
-                callback('[AssetLibrary] uuid must be string', null);
+                if (callback) {
+                    callback('[AssetLibrary] uuid must be string', null);
+                }
                 return;
             }
             // step 1
@@ -116,7 +128,7 @@ var AssetLibrary = (function () {
                         if ( canShareLoadingTask ) {
                             _uuidToCallbacks.invokeAndRemove(uuid, err, asset);
                         }
-                        else {
+                        else if (callback) {
                             callback(err, asset);
                         }
                     }
@@ -131,9 +143,13 @@ var AssetLibrary = (function () {
         },
 
         /**
+         * @method loadJson
          * @param {string|object} json
          * @param {function} callback
+         * @param {string} callback.param error - null or the error info
+         * @param {object} callback.param data - the loaded object or null
          * @param {boolean} [dontCache=false] - If false, the result will cache to AssetLibrary, and MUST be unload by user manually.
+         * @private
          */
         loadJson: function (json, callback, dontCache) {
             var handle = new LoadingHandle(!dontCache, !dontCache);
@@ -141,11 +157,15 @@ var AssetLibrary = (function () {
         },
 
         /**
+         * @method _deserializeWithDepends
          * @param {string|object} json
          * @param {string} url
          * @param {function} callback
+         * @param {string} callback.param error - null or the error info
+         * @param {object} callback.param data - the loaded object or null
          * @param {object} handle - the loading context which reserves all relevant parameters
-         * @param {Fire.Asset} [existingAsset] - existing asset to reload
+         * @param {Asset} [existingAsset] - existing asset to reload
+         * @private
          */
         _deserializeWithDepends: function (json, url, callback, handle, existingAsset) {
             // deserialize asset
@@ -240,7 +260,7 @@ var AssetLibrary = (function () {
                     return function (error, dependsAsset) {
                         if (error) {
                             // @ifdef EDITOR
-                            if (Fire.AssetDB && Fire.AssetDB.isValidUuid(dependsUuid)) {
+                            if (Editor.AssetDB && Editor.AssetDB.isValidUuid(dependsUuid)) {
                                 Fire.error('[AssetLibrary] Failed to load "%s", %s', dependsUuid, error);
                             }
                             // @endif
@@ -274,8 +294,10 @@ var AssetLibrary = (function () {
         /**
          * Get the exists asset by uuid.
          *
+         * @method getAssetByUuid
          * @param {string} uuid
-         * @return {Fire.Asset} - the existing asset, if not loaded, just returns null.
+         * @return {Asset} - the existing asset, if not loaded, just returns null.
+         * @private
          */
         getAssetByUuid: function (uuid) {
             return AssetLibrary._uuidToAsset[uuid] || null;
@@ -283,20 +305,22 @@ var AssetLibrary = (function () {
 
         /**
          * @callback AssetLibrary~loadCallback
-         * @param {Fire.Asset} asset - if failed, asset will be null
+         * @param {Asset} asset - if failed, asset will be null
          * @param {string} [error] - error info, if succeed, error will be empty or nil
          */
 
         /**
-         * Kill references to the asset so it can be garbage collected.
+         * !#en Kill references to the asset so it can be garbage collected.
          * Fireball will reload the asset from disk or remote if loadAssetByUuid being called again.
-         * This function will be called if the Asset was destroyed.
-         * 如果还有地方引用到asset，除非destroyAsset为true，否则不应该执行这个方法，因为那样可能会导致 asset 被多次创建。
+         * You rarely use this function in scripts, since it will be called automatically when the Asset is destroyed.
+         * !#zh 手动卸载指定的资源，这个方法会在 Asset 被 destroy 时自动调用，一般不需要用到这个方法。卸载以后，Fireball 可以重新从硬盘或网络加载这个资源。
          *
-         * @method Fire.AssetLibrary.unloadAsset
-         * @param {Fire.Asset|string} assetOrUuid
-         * @param {boolean} [destroyImmediate=false] - When destroyAsset is true, if there are objects
-         *                                         referencing the asset, the references will become invalid.
+         * 如果还有地方引用到asset，除非 destroyImmediated 为true，否则不应该执行这个方法，因为那样可能会导致 asset 被多次创建。
+         *
+         * @method unloadAsset
+         * @param {Asset|string} assetOrUuid
+         * @param {boolean} [destroyImmediate=false] When destroyImmediate is true, if there are objects
+         *                                           referencing the asset, the references will become invalid.
          */
         unloadAsset: function (assetOrUuid, destroyImmediate) {
             var asset;
@@ -318,10 +342,8 @@ var AssetLibrary = (function () {
 
         /**
          * init the asset library
-         * @method Fire.AssetLibrary.init
-         * @param {string} baseUrl
-         * @param {object} [uuidToUrl]
-         * @private
+         * @method init
+         * @param {string} libraryPath
          */
         init: function (libraryPath) {
 // @ifdef EDITOR
@@ -344,13 +366,19 @@ var AssetLibrary = (function () {
     // unload asset if it is destoryed
 
     /**
-     * uuid to all loaded assets
+     * !#en Caches uuid to all loaded assets in scenes.
      *
-     * 这里保存所有已经加载的资源，防止同一个资源在内存中加载出多份拷贝。
-     * 由于弱引用尚未标准化，在浏览器中所有加载过的资源都只能手工调用 unloadAsset 释放。
+     * !#zh 这里保存所有已经加载的场景资源，防止同一个资源在内存中加载出多份拷贝。
+     *
+     * 这里用不了WeakMap，在浏览器中所有加载过的资源都只能手工调用 unloadAsset 释放。
+     *
      * 参考：
      * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap
      * https://github.com/TooTallNate/node-weak
+     *
+     * @property _uuidToAsset
+     * @type {object}
+     * @private
      */
     AssetLibrary._uuidToAsset = {};
 

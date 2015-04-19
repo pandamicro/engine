@@ -1,4 +1,9 @@
-﻿var Camera = Fire.Class({
+﻿/**
+ * @class Camera
+ * @extends Component
+ * @constructor
+ */
+var Camera = Fire.Class({
     name: 'Fire.Camera',
     extends: Component,
     constructor: function () {
@@ -8,10 +13,14 @@
 
     properties: {
 
-        _background: {
-            default: Fire.Color.black,
-            visible: false
-        },
+        _background: Fire.Color.black,
+
+        /**
+         * The color of the screen background.
+         * @property background
+         * @type {Color}
+         * @default Fire.Color.black
+         */
         background: {
             get: function () {
                 return this._background;
@@ -24,10 +33,15 @@
             }
         },
 
-        _size: {
-            default: 800,
-            visible: false
-        },
+        _size: 800,
+
+        /**
+         * The height of Design Resolution in pixels
+         * @property size
+         * @type {number}
+         * @default 800
+         * @beta
+         */
         size: {
             get: function () {
                 return this._size;
@@ -43,10 +57,14 @@
             }
         },
 
-        _contentStrategy: {
-            default: Fire.ContentStrategyType.FixedHeight,
-            visible: false
-        },
+        _contentStrategy: Fire.ContentStrategyType.FixedHeight,
+
+        /**
+         * The Content Strategy of the camera.
+         * @property contentStrategy
+         * @type {ContentStrategyType}
+         * @default Fire.ContentStrategyType.FixedHeight
+         */
         contentStrategy: {
             type: Fire.ContentStrategyType,
             get: function () {
@@ -60,6 +78,11 @@
             tooltip: "The type of scale strategy for this camera"
         },
 
+        /**
+         * @property viewportInfo
+         * @type {object}
+         * @private
+         */
         viewportInfo: {
             get: function (value) {
                 var viewportSize = (this._renderContext || Engine._renderContext).size;
@@ -68,7 +91,12 @@
             visible: false
         },
 
-        // save the render context this camera belongs to, if null, main render context will be used.
+        /**
+         * save the render context this camera belongs to, if null, main render context will be used.
+         * @property renderContext
+         * @type {_Runtime.RenderContext}
+         * @private
+         */
         renderContext: {
             set: function (value) {
                 this._renderContext = value;
@@ -100,32 +128,42 @@
         if (Engine._scene.camera === this) {
             Engine._scene.camera = null;
         }
-        this._renderContext.camera = null;
+        if (this._renderContext) {
+            this._renderContext.camera = null;
+        }
     },
 
     // other functions
 
     /**
      * Transforms position from viewport space into screen space.
-     * @method Fire.Camera#viewportToScreen
-     * @param {Fire.Vec2} position
-     * @param {Fire.Vec2} [out] - optional, the receiving vector
-     * @return {Fire.Vec2}
+     * @method viewportToScreen
+     * @param {Vec2} position
+     * @param {Vec2} [out] - optional, the receiving vector
+     * @return {Vec2}
      */
     viewportToScreen: function (position, out) {
+        if ( !this._renderContext ) {
+            Fire.error("Camera not yet inited.");
+            return;
+        }
         out = this._renderContext.size.scale(position, out);
         return out;
     },
 
     /**
      * Transforms position from screen space into viewport space.
-     * @method Fire.Camera#screenToViewport
-     * @param {Fire.Vec2} position
-     * @param {Fire.Vec2} [out] - optional, the receiving vector
-     * @return {Fire.Vec2}
+     * @method screenToViewport
+     * @param {Vec2} position
+     * @param {Vec2} [out] - optional, the receiving vector
+     * @return {Vec2}
      */
     screenToViewport: function (position, out) {
         out = out || new Vec2();
+        if ( !this._renderContext ) {
+            Fire.error("Camera not yet inited.");
+            return;
+        }
         var size = this._renderContext.size;
         out.x = position.x / size.x;
         out.y = position.y / size.y;
@@ -134,10 +172,10 @@
 
     /**
      * Transforms position from viewport space into world space.
-     * @method Fire.Camera#viewportToWorld
-     * @param {Fire.Vec2} position
-     * @param {Fire.Vec2} [out] - optional, the receiving vector
-     * @return {Fire.Vec2}
+     * @method viewportToWorld
+     * @param {Vec2} position
+     * @param {Vec2} [out] - optional, the receiving vector
+     * @return {Vec2}
      */
     viewportToWorld: function (position, out) {
         out = this.viewportToScreen(position, out);
@@ -146,13 +184,13 @@
 
     /**
      * Transforms position from screen space into world space.
-     * @method Fire.Camera#screenToWorld
-     * @param {Fire.Vec2} position
-     * @param {Fire.Vec2} [out] - optional, the receiving vector
-     * @return {Fire.Vec2}
+     * @method screenToWorld
+     * @param {Vec2} position
+     * @param {Vec2} [out] - optional, the receiving vector
+     * @return {Vec2}
      */
     screenToWorld: function (position, out) {
-        var halfScreenSize = (this._renderContext || Engine._renderContext).size.mulSelf(0.5);
+        var halfScreenSize = (this._renderContext || Engine._renderContext).size.mul(0.5);
         var pivotToScreen = position.sub(halfScreenSize, halfScreenSize);
         pivotToScreen.y = -pivotToScreen.y; // 屏幕坐标的Y和世界坐标的Y朝向是相反的
         var mat = new Matrix23();
@@ -166,10 +204,10 @@
 
     /**
      * Transforms position from world space into screen space.
-     * @method Fire.Camera#worldToScreen
-     * @param {Fire.Vec2} position
-     * @param {Fire.Vec2} [out] - optional, the receiving vector
-     * @return {Fire.Vec2}
+     * @method worldToScreen
+     * @param {Vec2} position
+     * @param {Vec2} [out] - optional, the receiving vector
+     * @return {Vec2}
      */
     worldToScreen: function (position, out) {
         var mat = new Matrix23();
@@ -184,10 +222,10 @@
 
     /**
      * Transforms position from world space into viewport space.
-     * @method Fire.Camera#worldToViewport
-     * @param {Fire.Vec2} position
-     * @param {Fire.Vec2} [out] - optional, the receiving vector
-     * @return {Fire.Vec2}
+     * @method worldToViewport
+     * @param {Vec2} position
+     * @param {Vec2} [out] - optional, the receiving vector
+     * @return {Vec2}
      */
     worldToViewport: function (position, out) {
         out = this.worldToScreen(position, out);
@@ -220,8 +258,8 @@
             return;
         }
         // @endif
-        this._renderContext.view.setBackgroundColor(this._background);
-    },
+        this._renderContext.background = this._background;
+    }
 });
 
 Fire.addComponentMenu(Camera, 'Camera');

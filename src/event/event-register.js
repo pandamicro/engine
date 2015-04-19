@@ -1,16 +1,16 @@
 ﻿var FireMouseEvent = Fire.MouseEvent;
-var FireKeyboardEvent = Fire.KeyboardEvent;
+//var FireKeyboardEvent = Fire.KeyboardEvent;
 
 var EventRegister = {
     inputEvents: {
         // ref: http://www.w3.org/TR/DOM-Level-3-Events/#event-types-list
         keydown: {
-            constructor: FireKeyboardEvent,
+            constructor: null,
             bubbles: true,
             cancelable: true
         },
         keyup: {
-            constructor: FireKeyboardEvent,
+            constructor: null,
             bubbles: true,
             cancelable: true
         },
@@ -54,16 +54,16 @@ var EventRegister = {
         //    bubbles: true,
         //    cancelable: true
         //}
-        //mouseenter: {
-        //    constructor: FireMouseEvent,
-        //    bubbles: false,
-        //    cancelable: false,
-        //},
-        //mouseleave: {
-        //    constructor: FireMouseEvent,
-        //    bubbles: false,
-        //    cancelable: false,
-        //},
+        mouseenter: {
+            constructor: FireMouseEvent,
+            bubbles: false,
+            cancelable: false
+        },
+        mouseleave: {
+            constructor: FireMouseEvent,
+            bubbles: false,
+            cancelable: false
+        }
         //mouseout: {
         //    constructor: FireMouseEvent,
         //    bubbles: true,

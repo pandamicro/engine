@@ -1,6 +1,12 @@
 
 var Engine = (function () {
 
+    /**
+     * !#zh 这个模块提供引擎的一些全局接口和状态状态
+     *
+     * @class Engine
+     * @static
+     */
     var Engine = {
 // @ifdef EDITOR
         _editorCallback: editorCallback
@@ -10,21 +16,26 @@ var Engine = (function () {
     var isPlaying = false;
     var isPaused = false;
     var stepOnce = false;
-    var isLoadingScene = false;
+    var loadingScene = '';
 
     // We should use this id to cancel ticker, otherwise if the engine stop and replay immediately,
     // last ticker will not cancel correctly.
     var requestId = -1;
 
     /**
-     * 当前激活的场景，如果为空，一般是因为正在加载场景或Entity(例如执行Fire.deserialize)。
+     * !#en the active scene
+     * !#zh 当前激活的场景。
+     *
+     * 如果为空，一般是因为正在加载场景或Entity(例如执行Fire.deserialize)。
      * 这样是为了防止加载中的东西不小心影响到当前场景。一般代码不用关心这个问题，但大部分构造函数里执行的代码，
      * 如果涉及到场景物件的操作，都要注意这点。
      * 也就是说构造函数调用到的代码如果要操作 Engine._scene，必须判断非空，如果操作不直接针对 Engine._scene，
-     * 也判断 Engine._canModifyCurrentScene。
+     * 也可以判断 Engine._canModifyCurrentScene。
      * 另外，如果存在辅助场景，当在辅助场景内创建物件时，Engine._scene会被临时修改为辅助场景。
      *
-     * @property {Scene} Engine._scene - the active scene
+     * @property _scene
+     * @type {Scene}
+     * @private
      */
     Engine._scene = null;
 
@@ -37,46 +48,83 @@ var Engine = (function () {
     // temp array contains persistent entities
     Engine._dontDestroyEntities = [];
 
-    // main render context
+    /**
+     * The RenderContext attached to game or game view.
+     * @property _renderContext
+     * @type {_Runtime.RenderContext}
+     * @private
+     */
     Engine._renderContext = null;
 
-    // main interaction context
+    /**
+     * The InteractionContext attached to game or game view.
+     * @property _interactionContext
+     * @type {InteractionContext}
+     * @private
+     */
     Engine._interactionContext = null;
 
-    // the render context currently rendering
+    /**
+     * the render context currently rendering
+     * @property _curRenderContext
+     * @type {_Runtime.RenderContext}
+     * @private
+     */
     Engine._curRenderContext = null;
 
-    // main input context
+    /**
+     * The InputContext attached to game or game view.
+     * @property _inputContext
+     * @type {InputContext}
+     * @private
+     */
     Engine._inputContext = null;
 
-    // is rendering and allow update logic
+    /**
+     * is in player or playing in editor?
+     * @property isPlaying
+     * @type {boolean}
+     * @readOnly
+     */
     Object.defineProperty(Engine, 'isPlaying', {
         get: function () {
             return isPlaying;
         }
     });
 
-    // is logic paused
+    /**
+     * is editor currently paused?
+     * @property isPaused
+     * @type {boolean}
+     * @readOnly
+     */
     Object.defineProperty(Engine, 'isPaused', {
         get: function () {
             return isPaused;
         }
     });
 
-    // is loading scene and its assets asynchronous
-    Object.defineProperty(Engine, 'isLoadingScene', {
+    /**
+     * is loading scene?
+     * @property isLoadingScene
+     * @type {boolean}
+     * @readOnly
+     */
+    Object.defineProperty(Engine, 'loadingScene', {
         get: function () {
-            return isLoadingScene;
+            return loadingScene;
         }
     });
 
     var lockingScene = null;
 
     /**
-     * You should check whether you can modify the scene in constructors which may called by the engine while deserializing.
+     * !#en You should check whether you can modify the scene in constructors which may called by the engine while deserializing.
+     * !#zh 这个属性用来判断场景物体的构造函数执行时是否可以把物体加到场景里。
      * 这个属性和 Fire._isCloning 很类似。但这里关注的是场景是否能修改，而 Fire._isCloning 强调的是持有的对象是否需要重新创建。
-     * @param {boolean} Engine._canModifyCurrentScene
-     * @see Fire._isCloning
+     * @property _canModifyCurrentScene
+     * @type {boolean}
+     * @private
      */
     Object.defineProperty(Engine, '_canModifyCurrentScene', {
         get: function () {
@@ -100,26 +148,30 @@ var Engine = (function () {
     });
 
     var inited = false;
+    /**
+     * @property inited
+     * @type {boolean}
+     * @readOnly
+     */
     Object.defineProperty(Engine, 'inited', {
         get: function () {
             return inited;
         }
     });
 
-    /**
-     * Scene name to uuid
-     * @private
-     */
+    // Scene name to uuid
     Engine._sceneInfos = {};
 
     // functions
 
     /**
-     * @param {number} [w]
-     * @param {number} [h]
+     * Initialize the engine. This method will be called by boot.js or editor.
+     * @method init
+     * @param {number} [width]
+     * @param {number} [height]
      * @param {Canvas} [canvas]
      * @param {object} [options]
-     * @return {RenderContext}
+     * @return {_Runtime.RenderContext}
      */
     Engine.init = function ( w, h, canvas, options ) {
         if (inited) {
@@ -127,7 +179,7 @@ var Engine = (function () {
             return;
         }
 
-        Engine._renderContext = new RenderContext( w, h, canvas );
+        Engine._renderContext = new Fire._Runtime.RenderContext( w, h, canvas );
         Engine._interactionContext = new InteractionContext();
 
         Engine._game = Engine._renderContext.game;
@@ -156,6 +208,10 @@ var Engine = (function () {
         return Engine._renderContext;
     };
 
+    /**
+     * Start the engine loop. This method will be called by boot.js or editor.
+     * @method play
+     */
     Engine.play = function () {
         if (isPlaying && !isPaused) {
             Fire.warn('Fireball is already playing');
@@ -184,6 +240,10 @@ var Engine = (function () {
 // @endif
     };
 
+    /**
+     * Stop the engine loop.
+     * @method stop
+     */
     Engine.stop = function () {
         if (isPlaying) {
             FObject._deferredDestroy();
@@ -194,7 +254,7 @@ var Engine = (function () {
             // reset states
             isPlaying = false;
             isPaused = false;
-            isLoadingScene = false; // TODO: what if loading scene ?
+            loadingScene = ''; // TODO: what if loading scene ?
             if (requestId !== -1) {
                 Ticker.cancelAnimationFrame(requestId);
                 requestId = -1;
@@ -208,6 +268,10 @@ var Engine = (function () {
         }
     };
 
+    /**
+     * Pause the engine loop.
+     * @method pause
+     */
     Engine.pause = function () {
         isPaused = true;
 // @ifdef EDITOR
@@ -217,6 +281,10 @@ var Engine = (function () {
 // @endif
     };
 
+    /**
+     * Perform a single frame step.
+     * @method step
+     */
     Engine.step = function () {
         this.pause();
         stepOnce = true;
@@ -244,8 +312,7 @@ var Engine = (function () {
     }
 
     /**
-     * @method Fire.Engine.update
-     * @param {float} [unused] - not used parameter, can omit
+     * @method update
      * @private
      */
     function update (unused) {
@@ -254,9 +321,9 @@ var Engine = (function () {
         }
         requestId = Ticker.requestAnimationFrame(update);
 
-        if (isLoadingScene) {
-            return;
-        }
+        //if (sceneLoadingQueue) {
+        //    return;
+        //}
 
         var updateLogic = !isPaused || stepOnce;
         stepOnce = false;
@@ -273,13 +340,13 @@ var Engine = (function () {
     Engine.update = update;
 
     /**
-     * Set current scene directly
-     * @method Fire.Engine._setCurrentScene
+     * Launch loaded scene.
+     * @method _launchScene
      * @param {Scene} scene
      * @param {function} [onBeforeLoadScene]
      * @private
      */
-    Engine._setCurrentScene = function (scene, onBeforeLoadScene) {
+    Engine._launchScene = function (scene, onBeforeLoadScene) {
         if (!scene) {
             Fire.error('Argument must be non-nil');
             return;
@@ -332,61 +399,82 @@ var Engine = (function () {
 
     /**
      * Loads the scene by its name.
-     * @method Fire.Engine.loadScene
+     * @method loadScene
      * @param {string} sceneName - the name of the scene to load
-     * @param {function} [onLaunched]
-     * @param {function} [onUnloaded] - will be called when the previous scene was unloaded
+     * @param {function} [onLaunched] - callback, will be called after scene launched
+     * @param {function} [onUnloaded] - callback, will be called when the previous scene was unloaded
+     * @return {boolean} if error, return false
      */
     Engine.loadScene = function (sceneName, onLaunched, onUnloaded) {
+        if (loadingScene) {
+            Fire.error('[Engine.loadScene] Failed to load scene "%s" because "%s" is already loading', sceneName, loadingScene);
+            return false;
+        }
         var uuid = Engine._sceneInfos[sceneName];
         if (uuid) {
+            loadingScene = sceneName;
             Engine._loadSceneByUuid(uuid, onLaunched, onUnloaded);
+            return true;
         }
         else {
-            Fire.error('[Engine.loadScene] The scene "%s" could not be loaded because it has not been added to the build settings.', sceneName);
+            Fire.error('[Engine.loadScene] The scene "%s" can not be loaded because it has not been added to the build settings.', sceneName);
+            return false;
         }
     };
 
     /**
-     * Load scene
-     * @method Fire.Engine.loadScene
+     * Loads the scene by its uuid.
+     * @method _loadSceneByUuid
      * @param {string} uuid - the uuid of the scene asset to load
      * @param {function} [onLaunched]
-     * @param {function} [onUnloaded] - will be called when the previous scene was unloaded
+     * @param {function} [onUnloaded]
+     * @private
      */
     Engine._loadSceneByUuid = function (uuid, onLaunched, onUnloaded) {
-        // TODO: lookup uuid by name
-        isLoadingScene = true;
         AssetLibrary.unloadAsset(uuid);     // force reload
         AssetLibrary.loadAsset(uuid, function onSceneLoaded (error, scene) {
             if (error) {
-                Fire.error('Failed to load scene: ' + error);
+                error = 'Failed to load scene: ' + error;
                 // @ifdef EDITOR
                 console.throw('[test] Failed to load scene');
                 // @endif
-                isLoadingScene = false;
-                if (onLaunched) {
-                    onLaunched(null, error);
-                }
-                return;
             }
-            if (!(scene instanceof Fire._Scene)) {
+            else if (!(scene instanceof Fire._Scene)) {
                 error = 'The asset ' + uuid + ' is not a scene';
-                Fire.error(error);
-                isLoadingScene = false;
-                if (onLaunched) {
-                    onLaunched(null, error);
-                }
-                return;
+                scene = null;
             }
-
-            Engine._setCurrentScene(scene, onUnloaded);
-
-            isLoadingScene = false;
+            if (scene) {
+                Engine._launchScene(scene, onUnloaded);
+            }
+            else {
+                Fire.error(error);
+            }
+            loadingScene = '';
             if (onLaunched) {
-                onLaunched(scene);
+                onLaunched(scene, error);
             }
         });
+    };
+
+    /**
+     * Preloads the scene to reduces loading time. You can call this method at any time you want.
+     *
+     * After calling this method, you still need to launch the scene by `Engine.loadScene` because the loading logic will not changed. It will be totally fine to call `Engine.loadScene` at any time even if the preloading is not yet finished, the scene will be launched after loaded automatically.
+     * @method preloadScene
+     * @param {string} sceneName - the name of the scene to preload
+     * @param {function} [onLoaded] - callback, will be called after the scene loaded
+     * @param {string} onLoaded.param error - null or the error info
+     * @param {Asset} onLoaded.param data - the loaded scene or null
+     */
+    Engine.preloadScene = function (sceneName, onLoaded) {
+        var uuid = Engine._sceneInfos[sceneName];
+        if (uuid) {
+            AssetLibrary.unloadAsset(uuid);     // force reload
+            AssetLibrary.loadAsset(uuid, onLoaded);
+        }
+        else {
+            Fire.error('[Engine.preloadScene] The scene "%s" could not be loaded because it has not been added to the build settings.', sceneName);
+        }
     };
 
     return Engine;
