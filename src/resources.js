@@ -16,6 +16,15 @@ function normalizePath (path) {
 function AssetBundleBase () {
     this._pathToUuid = {};
 }
+
+var GLOB = '**/*';
+var GLOB_LEN = GLOB.length;
+
+AssetBundleBase._hasWildcard = function (path) {
+    var endsWithGlob = path.substr(-GLOB_LEN, GLOB_LEN) === GLOB;
+    return endsWithGlob;
+};
+
 JS.mixin(AssetBundleBase.prototype, {
 
     /**
@@ -25,7 +34,7 @@ JS.mixin(AssetBundleBase.prototype, {
      * All asset paths in Fireball use forward slashes, paths using backslashes will not work.
      *
      * @method contains
-     * @param {string} path
+     * @param {string} path - not support wildcard
      * @returns {boolean}
      */
     contains: function (path) {
@@ -41,28 +50,81 @@ JS.mixin(AssetBundleBase.prototype, {
         return Object.keys(this._pathToUuid);
     },
 
+    _loadByWildcard: function (path, callback) {
+        var originPath = path.slice(0, -GLOB_LEN);
+        var originPathLen = originPath.length;
+        var results = [];
+        var remain = 0;
+        function onLoad (err, asset) {
+            if (asset) {
+                results.push(asset);
+                if (--remain <= 0) {
+                    if (callback) {
+                        callback(null, results);
+                    }
+                }
+            }
+            else {
+                // error
+                if (callback) {
+                    callback(err, results);
+                    callback = null;
+                }
+            }
+        }
+        var p2u = this._pathToUuid;
+        for (var p in p2u) {
+            if (p.slice(0, originPathLen) === originPath) {
+                ++remain;
+                var uuid = p2u[p];
+                AssetLibrary.loadAsset(uuid, onLoad);
+            }
+        }
+        return remain > 0;
+    },
+
     /**
      * Loads asset with path from the bundle asynchronously.
+     *
+     * wildcard:
+     * - 如果路径以 &#42;&#42;&#47;&#42; 作为结尾，则该路径下的所有资源都会被加载，含子文件夹。
+     *   此时 callback 的第二参数将返回数组，如果文件夹下没有资源，数组长度将会是 0。如果加载出错，数组内的元素将不全。
      *
      * Note:
      * All asset paths in Fireball use forward slashes, paths using backslashes will not work.
      *
      * @method load
      * @param {string} path
-     * @param {function} callback
+     * @param {function} [callback]
      * @param {string} callback.param error - null or the error info
      * @param {object} callback.param data - the loaded object or null
+     * @param {boolean} [silence=false] - If true, the callback will not invoked even if asset is not found.
+     * @return {boolean} start loading
      */
-    load: function (path, callback) {
+    load: function (path, callback, silence) {
         if (! path) {
-            return callback('Argument must be non-nil', null);
+            if (! silence) {
+                callInNextTick(callback, 'Argument must be non-nil', null);
+            }
+            return false;
         }
         path = normalizePath(path);
         var uuid = this._pathToUuid[path];
-        if (! uuid) {
-            return callback('Path not exists', null);
+        if (uuid) {
+            AssetLibrary.loadAsset(uuid, callback);
+            return true;
         }
-        AssetLibrary.loadAsset(uuid, callback);
+        else if (AssetBundleBase._hasWildcard(path)) {
+            var loading = this._loadByWildcard(path, callback);
+            if ( !loading && !silence ) {
+                callInNextTick(callback, null, []);
+            }
+            return loading;
+        }
+        else if (! silence) {
+            callInNextTick(callback, 'Path not exists', null);
+            return false;
+        }
     },
 
     ///**
@@ -158,6 +220,10 @@ var Resources = {
     // }
     _mounts: [],
 
+    /**
+     * @property _resBundle
+     * @type ResourcesBundle
+     */
     _resBundle: new ResourcesBundle(),
 
     /**
@@ -209,18 +275,24 @@ var Resources = {
             var baseDir = item.baseDir;
             var bundle = item.bundle;
             if (baseDir === "") {
-                if (bundle.contains(path)) {
-                    return bundle.load(path, callback);
+                if (bundle.load(path, callback, true)) {
+                    return;
                 }
             }
             else if (path.slice(0, baseDir.length) === baseDir) {
                 var relative = path.slice(baseDir.length + 1);
-                if (bundle.contains(path)) {
-                    return bundle.load(relative, callback);
+                if (bundle.load(relative, callback, true)) {
+                    return;
                 }
             }
         }
-        return callback('Path not exists', null);
+        // not found
+        if (AssetBundleBase._hasWildcard(path)) {
+            return callback(null, []);
+        }
+        else {
+            return callback('Path not exists', null);
+        }
     }
 };
 

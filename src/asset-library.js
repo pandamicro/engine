@@ -89,18 +89,14 @@ var AssetLibrary = (function () {
          */
         _loadAssetByUuid: function (uuid, callback, handle, existingAsset) {
             if (typeof uuid !== 'string') {
-                if (callback) {
-                    callback('[AssetLibrary] uuid must be string', null);
-                }
+                callInNextTick(callback, '[AssetLibrary] uuid must be string', null);
                 return;
             }
             // step 1
             if ( !existingAsset ) {
                 var asset = handle.readCache(uuid);
                 if (asset) {
-                    if (callback) {
-                        callback(null, asset);
-                    }
+                    callInNextTick(callback, null, asset);
                     return;
                 }
             }
@@ -118,7 +114,7 @@ var AssetLibrary = (function () {
 
             // @ifdef EDITOR
             if (!_libraryBase) {
-                callback('Cannot load ' + uuid + ' in editor because AssetLibrary not yet initialized!', null);
+                callInNextTick(callback, 'Cannot load ' + uuid + ' in editor because AssetLibrary not yet initialized!', null);
                 return;
             }
             // @endif
