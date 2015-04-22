@@ -233,6 +233,9 @@ var Camera = Fire.Class({
     },
 
     _calculateTransform: function (out_matrix, out_worldPos) {
+        if (!this._contentStrategyInst) {
+            this._contentStrategyInst = Fire.Screen.ContentStrategy.fromType(this._contentStrategy);
+        }
         var viewportInfo = this.viewportInfo;
         var scale = viewportInfo.scale;
         var viewport = viewportInfo.viewport;
