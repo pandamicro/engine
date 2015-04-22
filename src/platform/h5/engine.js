@@ -377,13 +377,18 @@ var Engine = (function () {
         Engine._dontDestroyEntities.length = 0;
         Engine._scene = scene;
         Engine._renderContext.onSceneLaunched(scene);
+
+// @ifdef EDITOR
+        editorCallback.onBeforeActivateScene(scene);
+// @endif
+
+        scene.activate();
+
 // @ifdef EDITOR
         if (editorCallback.onSceneLaunched) {
             editorCallback.onSceneLaunched(scene);
         }
 // @endif
-
-        scene.activate();
     };
 
     /**

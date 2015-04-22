@@ -604,7 +604,7 @@ var Entity = Fire.Class({
             var component = this._components[c];
             // @ifdef EDITOR
             if (! (component instanceof Fire.Component)) {
-                Fire.error('Sorry, the entity [%s]\'s component is corrupted! Component index: %s.\nSee DevTools for corrupted value.', this.name, c);
+                Fire.error('Sorry, one of entity [%s]\'s component is corrupted! The component which original index is %s has been removed.\nSee DevTools for corrupted value.', this.name, c);
                 console.log('Corrupted component value:', component);
                 this._removeComponent(component);
                 continue;

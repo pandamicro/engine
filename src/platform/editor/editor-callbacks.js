@@ -43,6 +43,11 @@ var editorCallback = {
      */
     onSceneLaunched: null,
 
+    /**
+     * @param {Scene} scene
+     */
+    onBeforeActivateScene: function () {},
+
     ///**
     // * @param {Scene} scene
     // */
