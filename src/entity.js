@@ -602,6 +602,14 @@ var Entity = Fire.Class({
         var countBefore = this._components.length;
         for (var c = 0; c < countBefore; ++c) {
             var component = this._components[c];
+            // @ifdef EDITOR
+            if (! (component instanceof Fire.Component)) {
+                Fire.error('Sorry, the entity [%s]\'s component is corrupted! Component index: %s.\nSee DevTools for corrupted value.', this.name, c);
+                console.log('Corrupted component value:', component);
+                this._removeComponent(component);
+                continue;
+            }
+            // @endif
             component._onEntityActivated(value);
         }
         // activate children recursively
