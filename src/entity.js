@@ -588,6 +588,58 @@ var Entity = Fire.Class({
         this.setSiblingIndex(-1);
     },
 
+    /**
+     * Tests whether the entity intersects the specified point in world coordinates
+     * This ignores the alpha of the renderer.
+     *
+     * @method hitTest
+     * @param {number} worldX The world X position to check.
+     * @param {number} worldY The world Y position to check.
+     * @return {boolean} A Boolean indicating whether the Entity intersect the specified world position.
+     */
+    hitTest: function (worldX, worldY) {
+        var renderer = this.getComponent(Fire.SpriteRenderer);
+        if (! renderer || ! renderer.sprite) {
+            return false;
+        }
+
+        var worldMatrix = this.transform.getLocalToWorldMatrix();
+        var spriteMatrix = new Fire.Matrix23();
+        renderer.getSelfMatrix(spriteMatrix);
+        // TODO getSelfRenderMatrix
+        spriteMatrix.a = renderer.width / renderer.sprite.width;
+        spriteMatrix.d = renderer.height / renderer.sprite.height;
+        if (renderer.sprite.rotated) {
+            spriteMatrix.b = spriteMatrix.d;
+            spriteMatrix.c = -spriteMatrix.a;
+            spriteMatrix.a = 0;
+            spriteMatrix.d = 0;
+            spriteMatrix.ty -= renderer.height;
+        }
+        var matrix = spriteMatrix.prepend(worldMatrix);
+        matrix.invert();
+        var point = matrix.transformPoint(new Fire.Vec2(worldX, worldY));
+        // 因为世界坐标是Y轴向上，图片是Y轴向下，所以这边进行图片反转
+        point.y = -point.y;
+        point.x += renderer.sprite.x;
+        point.y += renderer.sprite.y;
+
+        var texture = renderer.sprite.texture;
+        if (! texture) {
+            return false;
+        }
+
+        if (0 < point.x && point.x < texture.width  &&
+            0 < point.y && point.y < texture.height) {
+            var alphaThreshold = renderer.sprite.alphaThreshold;
+            if (alphaThreshold > 0) {
+                return texture.getPixel(point.x, point.y).a >= alphaThreshold;
+            }
+            return true;
+        }
+        return false;
+    },
+
     ////////////////////////////////////////////////////////////////////
     // other methods
     ////////////////////////////////////////////////////////////////////
