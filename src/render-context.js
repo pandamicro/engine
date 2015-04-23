@@ -152,6 +152,6 @@ Fire.JS.mixin(RenderContext.prototype, {
     checkMatchCurrentScene: function () {}
 });
 
-Fire._Runtime.RenderContext = RenderContext;
+Runtime.RenderContext = RenderContext;
 
 // @endif

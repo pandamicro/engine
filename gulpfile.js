@@ -31,6 +31,7 @@ var paths = {
         // runtime engine
         'src/definition.js',
         'src/utils.js',
+        'src/runtime.js',
         'src/time.js',
         'src/event/event.js',
         'src/event/event-listeners.js',

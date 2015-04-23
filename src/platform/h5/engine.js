@@ -174,8 +174,10 @@ var Engine = (function () {
         }
         inited = true;
 
-        Engine._renderContext = new Fire._Runtime.RenderContext( w, h, canvas );
+        Engine._renderContext = new Runtime.RenderContext( w, h, canvas );
         Engine._interactionContext = new InteractionContext();
+
+        Runtime.init();
 
 // @ifdef EDITOR
         if (Fire.isEditor === false) {
@@ -282,18 +284,13 @@ var Engine = (function () {
         }
     };
 
-    function render () {
-        // render
-        Engine._scene.render(Engine._renderContext);
-    }
-
     function doUpdate (updateLogic) {
         if (Engine._scene) {
             if (updateLogic) {
                 Engine._scene.update();
                 FObject._deferredDestroy();
             }
-            render();
+            Runtime.render();
 
             // update interaction context
             Engine._interactionContext.update(Engine._scene.entities);

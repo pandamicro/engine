@@ -69,42 +69,15 @@ Object.defineProperty(Screen, 'height', {
 });
 
 /**
- * The canvas's parent node in dom.
- * @property _container
- * @type {HTMLElement}
- * @private
- */
-Object.defineProperty(Screen, '_container', {
-    get: function () {
-        var canvas = Fire.Engine._renderContext.canvas;
-        return canvas.parentNode;
-    }
-});
-
-/**
- * The container's parent node in dom.
- * @property _frame
- * @type {HTMLElement}
- * @private
- */
-Object.defineProperty(Screen, '_frame', {
-    get: function () {
-        var container = this._container;
-        return (container.parentNode === document.body) ? document.documentElement : container.parentNode;
-    }
-});
-
-/**
  * Size of parent node that contains container and _canvas
  * @property _frameSize
  * @type {Vec2}
  * @private
  */
-Object.defineProperty(Screen, '_frameSize', {
-    get: function () {
-        var frame = this._frame;
-        return Fire.v2(BrowserGetter.availWidth(frame), BrowserGetter.availHeight(frame));
-    }
+JS.get(Screen, '_frameSize', function () {
+    var container = Engine._renderContext.container;
+    var frame = (container.parentNode === document.body) ? document.documentElement : container.parentNode;
+    return Fire.v2(BrowserGetter.availWidth(frame), BrowserGetter.availHeight(frame));
 });
 
 //Object.defineProperty(Screen, 'resolutionPolicy', {
