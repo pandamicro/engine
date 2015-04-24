@@ -31,7 +31,10 @@ var InteractionContext = (function () {
                     var obb = obbMap[entity.id];
                     var polygon = new Fire.Polygon(obb);
                     if (polygon.contains(worldPosition)) {
-                        return entity;
+                        var chackHit = entity.hitTest(worldPosition.x, worldPosition.y);
+                        if (chackHit) {
+                            return entity;
+                        }
                     }
                 }
             }
