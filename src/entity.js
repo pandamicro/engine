@@ -47,12 +47,8 @@ var Entity = Fire.Class({
                 transform._onEntityActivated(true);     // 因为是刚刚创建，所以 activeInHierarchy 肯定为 true
 
 // @ifdef EDITOR
-                if (editorCallback.onEntityCreated) {
-                    editorCallback.onEntityCreated(this, editorOptions);
-                }
-                if (editorCallback.onComponentAdded) {
-                    editorCallback.onComponentAdded(this, transform);
-                }
+                editorCallback.onEntityCreated(this, editorOptions);
+                editorCallback.onComponentAdded(this, transform);
 // @endif
             }
         }
@@ -67,9 +63,7 @@ var Entity = Fire.Class({
             set: function (value) {
                 this._name = value;
                 // @ifdef EDITOR
-                if (editorCallback.onEntityRenamed) {
-                    editorCallback.onEntityRenamed(this);
-                }
+                editorCallback.onEntityRenamed(this);
                 // @endif
             }
         },
@@ -172,9 +166,7 @@ var Entity = Fire.Class({
                     }
                     Engine._renderContext.onEntityParentChanged(this, oldParent);
 // @ifdef EDITOR
-                    if (editorCallback.onEntityParentChanged) {
-                        editorCallback.onEntityParentChanged(this);
-                    }
+                    editorCallback.onEntityParentChanged(this);
 // @endif
                     //this._onHierarchyChanged(this, oldParent);
                 }
@@ -257,9 +249,7 @@ var Entity = Fire.Class({
         if (isTopMost) {
             Engine._renderContext.onEntityRemoved(this);
 // @ifdef EDITOR
-            if (editorCallback.onEntityRemoved) {
-                editorCallback.onEntityRemoved(this/*, isTopMost*/);
-            }
+            editorCallback.onEntityRemoved(this/*, isTopMost*/);
 // @endif
         }
         // destroy components
@@ -355,9 +345,7 @@ var Entity = Fire.Class({
         }
 
 // @ifdef EDITOR
-        if (editorCallback.onComponentAdded) {
-            editorCallback.onComponentAdded(this, component);
-        }
+        editorCallback.onComponentAdded(this, component);
 // @endif
         return component;
     },
@@ -404,9 +392,7 @@ var Entity = Fire.Class({
                 this._components.splice(i, 1);
                 component.entity = null;
 // @ifdef EDITOR
-                if (editorCallback.onComponentRemoved) {
-                    editorCallback.onComponentRemoved(this, component);
-                }
+                editorCallback.onComponentRemoved(this, component);
 // @endif
             }
             else if (component.entity !== this) {
@@ -567,9 +553,7 @@ var Entity = Fire.Class({
             // callback
             Engine._renderContext.onEntityIndexChanged(this, oldIndex, index);
 // @ifdef EDITOR
-            if (editorCallback.onEntityIndexChanged) {
-                editorCallback.onEntityIndexChanged(this, oldIndex, index);
-            }
+            editorCallback.onEntityIndexChanged(this, oldIndex, index);
 // @endif
             //this._onHierarchyChanged(this, this.parent);
         }
@@ -725,9 +709,7 @@ var Entity = Fire.Class({
         // invoke callbacks
         Engine._renderContext.onEntityCreated(clone, true);
 // @ifdef EDITOR
-        if (editorCallback.onEntityCreated) {
-            editorCallback.onEntityCreated(clone);
-        }
+        editorCallback.onEntityCreated(clone);
 // @endif
         // activate components
         if (clone._active) {

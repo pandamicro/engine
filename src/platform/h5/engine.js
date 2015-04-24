@@ -186,9 +186,7 @@ var Engine = (function () {
             //if (editorCallback.onSceneLoaded) {
             //    editorCallback.onSceneLoaded(Engine._scene);
             //}
-            if (editorCallback.onSceneLaunched) {
-                editorCallback.onSceneLaunched(Engine._scene);
-            }
+            editorCallback.onSceneLaunched(Engine._scene);
         }
 // @endif
 
@@ -211,9 +209,7 @@ var Engine = (function () {
         if (isPlaying && isPaused) {
             isPaused = false;
 // @ifdef EDITOR
-            if (editorCallback.onEnginePlayed) {
-                editorCallback.onEnginePlayed(true);
-            }
+            editorCallback.onEnginePlayed(true);
 // @endif
             return;
         }
@@ -225,9 +221,7 @@ var Engine = (function () {
         update();
 
 // @ifdef EDITOR
-        if (editorCallback.onEnginePlayed) {
-            editorCallback.onEnginePlayed(false);
-        }
+        editorCallback.onEnginePlayed(false);
 // @endif
     };
 
@@ -252,9 +246,7 @@ var Engine = (function () {
             }
 
 // @ifdef EDITOR
-            if (editorCallback.onEngineStopped) {
-                editorCallback.onEngineStopped();
-            }
+            editorCallback.onEngineStopped();
 // @endif
         }
     };
@@ -266,9 +258,7 @@ var Engine = (function () {
     Engine.pause = function () {
         isPaused = true;
 // @ifdef EDITOR
-        if (editorCallback.onEnginePaused) {
-            editorCallback.onEnginePaused();
-        }
+        editorCallback.onEnginePaused();
 // @endif
     };
 
@@ -342,9 +332,7 @@ var Engine = (function () {
         // unload scene
         var oldScene = Engine._scene;
 // @ifdef EDITOR
-        if (editorCallback.onStartUnloadScene) {
-            editorCallback.onStartUnloadScene(oldScene);
-        }
+        editorCallback.onStartUnloadScene(oldScene);
 // @endif
 
         if (Fire.isValid(oldScene)) {
@@ -382,9 +370,7 @@ var Engine = (function () {
         scene.activate();
 
 // @ifdef EDITOR
-        if (editorCallback.onSceneLaunched) {
-            editorCallback.onSceneLaunched(scene);
-        }
+        editorCallback.onSceneLaunched(scene);
 // @endif
     };
 
