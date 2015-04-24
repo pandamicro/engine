@@ -632,7 +632,7 @@ var Entity = Fire.Class({
         if (0 < point.x && point.x < texture.width  &&
             0 < point.y && point.y < texture.height) {
             var alphaThreshold = renderer.sprite.alphaThreshold;
-            if (alphaThreshold > 0) {
+            if (renderer.sprite.pixelLevelHitTest && alphaThreshold > 0) {
                 return texture.getPixel(point.x, point.y).a >= alphaThreshold;
             }
             return true;
