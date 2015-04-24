@@ -10,9 +10,14 @@ var Entity = Fire.Class({
 
     constructor: function () {
         var name = arguments[0];
-
         this._name = typeof name !== 'undefined' ? name : 'New Entity';
-        this._objFlags |= Entity._defaultFlags;
+
+// @ifdef EDITOR
+        var editorOptions = arguments[1];
+        if (editorOptions) {
+            this._objFlags |= editorOptions.flags;
+        }
+// @endif
 
         if (Fire._isCloning) {
             // create by deserializer or instantiating
@@ -43,7 +48,7 @@ var Entity = Fire.Class({
 
 // @ifdef EDITOR
                 if (editorCallback.onEntityCreated) {
-                    editorCallback.onEntityCreated(this);
+                    editorCallback.onEntityCreated(this, editorOptions);
                 }
                 if (editorCallback.onComponentAdded) {
                     editorCallback.onComponentAdded(this, transform);
