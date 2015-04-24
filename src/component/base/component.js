@@ -245,17 +245,13 @@
         if ( enable ) {
             if ( !(self._objFlags & IsEditorOnEnabledCalled) ) {
                 self._objFlags |= IsEditorOnEnabledCalled;
-                if ( editorCallback.onComponentEnabled ) {
-                    editorCallback.onComponentEnabled(self);
-                }
+                editorCallback.onComponentEnabled(self);
             }
         }
         else {
             if ( self._objFlags & IsEditorOnEnabledCalled ) {
                 self._objFlags &= ~IsEditorOnEnabledCalled;
-                if ( editorCallback.onComponentDisabled ) {
-                    editorCallback.onComponentDisabled(self);
-                }
+                editorCallback.onComponentDisabled(self);
             }
         }
         if ( !(Fire.Engine.isPlaying || Fire.attr(self, 'executeInEditMode')) ) {
