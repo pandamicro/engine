@@ -139,6 +139,7 @@ Fire.JS.mixin(RenderContext.prototype, {
      */
     remove: function (target) {},
 
+    onPreRender: function () {},
     render: function () {},
 
     /**

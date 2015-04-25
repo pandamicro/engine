@@ -104,6 +104,8 @@
         // updateTransform
         this.updateTransform(renderContext.camera || this.camera);
 
+        renderContext.onPreRender();
+
         // call onPreRender
         var entities = this.entities;
         for (var i = 0, len = entities.length; i < len; ++i) {
