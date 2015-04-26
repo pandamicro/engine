@@ -89,18 +89,14 @@ var AssetLibrary = (function () {
          */
         _loadAssetByUuid: function (uuid, callback, handle, existingAsset) {
             if (typeof uuid !== 'string') {
-                if (callback) {
-                    callback('[AssetLibrary] uuid must be string', null);
-                }
+                callInNextTick(callback, '[AssetLibrary] uuid must be string', null);
                 return;
             }
             // step 1
             if ( !existingAsset ) {
                 var asset = handle.readCache(uuid);
                 if (asset) {
-                    if (callback) {
-                        callback(null, asset);
-                    }
+                    callInNextTick(callback, null, asset);
                     return;
                 }
             }
@@ -114,10 +110,17 @@ var AssetLibrary = (function () {
                 return;
             }
 
-            // step 4
+            // step 3
+
+            // @ifdef EDITOR
+            if (!_libraryBase) {
+                callInNextTick(callback, 'Cannot load ' + uuid + ' in editor because AssetLibrary not yet initialized!', null);
+                return;
+            }
+            // @endif
             var url = _libraryBase + uuid.substring(0, 2) + Fire.Path.sep + uuid;
 
-            // step 5
+            // step 4
             LoadManager.loadByLoader(JsonLoader, url,
                 function (error, json) {
                     function onDeserializedWithDepends (err, asset) {

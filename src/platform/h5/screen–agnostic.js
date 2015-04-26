@@ -68,7 +68,7 @@ function ContainerStrategy () {}
  */
 ContainerStrategy.prototype.setupContainer = function (size) {
     var canvas = Fire.Engine._renderContext.canvas;
-    var container = Fire.Screen._container;
+    var container = Fire.Engine._renderContext.container;
 
     // Setup container
     container.style.width = canvas.style.width = size.x + 'px';

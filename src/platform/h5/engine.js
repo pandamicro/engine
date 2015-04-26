@@ -179,23 +179,22 @@ var Engine = (function () {
             return;
         }
 
-        Engine._renderContext = new Fire._Runtime.RenderContext( w, h, canvas );
+        Engine._renderContext = new Runtime.RenderContext( w, h, canvas );
         Engine._interactionContext = new InteractionContext();
 
         Engine._game = Engine._renderContext.game;
         Engine._director = Engine._game.director;
 
         // @ifdef EDITOR
+        Runtime.init();
+
         if (Fire.isEditor === false) {
             // test in other platform
             Engine._scene = new Scene();
             //if (editorCallback.onSceneLoaded) {
             //    editorCallback.onSceneLoaded(Engine._scene);
             //}
-            if (editorCallback.onSceneLaunched) {
-                editorCallback.onSceneLaunched(Engine._scene);
-            }
-
+            editorCallback.onSceneLaunched(Engine._scene);
             Engine._game.director.runScene(Engine._scene.getSceneNode());
         }
         // @endif
@@ -204,6 +203,7 @@ var Engine = (function () {
 
         if (options) {
             JS.mixin(Engine._sceneInfos, options.scenes);
+            Resources._resBundle.init(options.resBundle);
         }
         return Engine._renderContext;
     };
@@ -220,9 +220,7 @@ var Engine = (function () {
         if (isPlaying && isPaused) {
             isPaused = false;
 // @ifdef EDITOR
-            if (editorCallback.onEnginePlayed) {
-                editorCallback.onEnginePlayed(true);
-            }
+            editorCallback.onEnginePlayed(true);
 // @endif
             return;
         }
@@ -234,9 +232,7 @@ var Engine = (function () {
         update();
 
 // @ifdef EDITOR
-        if (editorCallback.onEnginePlayed) {
-            editorCallback.onEnginePlayed(false);
-        }
+        editorCallback.onEnginePlayed(false);
 // @endif
     };
 
@@ -261,9 +257,7 @@ var Engine = (function () {
             }
 
 // @ifdef EDITOR
-            if (editorCallback.onEngineStopped) {
-                editorCallback.onEngineStopped();
-            }
+            editorCallback.onEngineStopped();
 // @endif
         }
     };
@@ -275,9 +269,7 @@ var Engine = (function () {
     Engine.pause = function () {
         isPaused = true;
 // @ifdef EDITOR
-        if (editorCallback.onEnginePaused) {
-            editorCallback.onEnginePaused();
-        }
+        editorCallback.onEnginePaused();
 // @endif
     };
 
@@ -304,7 +296,7 @@ var Engine = (function () {
                 Engine._scene.update();
                 FObject._deferredDestroy();
             }
-            render();
+            Runtime.render();
 
             // update interaction context
             Engine._interactionContext.update(Engine._scene.entities);
@@ -356,9 +348,7 @@ var Engine = (function () {
         // unload scene
         var oldScene = Engine._scene;
 // @ifdef EDITOR
-        if (editorCallback.onStartUnloadScene) {
-            editorCallback.onStartUnloadScene(oldScene);
-        }
+        editorCallback.onStartUnloadScene(oldScene);
 // @endif
 
         if (Fire.isValid(oldScene)) {
@@ -388,13 +378,16 @@ var Engine = (function () {
         Engine._dontDestroyEntities.length = 0;
         Engine._scene = scene;
         Engine._renderContext.onSceneLaunched(scene);
+
 // @ifdef EDITOR
-        if (editorCallback.onSceneLaunched) {
-            editorCallback.onSceneLaunched(scene);
-        }
+        editorCallback.onBeforeActivateScene(scene);
 // @endif
 
         scene.activate();
+
+// @ifdef EDITOR
+        editorCallback.onSceneLaunched(scene);
+// @endif
     };
 
     /**

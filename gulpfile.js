@@ -30,6 +30,8 @@ var paths = {
 
         // runtime engine
         'src/definition.js',
+        'src/utils.js',
+        'src/runtime.js',
         'src/time.js',
         'src/event/event.js',
         'src/event/event-listeners.js',
@@ -52,6 +54,7 @@ var paths = {
         'src/scene.js',
         'src/load-manager.js',
         'src/asset-library.js',
+        'src/resources.js',
         'src/platform/h5/engine.js',
         'src/platform/h5/input-events.js',
         'src/platform/h5/input-context.js',

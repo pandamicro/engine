@@ -34,6 +34,16 @@ Fire.JS.get(RenderContext.prototype, 'canvas',
     }
 );
 
+/**
+ * The canvas's parent node in dom.
+ * @property _container
+ * @type {HTMLElement}
+ * @private
+ */
+JS.get(RenderContext.prototype, 'container', function () {
+    return this.canvas.parentNode;
+});
+
 //Object.defineProperty(RenderContext.prototype, 'width', {
 //    get: function () {
 //        return this.width;
@@ -129,6 +139,7 @@ Fire.JS.mixin(RenderContext.prototype, {
      */
     remove: function (target) {},
 
+    onPreRender: function () {},
     render: function () {},
 
     /**
@@ -152,6 +163,6 @@ Fire.JS.mixin(RenderContext.prototype, {
     checkMatchCurrentScene: function () {}
 });
 
-Fire._Runtime.RenderContext = RenderContext;
+Runtime.RenderContext = RenderContext;
 
 // @endif

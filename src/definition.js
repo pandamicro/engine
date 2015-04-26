@@ -65,13 +65,3 @@ Fire.ContentStrategyType = ContentStrategyType;
 var __TESTONLY__ = {};
 Fire.__TESTONLY__ = __TESTONLY__;
 // @endif
-
-Fire._Runtime = {};
-JS.getset(Fire._Runtime, 'RenderContext',
-    function () {
-        return RenderContext;
-    },
-    function (value) {
-        RenderContext = value;
-    }
-);

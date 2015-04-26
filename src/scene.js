@@ -103,11 +103,18 @@
         }
     };
 
+    /**
+     * The default scene rendering operation invoked by runtime.
+     * @method render
+     * @param {_Runtime.RenderContext} renderContext
+     */
     Scene.prototype.render = function (renderContext) {
         Engine._curRenderContext = renderContext;
 
         // updateTransform
         this.updateTransform(renderContext.camera || this.camera);
+
+        renderContext.onPreRender();
 
         // call onPreRender
         var entities = this.entities;

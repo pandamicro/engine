@@ -233,6 +233,10 @@ var Camera = Fire.Class({
     },
 
     _calculateTransform: function (out_matrix, out_worldPos) {
+        // TODO: 等 fireball-x/dev#388 完成后去掉该保护代码
+        if (!this._contentStrategyInst) {
+            this._contentStrategyInst = Fire.Screen.ContentStrategy.fromType(this._contentStrategy);
+        }
         var viewportInfo = this.viewportInfo;
         var scale = viewportInfo.scale;
         var viewport = viewportInfo.viewport;

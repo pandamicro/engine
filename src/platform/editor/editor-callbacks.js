@@ -8,58 +8,63 @@
 var editorCallback = {
 
 
-    onEnginePlayed: null,
-    onEngineStopped: null,
-    onEnginePaused: null,
+    onEnginePlayed: function () {},
+    onEngineStopped: function () {},
+    onEnginePaused: function () {},
 
     // This will be called before component callbacks
-    onEntityCreated: null,
+    onEntityCreated: function () {},
 
     /**
      * removes an entity and all its children from scene, this method will NOT be called if it is removed by hierarchy.
      * @param {Entity} entity - the entity to remove
      * @param {boolean} isTopMost - indicates whether it is the most top one among the entities who will be deleted in one operation
      */
-    onEntityRemoved: null,
+    onEntityRemoved: function () {},
 
-    onEntityParentChanged: null,
+    onEntityParentChanged: function () {},
 
     /**
      * @param {Entity} entity
      * @param {number} oldIndex
      * @param {number} newIndex
      */
-    onEntityIndexChanged: null,
+    onEntityIndexChanged: function () {},
 
-    onEntityRenamed: null,
-
-    /**
-     * @param {Scene} scene
-     */
-    onStartUnloadScene: null,
+    onEntityRenamed: function () {},
 
     /**
      * @param {Scene} scene
      */
-    onSceneLaunched: null,
+    onStartUnloadScene: function () {},
+
+    /**
+     * @param {Scene} scene
+     */
+    onSceneLaunched: function () {},
+
+    /**
+     * @param {Scene} scene
+     */
+    onBeforeActivateScene: function () {},
 
     ///**
     // * @param {Scene} scene
     // */
     //onSceneLoaded: null,
 
-    onComponentEnabled: null,
-    onComponentDisabled: null,
+    onComponentEnabled: function () {},
+    onComponentDisabled: function () {},
 
     /**
      * @param {Entity} entity
      * @param {Component} component
      */
-    onComponentAdded: null,
+    onComponentAdded: function () {},
 
     /**
      * @param {Entity} entity
      * @param {Component} component
      */
-    onComponentRemoved: null
+    onComponentRemoved: function () {}
 };

@@ -10,9 +10,14 @@ var Entity = Fire.Class({
 
     constructor: function () {
         var name = arguments[0];
-
         this._name = typeof name !== 'undefined' ? name : 'New Entity';
-        this._objFlags |= Entity._defaultFlags;
+
+// @ifdef EDITOR
+        var editorOptions = arguments[1];
+        if (editorOptions) {
+            this._objFlags |= editorOptions.flags;
+        }
+// @endif
 
         if (Fire._isCloning) {
             // create by deserializer or instantiating
@@ -42,12 +47,8 @@ var Entity = Fire.Class({
                 transform._onEntityActivated(true);     // 因为是刚刚创建，所以 activeInHierarchy 肯定为 true
 
 // @ifdef EDITOR
-                if (editorCallback.onEntityCreated) {
-                    editorCallback.onEntityCreated(this);
-                }
-                if (editorCallback.onComponentAdded) {
-                    editorCallback.onComponentAdded(this, transform);
-                }
+                editorCallback.onEntityCreated(this, editorOptions);
+                editorCallback.onComponentAdded(this, transform);
 // @endif
             }
         }
@@ -62,9 +63,7 @@ var Entity = Fire.Class({
             set: function (value) {
                 this._name = value;
                 // @ifdef EDITOR
-                if (editorCallback.onEntityRenamed) {
-                    editorCallback.onEntityRenamed(this);
-                }
+                editorCallback.onEntityRenamed(this);
                 // @endif
             }
         },
@@ -167,9 +166,7 @@ var Entity = Fire.Class({
                     }
                     Engine._renderContext.onEntityParentChanged(this, oldParent);
 // @ifdef EDITOR
-                    if (editorCallback.onEntityParentChanged) {
-                        editorCallback.onEntityParentChanged(this);
-                    }
+                    editorCallback.onEntityParentChanged(this);
 // @endif
                     //this._onHierarchyChanged(this, oldParent);
                 }
@@ -252,9 +249,7 @@ var Entity = Fire.Class({
         if (isTopMost) {
             Engine._renderContext.onEntityRemoved(this);
 // @ifdef EDITOR
-            if (editorCallback.onEntityRemoved) {
-                editorCallback.onEntityRemoved(this/*, isTopMost*/);
-            }
+            editorCallback.onEntityRemoved(this/*, isTopMost*/);
 // @endif
         }
         // destroy components
@@ -350,9 +345,7 @@ var Entity = Fire.Class({
         }
 
 // @ifdef EDITOR
-        if (editorCallback.onComponentAdded) {
-            editorCallback.onComponentAdded(this, component);
-        }
+        editorCallback.onComponentAdded(this, component);
 // @endif
         return component;
     },
@@ -399,9 +392,7 @@ var Entity = Fire.Class({
                 this._components.splice(i, 1);
                 component.entity = null;
 // @ifdef EDITOR
-                if (editorCallback.onComponentRemoved) {
-                    editorCallback.onComponentRemoved(this, component);
-                }
+                editorCallback.onComponentRemoved(this, component);
 // @endif
             }
             else if (component.entity !== this) {
@@ -562,9 +553,7 @@ var Entity = Fire.Class({
             // callback
             Engine._renderContext.onEntityIndexChanged(this, oldIndex, index);
 // @ifdef EDITOR
-            if (editorCallback.onEntityIndexChanged) {
-                editorCallback.onEntityIndexChanged(this, oldIndex, index);
-            }
+            editorCallback.onEntityIndexChanged(this, oldIndex, index);
 // @endif
             //this._onHierarchyChanged(this, this.parent);
         }
@@ -588,6 +577,58 @@ var Entity = Fire.Class({
         this.setSiblingIndex(-1);
     },
 
+    /**
+     * Tests whether the entity intersects the specified point in world coordinates
+     * This ignores the alpha of the renderer.
+     *
+     * @method hitTest
+     * @param {number} worldX The world X position to check.
+     * @param {number} worldY The world Y position to check.
+     * @return {boolean} A Boolean indicating whether the Entity intersect the specified world position.
+     */
+    hitTest: function (worldX, worldY) {
+        var renderer = this.getComponent(Fire.SpriteRenderer);
+        if (! renderer || ! renderer.sprite) {
+            return false;
+        }
+
+        var worldMatrix = this.transform.getLocalToWorldMatrix();
+        var spriteMatrix = new Fire.Matrix23();
+        renderer.getSelfMatrix(spriteMatrix);
+        // TODO getSelfRenderMatrix
+        spriteMatrix.a = renderer.width / renderer.sprite.width;
+        spriteMatrix.d = renderer.height / renderer.sprite.height;
+        if (renderer.sprite.rotated) {
+            spriteMatrix.b = spriteMatrix.d;
+            spriteMatrix.c = -spriteMatrix.a;
+            spriteMatrix.a = 0;
+            spriteMatrix.d = 0;
+            spriteMatrix.ty -= renderer.height;
+        }
+        var matrix = spriteMatrix.prepend(worldMatrix);
+        matrix.invert();
+        var point = matrix.transformPoint(new Fire.Vec2(worldX, worldY));
+        // 因为世界坐标是Y轴向上，图片是Y轴向下，所以这边进行图片反转
+        point.y = -point.y;
+        point.x += renderer.sprite.x;
+        point.y += renderer.sprite.y;
+
+        var texture = renderer.sprite.texture;
+        if (! texture) {
+            return false;
+        }
+
+        if (0 < point.x && point.x < texture.width  &&
+            0 < point.y && point.y < texture.height) {
+            var alphaThreshold = renderer.sprite.alphaThreshold;
+            if (renderer.sprite.pixelLevelHitTest && alphaThreshold > 0) {
+                return texture.getPixel(point.x, point.y).a >= alphaThreshold;
+            }
+            return true;
+        }
+        return false;
+    },
+
     ////////////////////////////////////////////////////////////////////
     // other methods
     ////////////////////////////////////////////////////////////////////
@@ -602,6 +643,14 @@ var Entity = Fire.Class({
         var countBefore = this._components.length;
         for (var c = 0; c < countBefore; ++c) {
             var component = this._components[c];
+            // @ifdef EDITOR
+            if (! (component instanceof Fire.Component)) {
+                Fire.error('Sorry, one of entity [%s]\'s component is corrupted! The component which original index is %s has been removed.\nSee DevTools for corrupted value.', this.name, c);
+                console.log('Corrupted component value:', component);
+                this._removeComponent(component);
+                continue;
+            }
+            // @endif
             component._onEntityActivated(value);
         }
         // activate children recursively
@@ -660,9 +709,7 @@ var Entity = Fire.Class({
         // invoke callbacks
         Engine._renderContext.onEntityCreated(clone, true);
 // @ifdef EDITOR
-        if (editorCallback.onEntityCreated) {
-            editorCallback.onEntityCreated(clone);
-        }
+        editorCallback.onEntityCreated(clone);
 // @endif
         // activate components
         if (clone._active) {
